@@ -63,20 +63,24 @@ foreach($awardTypes as $awardType) {
         }
 
         $employeesResult = $employeeStmt->get_result();
-        if ($employeesResult->num_rows > 0) {
+        if ($employeesResult->num_rows >= 2) {
             $employees = $employeesResult->fetch_all(MYSQLI_ASSOC);
 
-            $randEmployeeIndex = rand(0, ($employeesResult->num_rows - 1));
+            $randAwardeeIndex = rand(0, ($employeesResult->num_rows - 1));
+            $randGiverIndex = $randAwardeeIndex;
+            while ($randAwardeeIndex === $randGiverIndex) {
+                $randGiverIndex = rand(0, ($employeesResult->num_rows - 1));
+            }
 
-            $employee = $employees[$randEmployeeIndex];
-            $adminUser = $adminUsers[rand(0, 1)];
+            $awardee = $employees[$randAwardeeIndex];
+            $giver = $employees[$randGiverIndex];
 
             $insertAwardStmt = $mysqli->prepare(
                 "INSERT INTO Awards_Given (AwardID, EmployeeID, AwardDate, AwardedByID) VALUES (?, ?, ?, ?)"
             );
             $awardTypeId = $awardType['ID'];
-            $employeeId = $employee['EmployeeID'];
-            $adminUserId = $adminUser['EmployeeID'];
+            $employeeId = $awardee['EmployeeID'];
+            $adminUserId = $giver['EmployeeID'];
             $insertAwardStmt->bind_param(
                 'iisi',
                 $awardTypeId,
