@@ -8,8 +8,11 @@
 namespace controllers;
 
 
+use views\BaseTemplateView;
+
 require_once 'BaseController.php';
 require_once __DIR__ . '/../Views/ReportsViews.php';
+require_once __DIR__ . '/../Views/BaseTemplateView.php';
 
 class ReportsController extends BaseController
 {
@@ -17,14 +20,24 @@ class ReportsController extends BaseController
     {
         switch ($request['action']) {
             case 'index':
-                self::index();
+            default:
+                return self::index();
                 break;
         }
     }
 
+    /**
+     * Return the Admin Reports Page
+     * @return string
+     */
     private function index()
     {
         // make necessary queries calls through models
         // return views related to the initial reports landing page
+        return BaseTemplateView::baseTemplateView(
+            'admin',
+            '<div id="builder"></div>',
+            'report.init();'
+        );
     }
 }
