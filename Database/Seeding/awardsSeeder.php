@@ -16,17 +16,6 @@ if(!$awardTypesStmt->execute()) {
 }
 $awardTypes = $awardTypesStmt->get_result()->fetch_all(MYSQLI_ASSOC);
 
-$adminUsersStmt = $mysqli->prepare(
-    "SELECT * 
-    FROM Employees 
-    JOIN UserType ON Employees.ID = UserType.EmployeeID
-    WHERE UserType.Type = 'admin'");
-if(!$adminUsersStmt->execute()) {
-    error_log('Failed to get award types');
-    exit();
-}
-$adminUsers = $adminUsersStmt->get_result()->fetch_all(MYSQLI_ASSOC);
-
 foreach($awardTypes as $awardType) {
     $awardDateIterator = $awardDateIteratorLimit = new DateTime();
     switch ($awardType['AwardType']) {
