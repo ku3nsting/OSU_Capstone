@@ -9,6 +9,7 @@ namespace controllers;
 
 
 use views\BaseTemplateView;
+use views\ReportsViews;
 
 require_once 'BaseController.php';
 require_once __DIR__ . '/../Views/ReportsViews.php';
@@ -36,8 +37,24 @@ class ReportsController extends BaseController
         // return views related to the initial reports landing page
         return BaseTemplateView::baseTemplateView(
             'admin',
-            '<div id="builder"></div>',
+            ReportsViews::indexView(),
             'report.init();'
         );
+    }
+
+    private function runQuery($request)
+    {
+        // Base query for the query builder
+        $query = "
+            SELECT Awards.AwardLabel, Awards_Given.AwardDate,
+              Employees.fName, Employees.lName, Employees.Email, Employees.hireDate,
+              Giver.fName GiverFirstName, Giver.lName GiverLastName, Giver.Email GiverEmail
+            FROM Awards_Given
+            JOIN Awards ON Awards_Given.AwardID = Awards.ID
+            JOIN Employees ON Awards_Given.AwardedByID = Employees.ID
+            JOIN Employees as Giver ON Awards_Given.AwardedByID = Giver.ID
+            JOIN UserType ON Employees.ID = UserType.EmployeeID
+            WHERE UserType.Type = 'user'
+        ";
     }
 }

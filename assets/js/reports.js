@@ -76,6 +76,12 @@ var report = {
                     label: "Giver Last Name",
                     type: "string",
                     operators: stringOperators
+                },
+                {
+                    id: "GiverEmail",
+                    label: "Giver Email",
+                    type: "string",
+                    operators: stringOperators
                 }
             ]
         });
