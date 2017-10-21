@@ -66,11 +66,12 @@ class ReportsViews
     {
         return '
             <form>
+                <h2>Report Query Builder</h2>
                 <div class="form-group">
-                    <label for="selectQueryFields">Select Fields: </label>
-                    <p><em>hold ctrl or shift (or drag with the mouse) to select more than one</em></p>
+                    <label for="selectQueryFields" style="cursor: help;" title="hold ctrl or shift (or drag with the mouse) to select more than one">Select Fields:</label>
                     ' . self::selectQueryFields() . '
                 </div>
+                <label>Where Clause:</label>
                 <div id="builder"></div>
             </form>
         ';
@@ -82,7 +83,7 @@ class ReportsViews
      */
     public static function selectQueryFields()
     {
-        $selectFields = "<select id='selectQueryFields' multiple class='form-control'>";
+        $selectFields = "<select id='selectQueryFields' multiple class='form-control' style='height: 12.5em'>";
         foreach (self::$fields as $field) {
             $selectFields .= "<option value='{$field['id']}'>{$field['label']}</option>";
         }
