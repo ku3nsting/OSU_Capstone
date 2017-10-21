@@ -65,15 +65,20 @@ class ReportsViews
     public static function indexView()
     {
         return '
-            <form>
+            <form id="selectQueryForm" action="/admin/reports.php">
                 <h2>Report Query Builder</h2>
+                <input type="hidden" value="run-query" id="action" name="action">
                 <div class="form-group">
-                    <label for="selectQueryFields" style="cursor: help;" title="hold ctrl or shift (or drag with the mouse) to select more than one">Select Fields:</label>
+                    <label for="selectQueryFields">SELECT Fields</label>
+                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="cursor: help;" title="To select multiple click and drag mouse or hold Control and Click with mouse"></span>
                     ' . self::selectQueryFields() . '
                 </div>
-                <label>Where Clause:</label>
+                <label>WHERE</label>
                 <div id="builder"></div>
+                <a class="btn btn-primary" href="#" role="button" onclick="report.runQuery();">Submit</a>
             </form>
+            <h2>Results</h2>
+            <div id="query-results"></div>
         ';
     }
 
@@ -83,7 +88,7 @@ class ReportsViews
      */
     public static function selectQueryFields()
     {
-        $selectFields = "<select id='selectQueryFields' multiple class='form-control' style='height: 12.5em'>";
+        $selectFields = "<select id='selectQueryFields' name='selectQueryFields[]' multiple class='form-control' style='height: 12.5em'>";
         foreach (self::$fields as $field) {
             $selectFields .= "<option value='{$field['id']}'>{$field['label']}</option>";
         }

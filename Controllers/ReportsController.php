@@ -20,6 +20,9 @@ class ReportsController extends BaseController
     function respond($request)
     {
         switch ($request['action']) {
+            case 'run-query':
+                return self::runQuery($request);
+                break;
             case 'index':
             default:
                 return self::index();
@@ -42,6 +45,9 @@ class ReportsController extends BaseController
         );
     }
 
+    /**
+     * @param $request
+     */
     private function runQuery($request)
     {
         // Base query for the query builder
@@ -56,5 +62,7 @@ class ReportsController extends BaseController
             JOIN UserType ON Employees.ID = UserType.EmployeeID
             WHERE UserType.Type = 'user'
         ";
+
+        //TODO: process select fields and where rules
     }
 }

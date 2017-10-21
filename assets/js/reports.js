@@ -1,4 +1,12 @@
 var report = {
+    runQuery: function () {
+        var rules = $("#builder").queryBuilder('getRules', {skip_empty: true});
+        $.ajax({
+            url: $("#selectQueryForm").attr('action'),
+            method: "POST",
+            data: $("#selectQueryForm").serialize() + '&rules=' + JSON.stringify(rules)
+        });
+    },
     init: function () {
         var stringOperators = [
             'equal',
