@@ -8,17 +8,23 @@
 namespace controllers;
 
 
+use database\AwardsQueryBuilder;
 use views\BaseTemplateView;
+use views\ReportsViews;
 
 require_once 'BaseController.php';
 require_once __DIR__ . '/../Views/ReportsViews.php';
 require_once __DIR__ . '/../Views/BaseTemplateView.php';
+require_once __DIR__ . '/../Database/Query/AwardsQueryBuilder.php';
 
 class ReportsController extends BaseController
 {
     function respond($request)
     {
         switch ($request['action']) {
+            case 'run-query':
+                return self::runQuery($request);
+                break;
             case 'index':
             default:
                 return self::index();
@@ -36,8 +42,23 @@ class ReportsController extends BaseController
         // return views related to the initial reports landing page
         return BaseTemplateView::baseTemplateView(
             'admin',
-            '<div id="builder"></div>',
+            ReportsViews::indexView(),
             'report.init();'
         );
+    }
+
+    /**
+     * @param $request
+     */
+    private function runQuery($request)
+    {
+
+        $awardsQueryBuilder = new AwardsQueryBuilder();
+//        $query = $awardsQueryBuilder->buildQuery(json_decode($request['rules'], true));
+
+        $awards = $awardsQueryBuilder->runQuery(json_decode($request['rules'], true));
+        echo '<pre>';
+        var_dump($awards);
+        echo '</pre>';
     }
 }
