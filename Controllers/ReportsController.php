@@ -8,12 +8,14 @@
 namespace controllers;
 
 
+use database\AwardsQueryBuilder;
 use views\BaseTemplateView;
 use views\ReportsViews;
 
 require_once 'BaseController.php';
 require_once __DIR__ . '/../Views/ReportsViews.php';
 require_once __DIR__ . '/../Views/BaseTemplateView.php';
+require_once __DIR__ . '/../Database/Query/AwardsQueryBuilder.php';
 
 class ReportsController extends BaseController
 {
@@ -50,19 +52,13 @@ class ReportsController extends BaseController
      */
     private function runQuery($request)
     {
-        // Base query for the query builder
-        $query = "
-            SELECT Awards.AwardLabel, Awards_Given.AwardDate,
-              Employees.fName, Employees.lName, Employees.Email, Employees.hireDate,
-              Giver.fName GiverFirstName, Giver.lName GiverLastName, Giver.Email GiverEmail
-            FROM Awards_Given
-            JOIN Awards ON Awards_Given.AwardID = Awards.ID
-            JOIN Employees ON Awards_Given.AwardedByID = Employees.ID
-            JOIN Employees as Giver ON Awards_Given.AwardedByID = Giver.ID
-            JOIN UserType ON Employees.ID = UserType.EmployeeID
-            WHERE UserType.Type = 'user'
-        ";
 
-        //TODO: process select fields and where rules
+        $awardsQueryBuilder = new AwardsQueryBuilder();
+//        $query = $awardsQueryBuilder->buildQuery(json_decode($request['rules'], true));
+
+        $awards = $awardsQueryBuilder->runQuery(json_decode($request['rules'], true));
+        echo '<pre>';
+        var_dump($awards);
+        echo '</pre>';
     }
 }
