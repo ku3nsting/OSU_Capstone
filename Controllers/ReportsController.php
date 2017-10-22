@@ -54,9 +54,8 @@ class ReportsController extends BaseController
     {
 
         $awardsQueryBuilder = new AwardsQueryBuilder();
-//        $query = $awardsQueryBuilder->buildQuery(json_decode($request['rules'], true));
-
         $awards = $awardsQueryBuilder->runQuery(json_decode($request['rules'], true));
+
         echo '<pre>';
         var_dump($awards);
         echo '</pre>';

@@ -8,8 +8,6 @@ var report = {
         }).done(function (data) {
             $('#query-results').html(data);
         }).fail(function(jqXHR, textStatus, errorThrown) {
-            console.log(jqXHR);
-            console.log(errorThrown);
             $('#query-results').html(textStatus);
         });
     },
