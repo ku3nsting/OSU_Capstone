@@ -16,7 +16,7 @@
  
 	<title>Employee Recognition Application</title>
 
-	<link rel="stylesheet" type="text/css" href="style.css" /> 
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />  
    
 </head>
 
@@ -37,7 +37,7 @@
 		  <li><a href="account.php">Account</a></li>
 		  <li><a href="awards.php">My Awards</a></li>
 		  <li><a href="nominate.php">Nominate</a></li>
-		  <li style="float:right"><a class="active" href="login.php">Sign Out</a></li>
+		  <li style="float:right"><a class="active" href="login.html">Sign Out</a></li>
 		</ul>
 		
 		</td>
