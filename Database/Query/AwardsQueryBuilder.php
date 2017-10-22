@@ -106,7 +106,22 @@ class AwardsQueryBuilder
                 'sqlOperator' => '>',
                 'valuePrepend' => '',
                 'valueAppend' => '',
-            ]
+            ],
+            'greater_or_equal' => [
+                'sqlOperator' => '>=',
+                'valuePrepend' => '',
+                'valueAppend' => '',
+            ],
+            'less' => [
+                'sqlOperator' => '<',
+                'valuePrepend' => '',
+                'valueAppend' => '',
+            ],
+            'less_or_equal' => [
+                'sqlOperator' => '<=',
+                'valuePrepend' => '',
+                'valueAppend' => '',
+            ],
         ],
         'string' => [
             'equal' => [
@@ -121,6 +136,31 @@ class AwardsQueryBuilder
             ],
             'begins_with' => [
                 'sqlOperator' => 'LIKE',
+                'valuePrepend' => '',
+                'valueAppend' => '%',
+            ],
+            'not_begins_with' => [
+                'sqlOperator' => 'NOT LIKE',
+                'valuePrepend' => '',
+                'valueAppend' => '%',
+            ],
+            'contains' => [
+                'sqlOperator' => 'LIKE',
+                'valuePrepend' => '%',
+                'valueAppend' => '%',
+            ],
+            'not_contains' => [
+                'sqlOperator' => 'NOT LIKE',
+                'valuePrepend' => '%',
+                'valueAppend' => '%',
+            ],
+            'ends_with' => [
+                'sqlOperator' => 'LIKE',
+                'valuePrepend' => '%',
+                'valueAppend' => '',
+            ],
+            'not_ends_with' => [
+                'sqlOperator' => 'NOT LIKE',
                 'valuePrepend' => '%',
                 'valueAppend' => '',
             ],
