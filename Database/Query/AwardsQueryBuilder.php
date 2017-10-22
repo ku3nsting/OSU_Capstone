@@ -18,9 +18,6 @@ class AwardsQueryBuilder
      * @var string
      */
     public static $query = "
-        SELECT Awards.AwardLabel, Awards_Given.AwardDate,
-          Employees.fName, Employees.lName, Employees.Email, Employees.hireDate,
-          Giver.fName GiverFirstName, Giver.lName GiverLastName, Giver.Email GiverEmail
         FROM Awards_Given
         JOIN Awards ON Awards_Given.AwardID = Awards.ID
         JOIN Employees ON Awards_Given.AwardedByID = Employees.ID
@@ -210,9 +207,19 @@ class AwardsQueryBuilder
         return $values;
     }
 
-    public function runQuery(array $rules)
+    /**
+     * @param array $rules
+     * @param array $selectFields
+     * @return array|null
+     * @throws \Exception
+     */
+    public function runQuery(array $rules, array $selectFields)
     {
-        $query = $this->buildQuery($rules);
+        if (empty($selectFields)) {
+            throw new \Exception('No Select Fields were chosen for the Query');
+        }
+
+        $query = $this->buildQuery($rules, $selectFields);
 
         $stmt = $this->mysqli->prepare($query);
 
@@ -237,13 +244,21 @@ class AwardsQueryBuilder
 
     /**
      * @param array $rules
+     * @param array $selectFields
      * @return string
+     * @throws \Exception
      */
-    public function buildQuery(array $rules)
+    public function buildQuery(array $rules, array $selectFields)
     {
+        $select = $this->getSelectSql($selectFields);
+
         $whereClause = $this->buildWhereClause($rules);
 
-        return !empty($whereClause) ? self::$query . ' AND ' . $whereClause : self::$query;
+        if(!empty($whereClause) && !empty($selectFields)) {
+            return $select . self::$query . ' AND ' . $whereClause;
+        }
+
+        throw new \Exception('Missing select or where clause');
     }
 
     /**
@@ -360,5 +375,20 @@ class AwardsQueryBuilder
             . $this->operators[$type][$operator]['valueAppend'];
     }
 
-    //TODO: build select clause
+    /**
+     * @param $selectFields
+     * @return string
+     * @throws \Exception
+     */
+    private function getSelectSql($selectFields)
+    {
+        $selectDbFields = [];
+        foreach ($selectFields as $selectField) {
+            if (!array_key_exists($selectField, $this->fields)) {
+                throw new \Exception("Field, $selectField, is not a valid select field");
+            }
+            $selectDbFields[] = $this->fields[$selectField]['dbfield'];
+        }
+        return 'SELECT ' . implode(', ', $selectDbFields) . ' ';
+    }
 }
