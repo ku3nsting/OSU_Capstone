@@ -54,7 +54,14 @@ class ReportsController extends BaseController
     {
 
         $awardsQueryBuilder = new AwardsQueryBuilder();
-        $awards = $awardsQueryBuilder->runQuery(json_decode($request['rules'], true));
+        try {
+            $selectFields = isset($request['selectQueryFields']) ? $request['selectQueryFields'] : [];
+            $awards = $awardsQueryBuilder->runQuery(json_decode($request['rules'], true), $selectFields);
+        } catch (\Exception $exception) {
+            header('HTTP/1.1 500 Internal Server Error');
+            echo $exception->getMessage();
+            exit();
+        }
 
         echo '<pre>';
         var_dump($awards);
