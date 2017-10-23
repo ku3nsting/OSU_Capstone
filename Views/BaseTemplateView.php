@@ -13,9 +13,11 @@ class BaseTemplateView
     /**
      * Returning the base html for the website with the navigation links and assets included
      * @param string $type - options are 'user' or 'admin
+     * @param string $html
+     * @param string $scripts
      * @return string
      */
-    public static function baseTemplateView($type)
+    public static function baseTemplateView($type, $html = '', $scripts = '')
     {
         $userLinks = [
             'manage-account' => [
@@ -64,6 +66,8 @@ class BaseTemplateView
 
         <!-- Bootstrap -->
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+        <!-- Query Builder -->
+        <link rel="stylesheet" href="../assets/css/query-builder.default.min.css">
 
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn\'t work if you view the page via file:// -->
@@ -95,13 +99,20 @@ class BaseTemplateView
           </nav>
         </div>
 
-        <div class="container" id="main-content"></div>
+        <div class="container" id="main-content"> ' . $html . '</div>
 
 
         <!-- jQuery (necessary for Bootstrap\'s JavaScript plugins) -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <script src="../assets/js/query-builder.standalone.min.js"></script>
+        <script src="../assets/js/reports.js"></script>
+        <script>
+            $(document).ready(function() {
+                ' . $scripts. '
+            });
+        </script>
     </body>
 </html>
         ';

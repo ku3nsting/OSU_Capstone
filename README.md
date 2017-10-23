@@ -1,1 +1,1 @@
-# OSU_Capstone
+Database-backed Employee Recognition website with authentication
