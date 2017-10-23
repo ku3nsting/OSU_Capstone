@@ -1,3 +1,6 @@
+CREATE DATABASE gemini;
+USE gemini;
+
 -- Drop the tables
 DROP TABLE IF EXISTS `Awards_Given`;
 DROP TABLE IF EXISTS `UserType`;
