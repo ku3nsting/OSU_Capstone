@@ -5,7 +5,7 @@
 	//TEMP value (database from a previous class)
 	//we'll change this to connect to Employee recognition db
     //Connects to the database
-    $mysqli = new mysqli("oniddb.cws.oregonstate.edu","kuenstir-db","4jgIGJ2KQMnNGthS","kuenstir-db");
+    $mysqli = new mysqli("ip-172-31-19-147.us-west-2.compute.internal","root","cs467","gemini");
 
 ?>
 
