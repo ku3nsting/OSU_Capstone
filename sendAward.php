@@ -11,17 +11,17 @@ $mail = new PHPMailer;
 $mail->isSMTP();
 
 // email sender info
-$mail->setFrom('wilsjaco@oregonstate.edu', 'OSU Employee Recognition');
+$mail->setFrom('*****', 'OSU Employee Recognition');
 
 // email recipient info
 $mail->addAddress($email, $employeeName);
 
 // smtp username and password from aws
-$mail->Username = 'AKIAICM2CIW5CVVPP3GQ';
-$mail->Password = 'AhCQgS2DZRERRVq7Ql7EdPBml2hHiUzEuj8VRjzfFuMb';
+$mail->Username = '*****';
+$mail->Password = '*****';
     
 // set the smtp host
-$mail->Host = 'email-smtp.us-west-2.amazonaws.com';
+$mail->Host = '*******m';
 
 // contents of the email
 $mail->Subject = 'Employee award';
