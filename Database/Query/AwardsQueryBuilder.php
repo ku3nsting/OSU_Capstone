@@ -387,7 +387,7 @@ class AwardsQueryBuilder
             if (!array_key_exists($selectField, $this->fields)) {
                 throw new \Exception("Field, $selectField, is not a valid select field");
             }
-            $selectDbFields[] = $this->fields[$selectField]['dbfield'];
+            $selectDbFields[] = $this->fields[$selectField]['dbfield'] . " AS $selectField";
         }
         return 'SELECT ' . implode(', ', $selectDbFields) . ' ';
     }

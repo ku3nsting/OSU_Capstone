@@ -48,7 +48,9 @@ class ReportsController extends BaseController
     }
 
     /**
+     * Runs the query based on query builder selection and returns a table view of the results
      * @param $request
+     * @return string
      */
     private function runQuery($request)
     {
@@ -63,8 +65,6 @@ class ReportsController extends BaseController
             exit();
         }
 
-        echo '<pre>';
-        var_dump($awards);
-        echo '</pre>';
+        return ReportsViews::resultsTableView($awards, $selectFields);
     }
 }
