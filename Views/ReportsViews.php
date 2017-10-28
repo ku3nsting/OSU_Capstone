@@ -66,7 +66,7 @@ class ReportsViews
                 </div>
                 <label>WHERE</label>
                 <div id="builder"></div>
-                <a class="btn btn-primary" href="#" role="button" onclick="report.runQuery();">Submit</a>
+                <a class="btn btn-primary btn-sm" href="#" role="button" onclick="report.runQuery();">Submit</a>
             </form>
             <h2>Results</h2>
             <div id="query-results"></div>
