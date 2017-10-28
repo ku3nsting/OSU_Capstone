@@ -61,7 +61,7 @@ class ReportsController extends BaseController
             $awards = $awardsQueryBuilder->runQuery(json_decode($request['rules'], true), $selectFields);
         } catch (\Exception $exception) {
             header('HTTP/1.1 500 Internal Server Error');
-            echo $exception->getMessage();
+            echo '<div class="alert alert-danger">' . $exception->getMessage() . '</div>';
             exit();
         }
 
