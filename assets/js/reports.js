@@ -102,7 +102,7 @@ var report = {
             ]
         });
 
-        $('#builder').queryBuilder('setRules', testRules);
+        // $('#builder').queryBuilder('setRules', testRules);
     }
 };
 

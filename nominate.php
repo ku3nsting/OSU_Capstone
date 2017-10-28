@@ -5,7 +5,8 @@
 	//TEMP value (database from a previous class)
 	//we'll change this to connect to Employee recognition db
     //Connects to the database
-    $mysqli = new mysqli("ip-172-31-19-147.us-west-2.compute.internal","root","cs467","gemini");
+    require_once __DIR__ . '/Config/database.php';
+    $mysqli = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
 
 ?>
 

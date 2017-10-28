@@ -19,7 +19,12 @@ require_once __DIR__ . '/../Database/Query/AwardsQueryBuilder.php';
 
 class ReportsController extends BaseController
 {
-    function respond($request)
+    /**
+     * Respond to the request
+     * @param $request
+     * @return string
+     */
+    public function respond($request)
     {
         switch ($request['action']) {
             case 'run-query':
@@ -48,7 +53,9 @@ class ReportsController extends BaseController
     }
 
     /**
+     * Runs the query based on query builder selection and returns a table view of the results
      * @param $request
+     * @return string
      */
     private function runQuery($request)
     {
@@ -59,12 +66,10 @@ class ReportsController extends BaseController
             $awards = $awardsQueryBuilder->runQuery(json_decode($request['rules'], true), $selectFields);
         } catch (\Exception $exception) {
             header('HTTP/1.1 500 Internal Server Error');
-            echo $exception->getMessage();
+            echo '<div class="alert alert-danger">' . $exception->getMessage() . '</div>';
             exit();
         }
 
-        echo '<pre>';
-        var_dump($awards);
-        echo '</pre>';
+        return ReportsViews::resultsTableView($awards, $selectFields);
     }
 }
