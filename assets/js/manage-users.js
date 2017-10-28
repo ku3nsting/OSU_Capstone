@@ -14,7 +14,7 @@ var manageUsers = {
             $('#msg-div').html('');
             $('#addUserBtn').click(function () {
                 manageUsers.addUser();
-            })
+            });
         }).fail(function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.responseText !== undefined) {
                 $('#msg-div').html(jqXHR.responseText);
@@ -30,6 +30,8 @@ var manageUsers = {
             data: $('#add-user-form').serialize()
         }).done(function (data) {
             $('#msg-div').html(data);
+            // TODO: update to replace with edit form
+            $('#addUserBtn').addClass('hidden');
         }).fail(function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.responseText !== undefined) {
                 $('#msg-div').html(jqXHR.responseText);

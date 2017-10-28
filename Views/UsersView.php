@@ -58,7 +58,7 @@ class UsersView
                     <tr>
                         <th>User Id</th>
                         <th>Employee Name</th>
-                        <th>Hire Date</th>
+                        <th>Hire Date (YYYY-MM-DD)</th>
                         <th>Type</th>
                     </tr>
                 </thead>

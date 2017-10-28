@@ -64,16 +64,36 @@ class UsersController extends BaseController
         return UsersView::addUserForm();
     }
 
+    /**
+     * @param array $request
+     * @return string
+     */
     private function addUser($request)
     {
         $formErrors = $this->validateUserFields($request);
         if (!empty($formErrors)) {
+            http_response_code(422);
             echo '<pre>';
             var_dump($formErrors);
             echo '</pre>';
+            exit;
+        }
+
+        $request['Password'] = password_hash($request['Password'], PASSWORD_DEFAULT);
+
+        if (UsersModel::addUser($request)) {
+            // TODO: update to return edit form
+            return '<div class="alert alert-success">Successfully added the employee</div>';
+        } else {
+            http_response_code(500);
+            return '<div class="alert alert-danger">Failed to add the employee</div>';
         }
     }
 
+    /**
+     * @param array $request
+     * @return array
+     */
     private function validateUserFields($request)
     {
         $formErrors = [];
@@ -90,7 +110,7 @@ class UsersController extends BaseController
             $formErrors[] = 'Email cannot be empty';
         }
 
-        if (filter_var(($request['Email']), FILTER_VALIDATE_EMAIL)) {
+        if (!filter_var(($request['Email']), FILTER_VALIDATE_EMAIL)) {
             $formErrors[] = 'Invalid email format';
         }
 
