@@ -19,7 +19,12 @@ require_once __DIR__ . '/../Database/Query/AwardsQueryBuilder.php';
 
 class ReportsController extends BaseController
 {
-    function respond($request)
+    /**
+     * Respond to the request
+     * @param $request
+     * @return string
+     */
+    public function respond($request)
     {
         switch ($request['action']) {
             case 'run-query':

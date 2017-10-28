@@ -36,7 +36,7 @@ class BaseTemplateView
 
         $adminLinks = [
             'manage-users' => [
-                'href' => '#',
+                'href' => '/admin/manage-users.php',
                 'text' => 'Manage Users'
             ],
             'reports' => [
