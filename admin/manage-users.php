@@ -3,4 +3,9 @@
 require_once __DIR__ . '/../Controllers/UsersController.php';
 
 $usersController = new \controllers\UsersController();
-echo $usersController->respond($_REQUEST);
+try {
+    $response = $usersController->respond($_REQUEST);
+} catch (Exception $exception) {
+    $response = $exception->getMessage();
+}
+echo $response;

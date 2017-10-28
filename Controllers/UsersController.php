@@ -9,7 +9,6 @@ namespace controllers;
 
 
 use models\UsersModel;
-use mysqli;
 use views\BaseTemplateView;
 use views\UsersView;
 
@@ -28,6 +27,10 @@ class UsersController extends BaseController
     public function respond($request)
     {
         switch ($request['action']) {
+            case 'add-user-form':
+                return self::addUserForm();
+            case 'add-user':
+                return self::addUser($request);
             case 'index':
             default:
                 return self::index();
@@ -51,5 +54,62 @@ class UsersController extends BaseController
             UsersView::indexView($users),
             'manageUsers.init();'
         );
+    }
+
+    /**
+     * @return string
+     */
+    private function addUserForm()
+    {
+        return UsersView::addUserForm();
+    }
+
+    private function addUser($request)
+    {
+        $formErrors = $this->validateUserFields($request);
+        if (!empty($formErrors)) {
+            echo '<pre>';
+            var_dump($formErrors);
+            echo '</pre>';
+        }
+    }
+
+    private function validateUserFields($request)
+    {
+        $formErrors = [];
+
+        if (empty($request['fName'])) {
+            $formErrors[] = 'First Name cannot be empty';
+        }
+
+        if (empty($request['lName'])) {
+            $formErrors[] = 'Last Name cannot be empty';
+        }
+
+        if (empty($request['Email'])) {
+            $formErrors[] = 'Email cannot be empty';
+        }
+
+        if (filter_var(($request['Email']), FILTER_VALIDATE_EMAIL)) {
+            $formErrors[] = 'Invalid email format';
+        }
+
+        if (empty($request['hireDate'])) {
+            $formErrors[] = 'Hire Date cannot be empty';
+        }
+
+        if (!empty($request['hireDate']) && !strtotime($request['hireDate'])) {
+            $formErrors[] = 'Invalid date format for Hire Date';
+        }
+
+        if (empty($request['Password']) || strlen($request['Password']) < 8) {
+            $formErrors[] = 'Password must be 8 characters';
+        }
+
+        if (empty($request['Type']) || !in_array($request['Type'], ['admin', 'user'])) {
+            $formErrors[] = 'User Type must be Admin or Normal User';
+        }
+
+        return $formErrors;
     }
 }
