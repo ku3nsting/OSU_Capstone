@@ -21,7 +21,9 @@ class UsersModel extends BaseModel
     {
         $mysqli = self::getConnection();
 
-        $query = "SELECT * FROM Employees";
+        $query = "SELECT e.ID, CONCAT_WS(' ', e.fName, e.lName) fullName, e.hireDate, t.Type
+            FROM Employees e
+            JOIN UserType t ON e.ID = t.EmployeeID";
 
         $employeeStmt = $mysqli->prepare($query);
         if (!$employeeStmt) {
