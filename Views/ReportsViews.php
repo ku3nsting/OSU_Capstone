@@ -11,48 +11,39 @@ namespace views;
 class ReportsViews
 {
     private static $fields = [
-        [
-            "id" => "AwardLabel",
+        "AwardLabel" => [
             "label" => "Award Type",
             "type" => "string",
         ],
-        [
-            "id" => "AwardDate",
+        "AwardDate" => [
             "label" => "Award Date",
             "type" => "date",
         ],
-        [
-            "id" => "Email",
+        "Email" => [
             "label" => "Awardee Email",
             "type" => "string",
         ],
-        [
-            "id" => "fName",
+        "fName" => [
             "label" => "Awardee First Name",
             "type" => "string",
         ],
-        [
-            "id" => "lName",
+        "lName" => [
             "label" => "Awardee Last Name",
             "type" => "string",
         ],
-        [
-            "id" => "hireDate",
+        "hireDate" => [
             "label" => "Awardee Hire Date",
             "type" => "date",
         ],
-        [
-            "id" => "GiverFirstName",
+        "GiverFirstName" => [
             "label" => "Giver First Name",
             "type" => "string",
         ],
-        [
-            "id" => "GiverLastName",
+        "GiverLastName" => [
             "label" => "Giver Last Name",
             "type" => "string",
         ],
-        [
-            "id" => "GiverEmail",
+        "GiverEmail" => [
             "label" => "Giver Email",
             "type" => "string",
         ]
@@ -89,11 +80,48 @@ class ReportsViews
     public static function selectQueryFields()
     {
         $selectFields = "<select id='selectQueryFields' name='selectQueryFields[]' multiple class='form-control' style='height: 12.5em'>";
-        foreach (self::$fields as $field) {
-            $selectFields .= "<option value='{$field['id']}'>{$field['label']}</option>";
+        foreach (self::$fields as $fieldId => $field) {
+            $selectFields .= "<option value='{$fieldId}'>{$field['label']}</option>";
         }
         $selectFields .= "</select>";
         return $selectFields;
+    }
+
+    /**
+     * @param array $awards
+     * @param array $selectFields
+     * @return string
+     */
+    public static function resultsTableView($awards, $selectFields)
+    {
+        if (empty($awards)) {
+            return '<div class="alert alert-info">No awards given for the specified filters</div>';
+        }
+
+        // initiate table
+        $html = "<table class='table table-hover'>";
+
+        // add the header row
+        $html .= '<thead><tr>';
+        foreach ($selectFields as $columnKey) {
+            $html .= "<th>" . self::$fields[$columnKey]['label'] . "</th>";
+        }
+        $html .= '</tr></thead>';
+
+        // add the body rows
+        $html .= '<tbody>';
+        foreach ($awards as $award) {
+            $html .= '<tr>';
+            foreach ($selectFields as $columnKey) {
+                $html .= "<td>" . $award[$columnKey] . "</td>";
+            }
+            $html .= '</tr>';
+        }
+        $html .= '</tbody>';
+
+        // close and return the table
+        $html .= '</table>';
+        return $html;
     }
 
 }

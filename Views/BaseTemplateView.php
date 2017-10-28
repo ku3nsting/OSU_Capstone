@@ -40,7 +40,7 @@ class BaseTemplateView
                 'text' => 'Manage Users'
             ],
             'reports' => [
-                'href' => '#',
+                'href' => '/admin/reports.php',
                 'text' => 'Reports'
             ],
         ];
@@ -87,7 +87,7 @@ class BaseTemplateView
                   <span class="icon-bar"></span>
                   <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="#">Gemini</a>
+                <a class="navbar-brand" href="/admin/admin.php">Gemini</a>
               </div>
               <div id="navbar" class="navbar-collapse collapse">
                 ' . $navBarLinks . '
