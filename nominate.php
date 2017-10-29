@@ -48,18 +48,18 @@
 		
 		
 <!-- NOMINATION -->
-		<div id="centerContainer" style="height:400px;">
+		<div id="centerContainer" style="height:700px;">
 		
 		
 			
-			<form method="post" action="cindex.php">
+			<form method="post" action="sendAward.php">
 				<div id="center">
 					
 					<b>Nominate a Co-worker<br></b>
 					<p>
 					
 					<label>Recipient Name:	</label>
-					<select name="Coworkers">
+					<select name="nomineeName">
 					<?php
 					if(!($stmt = $mysqli->prepare("SELECT id, fname, lname FROM Employees"))){
 						echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
@@ -76,7 +76,30 @@
 					}
 					$stmt->close();
 					?>
-				</select>
+					</select>
+
+					<p>
+
+					<label for="email">Enter an Email (FOR TESTING): </label>
+					<div>
+						<input name="email" id="email" type="text" />
+					</div>
+
+					<p>
+
+					<label for="nomineeName">Enter a name (FOR TESTING): </label>
+					<div>
+						<input name="nomineeName" id="nomineeName" type="text" />
+					</div>
+
+					<p>
+
+					<label for="awardType">Choose an award type: </label>
+					<div>
+						<input type="radio" name="awardType" value="week" onclick="hideCustom();"checked>Employee of the Week <a href="/pdf/week.pdf">(preview pdf)</a><br>
+						<input type="radio" name="awardType" value="month" onclick="hideCustom();">Employee of the Month <a href="/pdf/month.pdf">(preview pdf)</a><br>
+						<input type="radio" name="awardType" value="custom"">Custom <a href="/pdf/custom.pdf">(preview pdf)</a><br>
+					</div>
 				
 					<p>
 					
