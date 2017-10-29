@@ -18,6 +18,29 @@
 	<title>Employee Recognition Application</title>
 
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" /> 
+
+	<style type="text/css">
+		#nomination {
+			width: 990px;
+			background-color: #F3F3F3;
+			border-radius: 20px;
+		}
+
+		#nominationForm {
+			margin-left: 300px;
+			padding-top: 20px;
+		}
+
+		#submitButton {
+			width: 1000px;
+			margin-left: 400px;
+			padding-bottom: 20px;
+		}
+
+		.button {
+			background-color: #008CBA;
+		}
+	</style>
    
 </head>
 
@@ -48,18 +71,18 @@
 		
 		
 <!-- NOMINATION -->
-		<div id="centerContainer" style="height:700px;">
+		<div id="nomination">
 		
 		
 			
 			<form method="post" action="sendAward.php">
-				<div id="center">
+				<div  id="nominationForm">
 					
-					<b>Nominate a Co-worker<br></b>
+					<h2>Nominate a Co-worker</h2>
 					<p>
 					
 					<label>Recipient Name:	</label>
-					<select name="nomineeName">
+					<select name="employeeNames">
 					<?php
 					if(!($stmt = $mysqli->prepare("SELECT id, fname, lname FROM Employees"))){
 						echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
@@ -103,15 +126,15 @@
 				
 					<p>
 					
-					<label>Reason for Nomination:	</label><p>
+					<label>Send your nominee a message:	</label><p>
 
-					<textarea name="reasons" placeholder="Type your message here" style="width:50%;height:150px;"></textarea>
+					<textarea name="reason" placeholder="Type your message here" style="width:50%;height:150px;"></textarea>
 
 					<p>
 					
 				</div>
 		
-				<div id="center">
+				<div id="submitButton">
 					<input class="button" type="submit" value="Nominate">
 				</div>
 		
