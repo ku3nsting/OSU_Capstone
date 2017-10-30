@@ -1,17 +1,3 @@
-<html>
-<head>
- 
-	<title>Employee Recognition Application</title>
-
-	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" />  
-   
-</head>
-
-<body>
-
-<div id="bodyDiv">
-
-
 <?php
 
 require '/var/www/html/vendor/autoload.php';
@@ -87,19 +73,4 @@ if(!$stmt->execute()){
 } else {
 	echo "Nomination completed sucessfully";
 }
-
-
 ?>
-
-
-
-				<p><div id="center">
-				<form action="cindex.php">
-					<input class="button" type="submit" value="Back to Homepage">
-					</form>
-				</div>
-				
-				</div>
-
-</body>
-</html>
