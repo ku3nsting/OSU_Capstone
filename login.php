@@ -1,52 +1,42 @@
 <?php
-    //Turn on error reporting
-    ini_set('display_errors', 'On');
+	
+	include("header.php");
+	
+	function debug_to_console( $data ) {
+    $output = $data;
+    if ( is_array( $output ) )
+        $output = implode( ',', $output);
 
-	//TEMP value (database from a previous class)
-	//we'll change this to connect to Employee recognition db
-    //Connects to the database
-    require_once __DIR__ . '/Config/database.php';
-    $mysqli = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
-
+    echo "<script>console.log( 'Debug Objects: " . $output . "' );</script>";
+	}
+	if(!empty($_POST["email"]) && !empty($_POST["password"])) {
+		$email = $_POST["email"];
+		$password = $_POST["password"];
+		
+		$conn = mysqli_connect("$dbservername, $dbusername, $dbpassword, $dbname");
+		$query = $connection->prepare("SELECT 'Password' FROM Employees WHERE Email='" . $_POST["email"] . "'");
+		$query->bind_param("s", $email);
+		$query->execute();
+		$query->bind_result($dbpassword);
+		$query->fetch();
+		$query->close();
+		
+		//make hash with stored password
+		$hash = password_hash($password, PASSWORD_DEFAULT);
+		echo $hash;
+		
+		//compare user-input to stored hash
+		if($dbpassword == $hash){
+			debug_to_console( "Authentication Successful!");
+			$_SESSION["authenticated"] = 'true';
+			header('Location: cindex.php');
+		}
+		else {
+			header('Location: login.html');
+		}
+	}
+	else {
+		//no credentials given
+		header('Location: login.html');
+	}
 ?>
-
-<!DOCTYPE html>
-
-<html>
-<head>
- 
-	<title>Employee Recognition Application</title>
-
-	<link rel="stylesheet" type="text/css" href="style.css" /> 
-   
-</head>
-
-<body>
-
-<div id="bodyDiv">
-	
-		<table id="spacingTable">
-		<tr>
-		<td width="10%"; id="logo">
-		<a href="cindex.php">
-		<img src = "resources/fakelogo.png" alt="Company Logo" style="width:100%;height:100%;"></a>
-		</td>
-		
-		<td width="88%" id="navBar">
-		
-		<ul>
-		  <li><a href="account.php">Account</a></li>
-		  <li><a href="awards.php">My Awards</a></li>
-		  <li><a href="nominate.php">Nominate</a></li>
-		  <li style="float:right"><a class="active" href="login.php">Sign Out</a></li>
-		</ul>
-		
-		</td>
-		</tr>
-		</table>
-
-	
-	
-	</div> <!-- bodydiv -->
-</body>
-</html>
