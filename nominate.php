@@ -95,11 +95,13 @@
 						echo "Bind failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
 					}
 					while($stmt->fetch()){
-					 echo '<option value=" '. $id . ' "> ' . $fname .' '. $lname .'</option>\n';
+					 echo '<option value=" '. $empID . ' "> ' . $fname .' '. $lname .'</option>\n';
 					}
 					$stmt->close();
 					?>
 					</select>
+					
+					
 
 					<p>
 
@@ -119,9 +121,9 @@
 
 					<label for="awardType">Choose an award type: </label>
 					<div>
-						<input type="radio" name="awardType" value="week" onclick="hideCustom();"checked>Employee of the Week <a href="/pdf/week.pdf">(preview pdf)</a><br>
-						<input type="radio" name="awardType" value="month" onclick="hideCustom();">Employee of the Month <a href="/pdf/month.pdf">(preview pdf)</a><br>
-						<input type="radio" name="awardType" value="custom"">Custom <a href="/pdf/custom.pdf">(preview pdf)</a><br>
+						<input type="radio" name="awardType" value="1" onclick="hideCustom();"checked>Employee of the Week <a href="/pdf/week.pdf">(preview pdf)</a><br>
+						<input type="radio" name="awardType" value="2" onclick="hideCustom();">Employee of the Month <a href="/pdf/month.pdf">(preview pdf)</a><br>
+						<input type="radio" name="awardType" value="3">Custom <a href="/pdf/custom.pdf">(preview pdf)</a><br>
 					</div>
 				
 					<p>
