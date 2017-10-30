@@ -11,9 +11,63 @@
 
 <div id="bodyDiv">
 
+
 <?php
+
+require '/var/www/html/vendor/autoload.php';
+
+$senderName = FILL THIS IN;
+
+// setup variables from webpage
+$email = $_REQUEST['email'];
+$employeeName = $_REQUEST['fname']." ".$_REQUEST['lname'];
+$awardType = $_REQUEST['awardType'];
+
+// new PHPMailer object and to smtp
+$mail = new PHPMailer;
+$mail->isSMTP();
+
+// email sender info
+$mail->setFrom($senderName, 'OSU Employee Recognition');
+
+// email recipient info
+$mail->addAddress($email, $employeeName);
+
+// smtp username and password from aws
+$mail->Username = $dbusername;
+$mail->Password = $dbpassword;
+    
+// set the smtp host
+$mail->Host = $dbservername;
+
+// contents of the email
+$mail->Subject = 'Employee award';
+$mail->Body = '<h1>Congratulations!</h1>
+    <h3>Hello, '.$employeeName.'. You have received an award.</h3>';
+
+// attach the pdf's here
+$mail->AddAttachment('/var/www/html/pdf/'.$awardType.'.pdf');
+
+// smtp auth and tls encryption/port setup
+$mail->SMTPAuth = true;
+$mail->SMTPSecure = 'tls';
+$mail->Port = 587;
+
+// set mail format to HTML
+$mail->isHTML(true);
+
+// alt body for users not using HTML email
+$mail->AltBody = "Congratulations. You have received an award.";
+
+// send the email and echo success
+if($mail->send()) {
+	echo "Award was sent!";
+} else {
+	echo "Award was not sent.";
+}
+
 //Turn on error reporting
-//no awarded-by field yet -- I was afraid it would break things since we don't have a signed-in value to pullf rom
+//no awarded-by field yet -- I was afraid it would break things since we don't have a signed-in value to pull from
 ini_set('display_errors', 'On');
 
 //Connects to the database
