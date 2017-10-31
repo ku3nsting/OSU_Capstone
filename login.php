@@ -31,7 +31,7 @@ $stmt->close();
 	//echo $hash;
 	
 	//compare user-input to stored hash
-	if($dbpassword == $password){
+	if($dbpassword == $hash){
 		
 		$_SESSION["authenticated"] = "true";
 		header('Location: cindex.php');
