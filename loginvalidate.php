@@ -26,7 +26,7 @@
 		
 
  <div class="wrapper">
-    <form class="form-signin" name="signForm" action="filter.php" method="post">       
+    <form class="form-signin" name="signForm" action="login.php" method="post">       
 	 <img src = "resources/fakelogo.png" alt="Company Logo" style="width:70%;height:70%;"></a>
       <h2 class="form-signin-heading">
 	  Sign in</h2>

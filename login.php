@@ -3,7 +3,7 @@ session_start();
 //Turn on error reporting
 ini_set('display_errors', 'On');
 //Connects to the database
-$newx = new mysqli("$dbservername, $dbusername, $dbpassword, $dbname");
+$newx = new mysqli("oniddb.cws.oregonstate.edu","kuenstir-db","596vXbwYMGgNDk7e","kuenstir-db");
 
 if(!($stmt = $newx->prepare("SELECT Employees.Password, Employees.Email FROM Employees WHERE Employees.Email = ?"))){
 	//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
@@ -31,19 +31,10 @@ $stmt->close();
 	//echo $hash;
 	
 	//compare user-input to stored hash
-	if($dbpassword == $hash){
+	if($dbpassword == $password){
 		
 		$_SESSION["authenticated"] = "true";
 		header('Location: cindex.php');
-	}
-	else {
-		header('Location: loginvalidate.php');
-		exit();
-	}
-	else {
-		//no credentials given
-		header('Location: loginvalidate.php');
-		exit();
 	}
 
 ?>
