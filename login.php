@@ -1,42 +1,49 @@
 <?php
-	
-	include("header.php");
-	
-	function debug_to_console( $data ) {
-    $output = $data;
-    if ( is_array( $output ) )
-        $output = implode( ',', $output);
+session_start();
+//Turn on error reporting
+ini_set('display_errors', 'On');
+//Connects to the database
+$newx = new mysqli("$dbservername, $dbusername, $dbpassword, $dbname");
 
-    echo "<script>console.log( 'Debug Objects: " . $output . "' );</script>";
+if(!($stmt = $newx->prepare("SELECT Employees.Password, Employees.Email FROM Employees WHERE Employees.Email = ?"))){
+	//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
+}
+
+$password = $_POST['password'];
+
+if(!($stmt->bind_param("s",$_POST['email']))){
+	//echo "Bind failed: "  . $stmt->errno . " " . $stmt->error;
+}
+
+if(!$stmt->execute()){
+	//echo "Execute failed: "  . $newx->connect_errno . " " . $newx->connect_error;
+}
+if(!$stmt->bind_result($dbpassword, $dbemail)){
+	//echo "Bind failed: "  . $newx->connect_errno . " " . $newx->connect_error;
+}
+while($stmt->fetch()){
+}
+$stmt->close();
+
+	//make hash with stored password
+	$hash = password_hash($password, PASSWORD_DEFAULT);
+	//$hash = $dbpassword;
+	//echo $hash;
+	
+	//compare user-input to stored hash
+	if($dbpassword == $hash){
+		
+		$_SESSION["authenticated"] = "true";
+		header('Location: cindex.php');
 	}
-	if(!empty($_POST["email"]) && !empty($_POST["password"])) {
-		$email = $_POST["email"];
-		$password = $_POST["password"];
-		
-		$conn = mysqli_connect("$dbservername, $dbusername, $dbpassword, $dbname");
-		$query = $connection->prepare("SELECT 'Password' FROM Employees WHERE Email='" . $_POST["email"] . "'");
-		$query->bind_param("s", $email);
-		$query->execute();
-		$query->bind_result($dbpassword);
-		$query->fetch();
-		$query->close();
-		
-		//make hash with stored password
-		$hash = password_hash($password, PASSWORD_DEFAULT);
-		echo $hash;
-		
-		//compare user-input to stored hash
-		if($dbpassword == $hash){
-			debug_to_console( "Authentication Successful!");
-			$_SESSION["authenticated"] = 'true';
-			header('Location: cindex.php');
-		}
-		else {
-			header('Location: login.html');
-		}
+	else {
+		header('Location: loginvalidate.php');
+		exit();
 	}
 	else {
 		//no credentials given
-		header('Location: login.html');
+		header('Location: loginvalidate.php');
+		exit();
 	}
+
 ?>
