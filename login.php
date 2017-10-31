@@ -18,7 +18,7 @@ if(!($stmt->bind_param("s",$_POST['email']))){
 if(!$stmt->execute()){
 	//echo "Execute failed: "  . $newx->connect_errno . " " . $newx->connect_error;
 }
-if(!$stmt->bind_result($dbpassword, $dbemail)){
+if(!$stmt->bind_result($dbpasswordx, $dbemail)){
 	//echo "Bind failed: "  . $newx->connect_errno . " " . $newx->connect_error;
 }
 while($stmt->fetch()){
@@ -31,7 +31,7 @@ $stmt->close();
 	//echo $hash;
 	
 	//compare user-input to stored hash
-	if($dbpassword == $hash){
+	if($dbpasswordx == $hash){
 		
 		$_SESSION["authenticated"] = "true";
 		header('Location: cindex.php');
