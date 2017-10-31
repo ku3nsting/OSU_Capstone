@@ -3,7 +3,7 @@ session_start();
 //Turn on error reporting
 ini_set('display_errors', 'On');
 //Connects to the database
-$newx = new mysqli("oniddb.cws.oregonstate.edu","kuenstir-db","596vXbwYMGgNDk7e","kuenstir-db");
+$newx =  new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
 
 if(!($stmt = $newx->prepare("SELECT Employees.Password, Employees.Email FROM Employees WHERE Employees.Email = ?"))){
 	//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
