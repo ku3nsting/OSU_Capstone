@@ -1,4 +1,5 @@
 <?php
+require_once __DIR__ . '/Config/database.php';
 session_start();
 //Turn on error reporting
 ini_set('display_errors', 'On');
@@ -26,7 +27,7 @@ while($stmt->fetch()){
 $stmt->close();
 
 	//make hash with stored password
-	$hash = password_hash($password, PASSWORD_DEFAULT);
+	$hash = password_verify($password, $dbpasswordx);
 	//$hash = $dbpassword;
 	//echo $hash;
 	
