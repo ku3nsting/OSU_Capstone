@@ -116,7 +116,6 @@ class UsersModel extends BaseModel
         $query = "SELECT COUNT(*) as awardsCount FROM Awards_Given WHERE EmployeeID = ?";
         $awardsCount = self::runQuery($query, ['i', $userId])[0];
 
-        error_log(print_r($awardsCount, true));
         if (!empty($awardsCount['awardsCount'])) {
             throw new Exception('Cannot delete the user because the user is still associated with given awards');
         }

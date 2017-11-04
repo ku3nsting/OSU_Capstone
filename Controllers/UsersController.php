@@ -29,19 +29,15 @@ class UsersController extends BaseController
         switch ($request['action']) {
             case 'edit-user-form':
                 return self::editUserForm($request);
-                break;
 
             case 'edit-user':
                 return self::editUser($request);
-                break;
 
             case 'add-user-form':
                 return self::addUserForm();
-                break;
 
             case 'add-user':
                 return self::addUser($request);
-                break;
 
             case 'delete-user':
                 return self::deleteUser($request);
@@ -49,7 +45,6 @@ class UsersController extends BaseController
             case 'index':
             default:
                 return self::index();
-                break;
         }
     }
 
