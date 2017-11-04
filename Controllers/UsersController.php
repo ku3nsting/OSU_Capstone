@@ -27,14 +27,24 @@ class UsersController extends BaseController
     public function respond($request)
     {
         switch ($request['action']) {
+            case 'edit-user-form':
+                return self::editUserForm($request);
+
+            case 'edit-user':
+                return self::editUser($request);
+
             case 'add-user-form':
                 return self::addUserForm();
+
             case 'add-user':
                 return self::addUser($request);
+
+            case 'delete-user':
+                return self::deleteUser($request);
+
             case 'index':
             default:
                 return self::index();
-                break;
         }
     }
 
@@ -61,7 +71,73 @@ class UsersController extends BaseController
      */
     private function addUserForm()
     {
-        return UsersView::addUserForm();
+        return UsersView::userForm();
+    }
+
+
+    /**
+     * @param array $request
+     * @return string
+     */
+    private function editUserForm($request)
+    {
+        // validate requested user id
+        $userId = $this->validateUserId($request['userId']);
+        if (empty($userId)) {
+            return $this->respondWithErrors(['Invalid user id'], 422);
+        }
+
+        // get user and validate user exists
+        $user = UsersModel::getUser($userId)[0];
+
+        // return user with form
+        return UsersView::userForm($user);
+    }
+
+    /**
+     * @param array $request
+     * @return string
+     */
+    private function editUser($request)
+    {
+        // validate requested user id
+        $userId = $this->validateUserId($request['userId']);
+        if (empty($userId)) {
+            return $this->respondWithErrors(['Invalid user id'], 422);
+        }
+
+        $formErrors = $this->validateUserFields($request);
+        if (!empty($formErrors)) {
+            return $this->respondWithErrors($formErrors, 422);
+        }
+
+        if (UsersModel::updateUser($request)) {
+            return '<div class="alert alert-success">Successfully updated the employee</div>';
+        } else {
+            http_response_code(500);
+            return '<div class="alert alert-danger">Failed to add the employee</div>';
+        }
+    }
+
+    /**
+     * @param $userId
+     * @return bool|int
+     */
+    private function validateUserId($userId)
+    {
+        // validate requested user id
+        $userId = filter_var($userId, FILTER_VALIDATE_INT);
+        if (empty($userId)) {
+            return false;
+        }
+
+        // get user and validate user exists
+        $user = UsersModel::getUser($userId)[0];
+        if (empty($user['ID'])) {
+            return false;
+        }
+
+        return $userId;
     }
 
     /**
@@ -72,18 +148,18 @@ class UsersController extends BaseController
     {
         $formErrors = $this->validateUserFields($request);
         if (!empty($formErrors)) {
-            http_response_code(422);
-            echo '<pre>';
-            var_dump($formErrors);
-            echo '</pre>';
-            exit;
+            return $this->respondWithErrors($formErrors, 422);
         }
 
         $request['Password'] = password_hash($request['Password'], PASSWORD_DEFAULT);
 
-        if (UsersModel::addUser($request)) {
-            // TODO: update to return edit form
-            return '<div class="alert alert-success">Successfully added the employee</div>';
+        $userId = UsersModel::addUser($request);
+        if ($userId) {
+            $response = [
+                'msg' => '<div class="alert alert-success">Successfully added the employee</div>',
+                'userId' => $userId
+            ];
+            return json_encode($response);
         } else {
             http_response_code(500);
             return '<div class="alert alert-danger">Failed to add the employee</div>';
@@ -91,10 +167,30 @@ class UsersController extends BaseController
     }
 
     /**
+     * @param $request
+     * @return string
+     */
+    private function deleteUser($request)
+    {
+        // validate requested user id
+        $userId = $this->validateUserId($request['userId']);
+        if (empty($userId)) {
+            return $this->respondWithErrors(['Invalid user id'], 422);
+        }
+
+        if (!UsersModel::deleteUser($userId)) {
+            return $this->respondWithErrors(['Could not delete user'], 400);
+        }
+
+        return '<div class="alert alert-success">Successfully deleted user</div>';
+    }
+
+    /**
      * @param array $request
+     * @param bool $passwordCheck
      * @return array
      */
-    private function validateUserFields($request)
+    private function validateUserFields(&$request, $passwordCheck = true)
     {
         $formErrors = [];
 
@@ -108,21 +204,19 @@ class UsersController extends BaseController
 
         if (empty($request['Email'])) {
             $formErrors[] = 'Email cannot be empty';
-        }
-
-        if (!filter_var(($request['Email']), FILTER_VALIDATE_EMAIL)) {
+        } else if (!filter_var(($request['Email']), FILTER_VALIDATE_EMAIL)) {
             $formErrors[] = 'Invalid email format';
         }
 
+        $hireDateTime = strtotime($request['hireDate']);
         if (empty($request['hireDate'])) {
             $formErrors[] = 'Hire Date cannot be empty';
-        }
-
-        if (!empty($request['hireDate']) && !strtotime($request['hireDate'])) {
+        } else if (!empty($request['hireDate']) && !strtotime($request['hireDate'])) {
             $formErrors[] = 'Invalid date format for Hire Date';
         }
+        $request['hireDate'] = date('Y-m-d', $hireDateTime);
 
-        if (empty($request['Password']) || strlen($request['Password']) < 8) {
+        if ($passwordCheck && (empty($request['Password']) || strlen($request['Password'])) < 8) {
             $formErrors[] = 'Password must be 8 characters';
         }
 
