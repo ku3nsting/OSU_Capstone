@@ -31,8 +31,8 @@ var manageUsers = {
             method: 'POST',
             data: $('#user-form').serialize()
         }).done(function (data) {
-            $('#msg-div').html(data);
-            // TODO: update to replace with edit form
+            var response = JSON.parse(data);
+            manageUsers.editUserForm(response['userId'], response['msg']);
             $('#addUserBtn').addClass('hidden');
         }).fail(function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.responseText !== undefined) {
@@ -42,13 +42,14 @@ var manageUsers = {
             }
         });
     },
-    editUserForm: function (userId) {
+    editUserForm: function (userId, msg) {
         $.ajax({
             url: '/admin/manage-users.php?action=edit-user-form&userId=' + encodeURIComponent(userId),
             method: 'GET'
         }).done(function (data) {
             $('#manage-users-content').html(data);
-            $('#msg-div').html('');
+            msg = msg !== undefined ? msg : '';
+            $('#msg-div').html(msg);
             $('#updateUserBtn').click(function () {
                 manageUsers.updateUser();
             });

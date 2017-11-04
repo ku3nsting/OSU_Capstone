@@ -158,9 +158,13 @@ class UsersController extends BaseController
 
         $request['Password'] = password_hash($request['Password'], PASSWORD_DEFAULT);
 
-        if (UsersModel::addUser($request)) {
-            // TODO: update to return edit form
-            return '<div class="alert alert-success">Successfully added the employee</div>';
+        $userId = UsersModel::addUser($request);
+        if ($userId) {
+            $response = [
+                'msg' => '<div class="alert alert-success">Successfully added the employee</div>',
+                'userId' => $userId
+            ];
+            return json_encode($response);
         } else {
             http_response_code(500);
             return '<div class="alert alert-danger">Failed to add the employee</div>';

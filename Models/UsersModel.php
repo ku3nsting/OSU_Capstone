@@ -51,7 +51,7 @@ class UsersModel extends BaseModel
      * Add a user
      *
      * @param array $data
-     * @return bool
+     * @return int
      * @throws Exception
      */
     public static function addUser($data)
@@ -81,7 +81,7 @@ class UsersModel extends BaseModel
 
         self::runQuery($query, ['is', $employeeId, $type], 'insert_get_id');
 
-        return true;
+        return $employeeId;
     }
 
     /**
