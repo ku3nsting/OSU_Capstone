@@ -29,10 +29,20 @@ class UsersController extends BaseController
         switch ($request['action']) {
             case 'edit-user-form':
                 return self::editUserForm($request);
+                break;
+
+            case 'edit-user':
+                return self::editUser($request);
+                break;
+
             case 'add-user-form':
                 return self::addUserForm();
+                break;
+
             case 'add-user':
                 return self::addUser($request);
+                break;
+
             case 'index':
             default:
                 return self::index();
@@ -82,6 +92,33 @@ class UsersController extends BaseController
         return UsersView::userForm($user);
     }
 
+    private function editUser($request)
+    {
+        // validate requested user id
+        $userId = filter_var($request['userId'], FILTER_VALIDATE_INT);
+        if (empty($userId)) {
+            return $this->respondWithErrors(['Invalid user id'], 422);
+        }
+
+        // get user and validate user exists
+        $user = UsersModel::getUser($userId)[0];
+        if (empty($user['ID'])) {
+            return $this->respondWithErrors(['Invalid user id'], 422);
+        }
+
+        $formErrors = $this->validateUserFields($request);
+        if (!empty($formErrors)) {
+            return $this->respondWithErrors($formErrors, 422);
+        }
+
+        if (UsersModel::updateUser($request)) {
+            return '<div class="alert alert-success">Successfully updated the employee</div>';
+        } else {
+            http_response_code(500);
+            return '<div class="alert alert-danger">Failed to add the employee</div>';
+        }
+    }
+
     /**
      * @param array $request
      * @return string
@@ -106,9 +143,10 @@ class UsersController extends BaseController
 
     /**
      * @param array $request
+     * @param bool $passwordCheck
      * @return array
      */
-    private function validateUserFields($request)
+    private function validateUserFields($request, $passwordCheck = true)
     {
         $formErrors = [];
 
@@ -136,7 +174,7 @@ class UsersController extends BaseController
             $formErrors[] = 'Invalid date format for Hire Date';
         }
 
-        if (empty($request['Password']) || strlen($request['Password']) < 8) {
+        if ($passwordCheck && (empty($request['Password']) || strlen($request['Password'])) < 8) {
             $formErrors[] = 'Password must be 8 characters';
         }
 

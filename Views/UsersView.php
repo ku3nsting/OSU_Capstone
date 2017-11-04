@@ -18,7 +18,7 @@ class UsersView
         $userTable = self::usersTable($users);
 
         return '<div class="row">
-            <h1 class="col-sm-9">Manage Users</h1>
+            <h1 class="col-sm-9" id="manage-users-title">Manage Users</h1>
             <div class="col-sm-2 pull-right">
                 <a href="#" id="addUserFormBtn" class="btn btn-primary" style="margin-top: 20px">Add User Form</a>
             </div>
@@ -85,8 +85,9 @@ class UsersView
             $fName = $lName = $hireDate = $Email = $Type = '';
         }
         return "
-            <form id='add-user-form'>
+            <form id='user-form'>
                 <input class='hidden' id='action' name='action' value='$action'>
+                " . (!empty($user['ID']) ? "<input class='hidden' id='userId' name='userId' value='{$user['ID']}'>" : '') . "
                 <div class='form-group'>
                      <label for='fName'>First Name</label>           
                      <input type='text' id='fName' name='fName' class='form-control' value='$fName'>
@@ -105,11 +106,13 @@ class UsersView
                 </div>" .
 
                 // Only add password for new users
-                (empty($user) ? "<div class='form-group'>
-                     <label for='Password'>Password</label>
-                     <input type='password' id='Password' name='Password' class='form-control'>
-                </div>"
-                : '') .
+                (empty($user)
+                    ? "<div class='form-group'>
+                         <label for='Password'>Password</label>
+                         <input type='password' id='Password' name='Password' class='form-control'>
+                    </div>"
+                    : ''
+                ) .
 
                 "<div class='form-group'>
                      <label for='Type'>Type</label>           
@@ -119,7 +122,14 @@ class UsersView
                         <option value='admin' " . ($Type === 'admin' ? 'selected' : '') . ">Admin User</option>
                      </select>
                 </div>
-                <a class='btn btn-primary' href='#' role='button' id='addUserBtn'>Submit</a>
+                " . ($action === 'add-user'
+                    ? "<a class='btn btn-primary' href='#' role='button' id='addUserBtn'>Add User</a>"
+                    : "<a class='btn btn-primary' href='#' role='button' id='updateUserBtn'>Update User</a>"
+                ) . "
+                " . (empty($user['awardCount'])
+                    ? "<a class='btn btn-danger' href='#' role='button' id='deleteUserBtn'>Delete</a>"
+                    : ''
+                ) . "
             </form>
         ";
     }

@@ -15,6 +15,8 @@ var manageUsers = {
             $('#addUserBtn').click(function () {
                 manageUsers.addUser();
             });
+            $('#addUserFormBtn').addClass('hidden');
+            $('#manage-users-title').html('User Form');
         }).fail(function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.responseText !== undefined) {
                 $('#msg-div').html(jqXHR.responseText);
@@ -27,7 +29,7 @@ var manageUsers = {
         $.ajax({
             url: '/admin/manage-users.php',
             method: 'POST',
-            data: $('#add-user-form').serialize()
+            data: $('#user-form').serialize()
         }).done(function (data) {
             $('#msg-div').html(data);
             // TODO: update to replace with edit form
@@ -39,7 +41,6 @@ var manageUsers = {
                 $('#msg-div').html(errorThrown);
             }
         });
-
     },
     editUserForm: function (userId) {
         $.ajax({
@@ -48,9 +49,11 @@ var manageUsers = {
         }).done(function (data) {
             $('#manage-users-content').html(data);
             $('#msg-div').html('');
-            // $('#addUserBtn').click(function () {
-            //     manageUsers.addUser();
-            // });
+            $('#updateUserBtn').click(function () {
+                manageUsers.updateUser();
+            });
+            $('#addUserFormBtn').addClass('hidden');
+            $('#manage-users-title').html('User Form');
         }).fail(function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.responseText !== undefined) {
                 $('#msg-div').html(jqXHR.responseText);
@@ -58,5 +61,21 @@ var manageUsers = {
                 $('#msg-div').html(errorThrown);
             }
         });
+    },
+    updateUser: function () {
+        $.ajax({
+            url: '/admin/manage-users.php',
+            method: 'POST',
+            data: $('#user-form').serialize()
+        }).done(function (data) {
+            $('#msg-div').html(data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            if (jqXHR.responseText !== undefined) {
+                $('#msg-div').html(jqXHR.responseText);
+            } else {
+                $('#msg-div').html(errorThrown);
+            }
+        });
+
     }
 };

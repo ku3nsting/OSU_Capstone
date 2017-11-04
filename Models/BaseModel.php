@@ -71,6 +71,8 @@ class BaseModel
         }
 
         switch ($type) {
+            case 'update':
+                return true;
             case 'insert_get_id':
                 return $mysqli->insert_id;
             case 'fetch_all':

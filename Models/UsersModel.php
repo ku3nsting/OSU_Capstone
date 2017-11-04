@@ -37,7 +37,8 @@ class UsersModel extends BaseModel
     public static function getUser($userId)
     {
         $query = "
-            SELECT e.ID, e.fName, e.lName, e.hireDate, e.Email, t.Type
+            SELECT e.ID, e.fName, e.lName, e.hireDate, e.Email, t.Type,
+             (SELECT COUNT(Awards_Given.ID) FROM Awards_Given WHERE Awards_Given.EmployeeID = e.ID) awardCount
             FROM Employees e
             JOIN UserType t ON e.ID = t.EmployeeID
             WHERE e.ID = ?
@@ -79,6 +80,28 @@ class UsersModel extends BaseModel
         ";
 
         self::runQuery($query, ['is', $employeeId, $type], 'insert_get_id');
+
+        return true;
+    }
+
+    /**
+     * @param array $data
+     * @return bool
+     */
+    public static function updateUser($data)
+    {
+        $employeeId = $data['userId'];
+        $firstName = $data['fName'];
+        $lastName = $data['lName'];
+        $hireDate = $data['hireDate'];
+        $email = $data['Email'];
+        $type = $data['Type'];
+
+        $query = "UPDATE Employees SET fName = ?, lName = ?, hireDate = ?, Email = ? WHERE ID = ?";
+        self::runQuery($query, ['ssssi', $firstName, $lastName, $hireDate, $email, $employeeId], 'update');
+
+        $query = "UPDATE UserType SET UserType.Type = ? WHERE EmployeeID = ?";
+        self::runQuery($query, ['si', $type, $employeeId], 'update');
 
         return true;
     }
