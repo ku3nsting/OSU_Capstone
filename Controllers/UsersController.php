@@ -27,6 +27,8 @@ class UsersController extends BaseController
     public function respond($request)
     {
         switch ($request['action']) {
+            case 'edit-user-form':
+                return self::editUserForm($request);
             case 'add-user-form':
                 return self::addUserForm();
             case 'add-user':
@@ -61,7 +63,23 @@ class UsersController extends BaseController
      */
     private function addUserForm()
     {
-        return UsersView::addUserForm();
+        return UsersView::userForm();
+    }
+
+
+    private function editUserForm($request)
+    {
+        // validate requested user id
+        $userId = filter_var($request['user-id'], FILTER_VALIDATE_INT);
+        if (empty($userId)) {
+            return $this->respondWithErrors(['Invalid user id'], 422);
+        }
+
+        // get user and validate user exists
+        $user = UsersModel::getUser($userId)[0];
+
+        // return user with form
+        return UsersView::userForm($user);
     }
 
     /**
@@ -72,11 +90,7 @@ class UsersController extends BaseController
     {
         $formErrors = $this->validateUserFields($request);
         if (!empty($formErrors)) {
-            http_response_code(422);
-            echo '<pre>';
-            var_dump($formErrors);
-            echo '</pre>';
-            exit;
+            return $this->respondWithErrors($formErrors, 422);
         }
 
         $request['Password'] = password_hash($request['Password'], PASSWORD_DEFAULT);

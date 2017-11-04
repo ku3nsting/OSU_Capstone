@@ -43,7 +43,7 @@ class UsersView
         // create the users tables rows
         $userRows = '';
         foreach ($users as $user) {
-            $userRows .= "<tr>
+            $userRows .= "<tr onclick='manageUsers.editUserForm({$user['ID']})'>
                 <td>{$user['ID']}</td>
                 <td>{$user['fullName']}</td>
                 <td>{$user['hireDate']}</td>
@@ -67,40 +67,60 @@ class UsersView
         ";
     }
 
-    public static function addUserForm()
+    /**
+     * @param array $user
+     * @return string
+     */
+    public static function userForm($user = [])
     {
-        return '
-            <form id="add-user-form">
-                <input class="hidden" id="action" name="action" value="add-user">
-                <div class="form-group">
-                     <label for="fName">First Name</label>           
-                     <input type="text" id="fName" name="fName" class="form-control">
+        if (!empty($user)) {
+            $action = 'edit-user';
+            $fName = $user['fName'];
+            $lName = $user['lName'];
+            $hireDate = $user['hireDate'];
+            $Email = $user['Email'];
+            $Type = $user['Type'];
+        } else {
+            $action = 'add-user';
+            $fName = $lName = $hireDate = $Email = $Type = '';
+        }
+        return "
+            <form id='add-user-form'>
+                <input class='hidden' id='action' name='action' value='$action'>
+                <div class='form-group'>
+                     <label for='fName'>First Name</label>           
+                     <input type='text' id='fName' name='fName' class='form-control' value='$fName'>
                 </div>
-                <div class="form-group">
-                     <label for="lName">Last Name</label>           
-                     <input type="text" id="lName" name="lName" class="form-control">
+                <div class='form-group'>
+                     <label for='lName'>Last Name</label>           
+                     <input type='text' id='lName' name='lName' class='form-control' value='$lName'>
                 </div>
-                <div class="form-group">
-                     <label for="Email">Email</label>           
-                     <input type="email" id="Email" name="Email" class="form-control">
+                <div class='form-group'>
+                     <label for='Email'>Email</label>           
+                     <input type='email' id='Email' name='Email' class='form-control' value='$Email'>
                 </div>
-                <div class="form-group">
-                     <label for="hireDate">Hire Date</label>           
-                     <input type="date" id="hireDate" name="hireDate" class="form-control">
-                </div>
-                <div class="form-group">
-                     <label for="Password">Password</label>
-                     <input type="password" id="Password" name="Password" class="form-control">
-                </div>
-                <div class="form-group">
-                     <label for="Type">Type</label>           
-                     <select id="Type" name="Type" class="form-control">
-                        <option value="user">Normal User</option>
-                        <option value="admin">Admin User</option>
+                <div class='form-group'>
+                     <label for='hireDate'>Hire Date</label>           
+                     <input type='date' id='hireDate' name='hireDate' class='form-control' value='$hireDate'>
+                </div>" .
+
+                // Only add password for new users
+                (empty($user) ? "<div class='form-group'>
+                     <label for='Password'>Password</label>
+                     <input type='password' id='Password' name='Password' class='form-control'>
+                </div>"
+                : '') .
+
+                "<div class='form-group'>
+                     <label for='Type'>Type</label>           
+                     <select id='Type' name='Type' class='form-control'>
+                        <option value='' " . ($Type === '' ? 'selected' : '') . ">Please Select ...</option>
+                        <option value='user' " . ($Type === 'user' ? 'selected' : '') . ">Normal User</option>
+                        <option value='admin' " . ($Type === 'admin' ? 'selected' : '') . ">Admin User</option>
                      </select>
                 </div>
-                <a class="btn btn-primary" href="#" role="button" id="addUserBtn">Submit</a>
+                <a class='btn btn-primary' href='#' role='button' id='addUserBtn'>Submit</a>
             </form>
-        ';
+        ";
     }
 }

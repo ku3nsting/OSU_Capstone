@@ -39,6 +39,36 @@ class UsersModel extends BaseModel
         return $employeeStmt->get_result()->fetch_all(MYSQLI_ASSOC);
     }
 
+    public static function getUser($userId)
+    {
+        $mysqli = self::getConnection();
+
+        $query = "
+            SELECT e.ID, e.fName, e.lName, e.hireDate, e.Email, t.Type
+            FROM Employees e
+            JOIN UserType t ON e.ID = t.EmployeeID
+            WHERE e.ID = ?
+        ";
+
+        $employeeStmt = $mysqli->prepare($query);
+        if (!$employeeStmt) {
+            $errorMsg = "Prepare failed: ({$mysqli->errno}) {$mysqli->error}";
+            throw new Exception($errorMsg);
+        }
+
+        if (!$employeeStmt->bind_param('i', $userId)) {
+            $errorMsg = "Bind failed: {$employeeStmt->errno} {$employeeStmt->error}";
+            throw new Exception($errorMsg);
+        }
+
+        if(!$employeeStmt->execute()) {
+            $errorMsg = "Execute failed: {$employeeStmt->errno} {$employeeStmt->error}";
+            throw new Exception($errorMsg);
+        }
+
+        return $employeeStmt->get_result()->fetch_all(MYSQLI_ASSOC);
+    }
+
     public static function addUser($data)
     {
         $firstName = $data['fName'];

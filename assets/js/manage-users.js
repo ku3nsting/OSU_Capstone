@@ -40,5 +40,23 @@ var manageUsers = {
             }
         });
 
+    },
+    editUserForm: function (userId) {
+        $.ajax({
+            url: '/admin/manage-users.php?action=edit-user-form&user-id=' + encodeURIComponent(userId),
+            method: 'GET'
+        }).done(function (data) {
+            $('#manage-users-content').html(data);
+            $('#msg-div').html('');
+            // $('#addUserBtn').click(function () {
+            //     manageUsers.addUser();
+            // });
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            if (jqXHR.responseText !== undefined) {
+                $('#msg-div').html(jqXHR.responseText);
+            } else {
+                $('#msg-div').html(errorThrown);
+            }
+        });
     }
 };

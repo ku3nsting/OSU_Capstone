@@ -11,4 +11,22 @@ namespace controllers;
 abstract class BaseController
 {
     abstract function respond($request);
+
+    /**
+     * Process the errors and return html message
+     *
+     * @param array $errors
+     * @param int $code
+     * @return string
+     */
+    protected function respondWithErrors(array $errors, $code)
+    {
+        http_response_code($code);
+
+        echo '<pre>';
+        var_dump($errors);
+        echo '</pre>';
+
+        return '';
+    }
 }
