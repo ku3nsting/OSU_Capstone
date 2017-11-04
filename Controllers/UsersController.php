@@ -43,6 +43,9 @@ class UsersController extends BaseController
                 return self::addUser($request);
                 break;
 
+            case 'delete-user':
+                return self::deleteUser($request);
+
             case 'index':
             default:
                 return self::index();
@@ -77,10 +80,14 @@ class UsersController extends BaseController
     }
 
 
+    /**
+     * @param array $request
+     * @return string
+     */
     private function editUserForm($request)
     {
         // validate requested user id
-        $userId = filter_var($request['user-id'], FILTER_VALIDATE_INT);
+        $userId = $this->validateUserId($request['userId']);
         if (empty($userId)) {
             return $this->respondWithErrors(['Invalid user id'], 422);
         }
@@ -92,17 +99,15 @@ class UsersController extends BaseController
         return UsersView::userForm($user);
     }
 
+    /**
+     * @param array $request
+     * @return string
+     */
     private function editUser($request)
     {
         // validate requested user id
-        $userId = filter_var($request['userId'], FILTER_VALIDATE_INT);
+        $userId = $this->validateUserId($request['userId']);
         if (empty($userId)) {
-            return $this->respondWithErrors(['Invalid user id'], 422);
-        }
-
-        // get user and validate user exists
-        $user = UsersModel::getUser($userId)[0];
-        if (empty($user['ID'])) {
             return $this->respondWithErrors(['Invalid user id'], 422);
         }
 
@@ -117,6 +122,27 @@ class UsersController extends BaseController
             http_response_code(500);
             return '<div class="alert alert-danger">Failed to add the employee</div>';
         }
+    }
+
+    /**
+     * @param $userId
+     * @return bool|int
+     */
+    private function validateUserId($userId)
+    {
+        // validate requested user id
+        $userId = filter_var($userId, FILTER_VALIDATE_INT);
+        if (empty($userId)) {
+            return false;
+        }
+
+        // get user and validate user exists
+        $user = UsersModel::getUser($userId)[0];
+        if (empty($user['ID'])) {
+            return false;
+        }
+
+        return $userId;
     }
 
     /**
@@ -142,11 +168,30 @@ class UsersController extends BaseController
     }
 
     /**
+     * @param $request
+     * @return string
+     */
+    private function deleteUser($request)
+    {
+        // validate requested user id
+        $userId = $this->validateUserId($request['userId']);
+        if (empty($userId)) {
+            return $this->respondWithErrors(['Invalid user id'], 422);
+        }
+
+        if (!UsersModel::deleteUser($userId)) {
+            return $this->respondWithErrors(['Could not delete user'], 400);
+        }
+
+        return '<div class="alert alert-success">Successfully deleted user</div>';
+    }
+
+    /**
      * @param array $request
      * @param bool $passwordCheck
      * @return array
      */
-    private function validateUserFields($request, $passwordCheck = true)
+    private function validateUserFields(&$request, $passwordCheck = true)
     {
         $formErrors = [];
 
@@ -160,19 +205,17 @@ class UsersController extends BaseController
 
         if (empty($request['Email'])) {
             $formErrors[] = 'Email cannot be empty';
-        }
-
-        if (!filter_var(($request['Email']), FILTER_VALIDATE_EMAIL)) {
+        } else if (!filter_var(($request['Email']), FILTER_VALIDATE_EMAIL)) {
             $formErrors[] = 'Invalid email format';
         }
 
+        $hireDateTime = strtotime($request['hireDate']);
         if (empty($request['hireDate'])) {
             $formErrors[] = 'Hire Date cannot be empty';
-        }
-
-        if (!empty($request['hireDate']) && !strtotime($request['hireDate'])) {
+        } else if (!empty($request['hireDate']) && !strtotime($request['hireDate'])) {
             $formErrors[] = 'Invalid date format for Hire Date';
         }
+        $request['hireDate'] = date('Y-m-d', $hireDateTime);
 
         if ($passwordCheck && (empty($request['Password']) || strlen($request['Password'])) < 8) {
             $formErrors[] = 'Password must be 8 characters';

@@ -105,4 +105,28 @@ class UsersModel extends BaseModel
 
         return true;
     }
+
+    /**
+     * @param $userId
+     * @return boolean
+     * @throws Exception
+     */
+    public static function deleteUser($userId)
+    {
+        $query = "SELECT COUNT(*) as awardsCount FROM Awards_Given WHERE EmployeeID = ?";
+        $awardsCount = self::runQuery($query, ['i', $userId])[0];
+
+        error_log(print_r($awardsCount, true));
+        if (!empty($awardsCount['awardsCount'])) {
+            throw new Exception('Cannot delete the user because the user is still associated with given awards');
+        }
+
+        $query = "DELETE FROM UserType WHERE EmployeeID = ?";
+        self::runQuery($query, ['i', $userId], 'update');
+
+        $query = "DELETE FROM Employees WHERE ID = ?";
+        self::runQuery($query, ['i', $userId], 'update');
+
+        return true;
+    }
 }
