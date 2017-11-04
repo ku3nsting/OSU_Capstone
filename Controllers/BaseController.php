@@ -23,10 +23,12 @@ abstract class BaseController
     {
         http_response_code($code);
 
-        echo '<pre>';
-        var_dump($errors);
-        echo '</pre>';
+        $html = '<div class="alert alert-danger"><ul>';
+        foreach ($errors as $error) {
+            $html .= "<li>$error</li>";
+        }
+        $html .= '</ul></div>';
 
-        return '';
+        return $html;
     }
 }
