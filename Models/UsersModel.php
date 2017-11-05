@@ -48,6 +48,25 @@ class UsersModel extends BaseModel
     }
 
     /**
+     * Get a user by id
+     *
+     * @param string $email
+     * @return array
+     */
+    public static function getAdminUserForAuthentication($email)
+    {
+        $query = "
+            SELECT e.ID, e.Password, e.Email, t.Type
+            FROM Employees e
+            JOIN UserType t ON e.ID = t.EmployeeID
+            WHERE e.Email = ?
+            AND t.Type = 'admin'
+        ";
+
+        return self::runQuery($query, ['s', $email]);
+    }
+
+    /**
      * Add a user
      *
      * @param array $data

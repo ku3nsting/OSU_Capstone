@@ -2,6 +2,12 @@
 
 require_once __DIR__ . '/../Controllers/UsersController.php';
 
+session_start();
+if (empty($_SESSION['authenticated'])) {
+    echo "<script>location.href='/admin/login.php';</script>;";
+    exit();
+}
+
 $usersController = new \controllers\UsersController();
 try {
     $response = $usersController->respond($_REQUEST);
