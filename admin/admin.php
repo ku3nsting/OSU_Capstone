@@ -3,4 +3,10 @@
 require_once __DIR__ . '/../Views/BaseTemplateView.php';
 use views\BaseTemplateView;
 
-echo BaseTemplateView::baseTemplateView('admin', 'Welcome to Admin Home');
+session_start();
+if (empty($_SESSION['authenticated'])) {
+    echo "<script>location.href='/admin/login.php';</script>;";
+    exit();
+}
+
+echo BaseTemplateView::baseTemplateView('admin', 'Welcome to Admin Home', '');

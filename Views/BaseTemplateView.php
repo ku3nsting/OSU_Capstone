@@ -34,16 +34,25 @@ class BaseTemplateView
             ],
         ];
 
-        $adminLinks = [
-            'manage-users' => [
-                'href' => '/admin/manage-users.php',
-                'text' => 'Manage Users'
-            ],
-            'reports' => [
-                'href' => '/admin/reports.php',
-                'text' => 'Reports'
-            ],
-        ];
+        if (!empty($_SESSION['authenticated'])) {
+            $adminLinks = [
+                'manage-users' => [
+                    'href' => '/admin/manage-users.php',
+                    'text' => 'Manage Users'
+                ],
+                'reports' => [
+                    'href' => '/admin/reports.php',
+                    'text' => 'Reports'
+                ],
+            ];
+        } else {
+            $adminLinks = [
+                'login' => [
+                    'href' => '/admin/login.php',
+                    'text' => 'Login'
+                ]
+            ];
+        }
 
         $navBarLinks = '';
         switch ($type) {
@@ -94,7 +103,7 @@ class BaseTemplateView
               <div id="navbar" class="navbar-collapse collapse">
                 ' . $navBarLinks . '
                 <ul class="nav navbar-nav navbar-right">
-                  <li><a href="./">Sign Out</a></li>
+                  <li><a href="/admin/logout.php">Sign Out</a></li>
                 </ul>
               </div><!--/.nav-collapse -->
             </div><!--/.container-fluid -->
