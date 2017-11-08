@@ -6,7 +6,7 @@ ini_set('display_errors', 'On');
 //Connects to the database
 $newx =  new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
 
-if(!($stmt = $newx->prepare("SELECT Employees.Password, Employees.Email FROM Employees WHERE Employees.Email = ?"))){
+if(!($stmt = $newx->prepare("SELECT Employees.ID, Employees.Password, Employees.Email FROM Employees WHERE Employees.Email = ?"))){
 	//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
 }
 
@@ -19,7 +19,7 @@ if(!($stmt->bind_param("s",$_POST['email']))){
 if(!$stmt->execute()){
 	//echo "Execute failed: "  . $newx->connect_errno . " " . $newx->connect_error;
 }
-if(!$stmt->bind_result($dbpasswordx, $dbemail)){
+if(!$stmt->bind_result($userID, $dbpasswordx, $dbemail)){
 	//echo "Bind failed: "  . $newx->connect_errno . " " . $newx->connect_error;
 }
 while($stmt->fetch()){
@@ -35,6 +35,7 @@ $stmt->close();
 	if($dbpasswordx == $hash){
 		
 		$_SESSION["authenticated"] = "true";
+		$_SESSION["userID"] = $userID;
 		header('Location: cindex.php');
 	}
 
