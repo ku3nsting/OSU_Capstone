@@ -1,6 +1,7 @@
 var report = {
     runQuery: function () {
         var rules = $("#builder").queryBuilder('getRules', {skip_empty: true});
+        $('#csvExport').val(0);
         $.ajax({
             url: $("#selectQueryForm").attr('action'),
             method: "POST",
@@ -14,6 +15,14 @@ var report = {
                 $('#query-results').html(errorThrown);
             }
         });
+    },
+    exportCsv: function () {
+        var rules = $("#builder").queryBuilder('getRules', {skip_empty: true});
+
+        $('#csvExport').val(1);
+        $('#rules').val(JSON.stringify(rules));
+
+        document.forms['selectQueryForm'].submit();
     },
     init: function () {
         var stringOperators = [

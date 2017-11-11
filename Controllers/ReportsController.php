@@ -59,7 +59,6 @@ class ReportsController extends BaseController
      */
     private function runQuery($request)
     {
-
         $awardsQueryBuilder = new AwardsQueryBuilder();
         try {
             $selectFields = isset($request['selectQueryFields']) ? $request['selectQueryFields'] : [];
@@ -70,6 +69,47 @@ class ReportsController extends BaseController
             exit();
         }
 
+        if (!empty($request['csvExport'])) {
+            return $this->exportToCsv($awards, $selectFields);
+        }
+
         return ReportsViews::resultsTableView($awards, $selectFields);
+    }
+
+    /**
+     * Exports the query data to csv for the user
+     *
+     * @param $awards
+     * @param $selectFields
+     * @return string
+     */
+    private function exportToCsv($awards, $selectFields)
+    {
+        // Note: I utilized the following stack over flow and the php documentation comments
+        // on fputcsv to come up with code
+        // https://stackoverflow.com/questions/13316293/my-csv-export-displaying-html-how-to-get-rid-of
+        ob_end_clean();
+
+        header("Content-type: text/csv");
+        header("Content-Disposition: attachment; filename=query-results.csv");
+        header("Pragma: no-cache");
+        header("Expires: 0");
+
+        $out = fopen('php://output', 'w');
+
+        // add the header row
+        $header = [];
+        foreach ($selectFields as $columnKey) {
+            $header[] = ReportsViews::$fields[$columnKey]['label'];
+        }
+        fputcsv($out, $header);
+
+        foreach ($awards as $award) {
+            fputcsv($out, $award);
+        }
+
+        fclose($out);
+
+        exit();
     }
 }
