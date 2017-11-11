@@ -235,7 +235,7 @@ class UsersController extends BaseController
         $userId = UsersModel::addUser($request);
         if ($userId) {
             $response = [
-                'msg' => '<div class="alert alert-success">Successfully added the employee</div>',
+                'msg' => BaseTemplateView::alert('alert-success', 'Successfully added the employee'),
                 'userId' => $userId
             ];
             return json_encode($response);
