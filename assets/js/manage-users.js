@@ -67,10 +67,14 @@ var manageUsers = {
         });
     },
     updateUser: function () {
+        var myForm = document.getElementById('user-form');
+        var formData = new FormData(myForm);
         $.ajax({
             url: '/admin/manage-users.php',
             method: 'POST',
-            data: $('#user-form').serialize()
+            processData: false,
+            contentType: false,
+            data: formData
         }).done(function (data) {
             $('#msg-div').html(data);
         }).fail(function(jqXHR, textStatus, errorThrown) {

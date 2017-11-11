@@ -84,8 +84,24 @@ class UsersView
             $action = 'add-user';
             $fName = $lName = $hireDate = $Email = $Type = '';
         }
+
+        if (!empty($user['signFile']) && file_exists($user['signFile'])) {
+            $location = '/uploads/signatureEmployeeId' . $user['ID'];
+            $signFileHtml = "
+                <div class='form-group'>
+                    <label for='siganture'>Signature</label>
+                    <div><img src='$location' style='max-height: 100px;'></div>
+                </div>";
+        } else {
+            $signFileHtml = "
+                <div class='form-group'>
+                    <label for='siganture'>Signature File</label>
+                    <input type='file' id='signature' name='signature'>
+                </div>";
+        }
+
         return "
-            <form id='user-form'>
+            <form id='user-form' enctype='multipart/form-data'>
                 <input class='hidden' id='action' name='action' value='$action'>
                 " . (!empty($user['ID']) ? "<input class='hidden' id='userId' name='userId' value='{$user['ID']}'>" : '') . "
                 <div class='form-group'>
@@ -114,7 +130,12 @@ class UsersView
                     : ''
                 ) .
 
-                "<div class='form-group'>
+                (!empty($user) ? $signFileHtml
+                    : "<div class='alert alert-info'>Please create user first, then add signature file</div>"
+                )
+
+                . "
+                <div class='form-group'>
                      <label for='Type'>Type</label>           
                      <select id='Type' name='Type' class='form-control'>
                         <option value='' " . ($Type === '' ? 'selected' : '') . ">Please Select ...</option>
@@ -126,7 +147,7 @@ class UsersView
                     ? "<a class='btn btn-primary' href='#' role='button' id='addUserBtn'>Add User</a>"
                     : "<a class='btn btn-primary' href='#' role='button' id='updateUserBtn'>Update User</a>"
                 ) . "
-                " . (empty($user['awardCount'])
+                " . (empty($user['awardCount']) && !empty($user['ID'])
                     ? "<a class='btn btn-danger' href='#' role='button' id='deleteUserBtn'>Delete</a>"
                     : ''
                 ) . "

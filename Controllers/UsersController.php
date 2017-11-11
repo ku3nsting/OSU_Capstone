@@ -90,6 +90,8 @@ class UsersController extends BaseController
         // get user and validate user exists
         $user = UsersModel::getUser($userId)[0];
 
+        $user['signFile'] = $this->getUserSignFile($userId);
+
         // return user with form
         return UsersView::userForm($user);
     }
@@ -111,12 +113,42 @@ class UsersController extends BaseController
             return $this->respondWithErrors($formErrors, 422);
         }
 
+
         if (UsersModel::updateUser($request)) {
+            $msg = $this->storeUserSignature($request);
             return '<div class="alert alert-success">Successfully updated the employee</div>';
         } else {
             http_response_code(500);
             return '<div class="alert alert-danger">Failed to add the employee</div>';
         }
+    }
+
+    /**
+     * Store the user's signature file
+     *
+     * @param $request
+     * @return string
+     */
+    private function storeUserSignature($request)
+    {
+        if (empty($_FILES['signature']['tmp_name'])) {
+            return '';
+        }
+
+        if (move_uploaded_file($_FILES['signature']['tmp_name'], $this->getUserSignFile($request['userId']))) {
+            return '<div class="alert alert-success">Successfully stored the signature file</div>';
+        }
+
+        return '<div class="alert alert-warning">Failed to store the signature file. Please try again. If the problem persists please contact your site administrator</div>';
+    }
+
+    /**
+     * @param $userId
+     * @return string
+     */
+    private function getUserSignFile($userId)
+    {
+        return $_SERVER['DOCUMENT_ROOT'] . '/uploads/signatureEmployeeId' . $userId;
     }
 
     /**
