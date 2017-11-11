@@ -241,6 +241,8 @@ class UsersController extends BaseController
             return $this->respondWithErrors(['Could not delete user'], 400);
         }
 
+        $this->deleteUserSignature($request);
+
         return '<div class="alert alert-success">Successfully deleted user</div>';
     }
 
