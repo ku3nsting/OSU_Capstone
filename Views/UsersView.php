@@ -128,7 +128,12 @@ class UsersView
                     ? "<div class='form-group'>
                          <label for='Password'>Password</label>
                          <input type='password' id='Password' name='Password' class='form-control'>
-                    </div>"
+                    </div>
+                    <div class='form-group'>
+                         <label for='Password'>Re-Enter Password</label>
+                         <input type='password' id='PasswordAgain' name='PasswordAgain' class='form-control'>
+                    </div>
+                    "
                     : ''
                 ) .
 

@@ -77,6 +77,31 @@ class UsersController extends BaseController
         return UsersView::userForm();
     }
 
+    /**
+     * @param array $request
+     * @return string
+     */
+    private function addUser($request)
+    {
+        $formErrors = $this->validateUserFields($request);
+        if (!empty($formErrors)) {
+            return $this->respondWithErrors($formErrors, 422);
+        }
+
+        $request['Password'] = password_hash($request['Password'], PASSWORD_DEFAULT);
+
+        $userId = UsersModel::addUser($request);
+        if ($userId) {
+            $response = [
+                'msg' => BaseTemplateView::alert('alert-success', 'Successfully added the employee'),
+                'userId' => $userId
+            ];
+            return json_encode($response);
+        } else {
+            http_response_code(500);
+            return '<div class="alert alert-danger">Failed to add the employee</div>';
+        }
+    }
 
     /**
      * @param array $request
@@ -220,32 +245,6 @@ class UsersController extends BaseController
     }
 
     /**
-     * @param array $request
-     * @return string
-     */
-    private function addUser($request)
-    {
-        $formErrors = $this->validateUserFields($request);
-        if (!empty($formErrors)) {
-            return $this->respondWithErrors($formErrors, 422);
-        }
-
-        $request['Password'] = password_hash($request['Password'], PASSWORD_DEFAULT);
-
-        $userId = UsersModel::addUser($request);
-        if ($userId) {
-            $response = [
-                'msg' => BaseTemplateView::alert('alert-success', 'Successfully added the employee'),
-                'userId' => $userId
-            ];
-            return json_encode($response);
-        } else {
-            http_response_code(500);
-            return '<div class="alert alert-danger">Failed to add the employee</div>';
-        }
-    }
-
-    /**
      * @param $request
      * @return string
      */
@@ -299,6 +298,10 @@ class UsersController extends BaseController
 
         if ($passwordCheck && (empty($request['Password']) || strlen($request['Password'])) < 8) {
             $formErrors[] = 'Password must be 8 characters';
+        }
+
+        if ($passwordCheck && $request['Password'] !== $request['PasswordAgain']) {
+            $formErrors[] = 'Passwords do not match';
         }
 
         if (empty($request['Type']) || !in_array($request['Type'], ['admin', 'user'])) {
