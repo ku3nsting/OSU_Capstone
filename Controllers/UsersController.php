@@ -90,12 +90,7 @@ class UsersController extends BaseController
             return $this->respondWithErrors(['Invalid user id'], 422);
         }
 
-        // get user and validate user exists
-        $user = UsersModel::getUser($userId)[0];
-
-        if (file_exists($this->getUserSignFile($userId))) {
-            $user['signFile'] = $this->getUserSignFile($userId, 'src');
-        }
+        $user = $this->getUser($userId);
 
         // return user with form
         return UsersView::userForm($user);
@@ -118,14 +113,36 @@ class UsersController extends BaseController
             return $this->respondWithErrors($formErrors, 422);
         }
 
-
         if (UsersModel::updateUser($request)) {
+            // Set the messages
             $msg = $this->storeUserSignature($request);
-            return '<div class="alert alert-success">Successfully updated the employee</div>';
+            $msg = BaseTemplateView::alert('alert-success', 'Successfully updated the employee') . $msg;
+
+            // Get the user for the form
+            $user = $this->getUser($userId);
+
+            // return the messages and form
+            return json_encode(['msg' => $msg, 'userForm' => UsersView::userForm($user)]);
         } else {
             http_response_code(500);
             return '<div class="alert alert-danger">Failed to add the employee</div>';
         }
+    }
+
+    /**
+     * @param int $userId
+     * @return array
+     */
+    private function getUser($userId)
+    {
+        // get user and validate user exists
+        $user = UsersModel::getUser($userId)[0];
+
+        if (file_exists($this->getUserSignFile($userId))) {
+            $user['signFile'] = $this->getUserSignFile($userId, 'src');
+        }
+
+        return $user;
     }
 
     /**
@@ -141,10 +158,13 @@ class UsersController extends BaseController
         }
 
         if (move_uploaded_file($_FILES['signature']['tmp_name'], $this->getUserSignFile($request['userId']))) {
-            return '<div class="alert alert-success">Successfully stored the signature file</div>';
+            return BaseTemplateView::alert('alert-success', "Successfully stored the signature file");
         }
 
-        return '<div class="alert alert-warning">Failed to store the signature file. Please try again. If the problem persists please contact your site administrator</div>';
+        return BaseTemplateView::alert(
+            'alert-danger',
+            'Failed to store the signature file. Please try again. If the problem persists please contact your site administrator'
+        );
     }
 
     /**
