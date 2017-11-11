@@ -10,7 +10,7 @@ namespace views;
 
 class ReportsViews
 {
-    private static $fields = [
+    public static $fields = [
         "AwardLabel" => [
             "label" => "Award Type",
             "type" => "string",
@@ -59,6 +59,8 @@ class ReportsViews
             <form id="selectQueryForm" action="/admin/reports.php">
                 <h2>Report Query Builder</h2>
                 <input type="hidden" value="run-query" id="action" name="action">
+                <input type="hidden" value="" id="rules" name="rules">
+                <input type="hidden" value="" id="csvExport" name="csvExport">
                 <div class="form-group">
                     <label for="selectQueryFields">SELECT Fields</label>
                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="cursor: help;" title="To select multiple click and drag mouse or hold Control and Click with mouse"></span>
@@ -67,6 +69,7 @@ class ReportsViews
                 <label>WHERE</label>
                 <div id="builder"></div>
                 <a class="btn btn-primary btn-sm" href="#" role="button" onclick="report.runQuery();">Submit</a>
+                <a class="btn btn-primary btn-sm" href="#" role="button" onclick="report.exportCsv();">Export to CSV</a>
             </form>
             <h2>Results</h2>
             <div id="query-results"></div>
