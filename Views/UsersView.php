@@ -85,16 +85,18 @@ class UsersView
             $fName = $lName = $hireDate = $Email = $Type = '';
         }
 
-        if (!empty($user['signFile']) && file_exists($user['signFile'])) {
-            $location = '/uploads/signatureEmployeeId' . $user['ID'];
+        if (!empty($user['signFile'])) {
             $signFileHtml = "
-                <div class='form-group'>
+                <div class='form-group' id='signature-div'>
                     <label for='siganture'>Signature</label>
-                    <div><img src='$location' style='max-height: 100px;'></div>
+                    <div>
+                        <img src='{$user['signFile']}' style='max-height: 100px;'>
+                        <span class='glyphicon glyphicon-remove' style='color: darkred;' onclick='manageUsers.deleteSignature();'></span>
+                    </div>
                 </div>";
         } else {
             $signFileHtml = "
-                <div class='form-group'>
+                <div class='form-group' id='signature-div'>
                     <label for='siganture'>Signature File</label>
                     <input type='file' id='signature' name='signature'>
                 </div>";
@@ -153,5 +155,18 @@ class UsersView
                 ) . "
             </form>
         ";
+    }
+
+    /**
+     * @return string
+     */
+    public static function userSignatureFormField()
+    {
+        return "
+            <div class='form-group' id='signature-div'>
+                <label for='siganture'>Signature File</label>
+                <input type='file' id='signature' name='signature'>
+            </div>";
+
     }
 }

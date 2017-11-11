@@ -42,6 +42,9 @@ class UsersController extends BaseController
             case 'delete-user':
                 return self::deleteUser($request);
 
+            case 'delete-signature':
+                return self::deleteUserSignature($request);
+
             case 'index':
             default:
                 return self::index();
@@ -90,7 +93,9 @@ class UsersController extends BaseController
         // get user and validate user exists
         $user = UsersModel::getUser($userId)[0];
 
-        $user['signFile'] = $this->getUserSignFile($userId);
+        if (file_exists($this->getUserSignFile($userId))) {
+            $user['signFile'] = $this->getUserSignFile($userId, 'src');
+        }
 
         // return user with form
         return UsersView::userForm($user);
@@ -143,12 +148,34 @@ class UsersController extends BaseController
     }
 
     /**
-     * @param $userId
+     * @param $request
      * @return string
      */
-    private function getUserSignFile($userId)
+    private function deleteUserSignature($request)
     {
-        return $_SERVER['DOCUMENT_ROOT'] . '/uploads/signatureEmployeeId' . $userId;
+        $fileName = $this->getUserSignFile($request['userId']);
+
+        if (file_exists($fileName)) {
+            unlink($fileName);
+        }
+
+        return UsersView::userSignatureFormField();
+    }
+
+    /**
+     * @param $userId
+     * @param string $type
+     * @return string
+     */
+    private function getUserSignFile($userId, $type = 'full-path')
+    {
+        $fileLocation = '/uploads/signatureEmployeeId' . $userId;
+
+        if ($type === 'full-path') {
+            return $_SERVER['DOCUMENT_ROOT'] . $fileLocation;
+        }
+
+        return $fileLocation;
     }
 
     /**

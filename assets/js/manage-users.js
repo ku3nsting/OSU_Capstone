@@ -99,5 +99,19 @@ var manageUsers = {
                 $('#msg-div').html(errorThrown);
             }
         });
+    },
+    deleteSignature: function() {
+        $.ajax({
+            url: '/admin/manage-users.php?action=delete-signature&userId=' + encodeURIComponent($('#userId').val()),
+            method: 'POST'
+        }).done(function (data) {
+            $('#signature-div').html(data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            if (jqXHR.responseText !== undefined) {
+                $('#msg-div').html(jqXHR.responseText);
+            } else {
+                $('#msg-div').html(errorThrown);
+            }
+        });
     }
 };
