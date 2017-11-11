@@ -42,6 +42,9 @@ class UsersController extends BaseController
             case 'delete-user':
                 return self::deleteUser($request);
 
+            case 'delete-signature':
+                return self::deleteUserSignature($request);
+
             case 'index':
             default:
                 return self::index();
@@ -74,6 +77,31 @@ class UsersController extends BaseController
         return UsersView::userForm();
     }
 
+    /**
+     * @param array $request
+     * @return string
+     */
+    private function addUser($request)
+    {
+        $formErrors = $this->validateUserFields($request);
+        if (!empty($formErrors)) {
+            return $this->respondWithErrors($formErrors, 422);
+        }
+
+        $request['Password'] = password_hash($request['Password'], PASSWORD_DEFAULT);
+
+        $userId = UsersModel::addUser($request);
+        if ($userId) {
+            $response = [
+                'msg' => BaseTemplateView::alert('alert-success', 'Successfully added the employee'),
+                'userId' => $userId
+            ];
+            return json_encode($response);
+        } else {
+            http_response_code(500);
+            return '<div class="alert alert-danger">Failed to add the employee</div>';
+        }
+    }
 
     /**
      * @param array $request
@@ -87,8 +115,7 @@ class UsersController extends BaseController
             return $this->respondWithErrors(['Invalid user id'], 422);
         }
 
-        // get user and validate user exists
-        $user = UsersModel::getUser($userId)[0];
+        $user = $this->getUser($userId);
 
         // return user with form
         return UsersView::userForm($user);
@@ -112,11 +139,88 @@ class UsersController extends BaseController
         }
 
         if (UsersModel::updateUser($request)) {
-            return '<div class="alert alert-success">Successfully updated the employee</div>';
+            // Set the messages
+            $msg = $this->storeUserSignature($request);
+            $msg = BaseTemplateView::alert('alert-success', 'Successfully updated the employee') . $msg;
+
+            // Get the user for the form
+            $user = $this->getUser($userId);
+
+            // return the messages and form
+            return json_encode(['msg' => $msg, 'userForm' => UsersView::userForm($user)]);
         } else {
             http_response_code(500);
             return '<div class="alert alert-danger">Failed to add the employee</div>';
         }
+    }
+
+    /**
+     * @param int $userId
+     * @return array
+     */
+    private function getUser($userId)
+    {
+        // get user and validate user exists
+        $user = UsersModel::getUser($userId)[0];
+
+        if (file_exists($this->getUserSignFile($userId))) {
+            $user['signFile'] = $this->getUserSignFile($userId, 'src');
+        }
+
+        return $user;
+    }
+
+    /**
+     * Store the user's signature file
+     *
+     * @param $request
+     * @return string
+     */
+    private function storeUserSignature($request)
+    {
+        if (empty($_FILES['signature']['tmp_name'])) {
+            return '';
+        }
+
+        if (move_uploaded_file($_FILES['signature']['tmp_name'], $this->getUserSignFile($request['userId']))) {
+            return BaseTemplateView::alert('alert-success', "Successfully stored the signature file");
+        }
+
+        return BaseTemplateView::alert(
+            'alert-danger',
+            'Failed to store the signature file. Please try again. If the problem persists please contact your site administrator'
+        );
+    }
+
+    /**
+     * @param $request
+     * @return string
+     */
+    private function deleteUserSignature($request)
+    {
+        $fileName = $this->getUserSignFile($request['userId']);
+
+        if (file_exists($fileName)) {
+            unlink($fileName);
+        }
+
+        return UsersView::userSignatureFormField();
+    }
+
+    /**
+     * @param $userId
+     * @param string $type
+     * @return string
+     */
+    private function getUserSignFile($userId, $type = 'full-path')
+    {
+        $fileLocation = '/uploads/signatureEmployeeId' . $userId;
+
+        if ($type === 'full-path') {
+            return $_SERVER['DOCUMENT_ROOT'] . $fileLocation;
+        }
+
+        return $fileLocation;
     }
 
     /**
@@ -141,32 +245,6 @@ class UsersController extends BaseController
     }
 
     /**
-     * @param array $request
-     * @return string
-     */
-    private function addUser($request)
-    {
-        $formErrors = $this->validateUserFields($request);
-        if (!empty($formErrors)) {
-            return $this->respondWithErrors($formErrors, 422);
-        }
-
-        $request['Password'] = password_hash($request['Password'], PASSWORD_DEFAULT);
-
-        $userId = UsersModel::addUser($request);
-        if ($userId) {
-            $response = [
-                'msg' => '<div class="alert alert-success">Successfully added the employee</div>',
-                'userId' => $userId
-            ];
-            return json_encode($response);
-        } else {
-            http_response_code(500);
-            return '<div class="alert alert-danger">Failed to add the employee</div>';
-        }
-    }
-
-    /**
      * @param $request
      * @return string
      */
@@ -181,6 +259,8 @@ class UsersController extends BaseController
         if (!UsersModel::deleteUser($userId)) {
             return $this->respondWithErrors(['Could not delete user'], 400);
         }
+
+        $this->deleteUserSignature($request);
 
         return '<div class="alert alert-success">Successfully deleted user</div>';
     }
@@ -218,6 +298,10 @@ class UsersController extends BaseController
 
         if ($passwordCheck && (empty($request['Password']) || strlen($request['Password'])) < 8) {
             $formErrors[] = 'Password must be 8 characters';
+        }
+
+        if ($passwordCheck && $request['Password'] !== $request['PasswordAgain']) {
+            $formErrors[] = 'Passwords do not match';
         }
 
         if (empty($request['Type']) || !in_array($request['Type'], ['admin', 'user'])) {

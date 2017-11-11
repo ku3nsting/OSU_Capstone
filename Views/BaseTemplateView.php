@@ -118,8 +118,8 @@ class BaseTemplateView
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
         <script src="../assets/js/query-builder.standalone.min.js"></script>
-        <script src="../assets/js/reports.js"></script>
-        <script src="../assets/js/manage-users.js"></script>
+        <script src="../assets/js/reports.js?' . filemtime('../assets/js/reports.js') . '"></script>
+        <script src="../assets/js/manage-users.js?' . filemtime('../assets/js/manage-users.js') . '"></script>
         <script>
             $(document).ready(function() {
                 ' . $scripts. '
@@ -152,5 +152,15 @@ class BaseTemplateView
         $navBarList .= '</ul>';
 
         return $navBarList;
+    }
+
+    public static function alert($type, $msg)
+    {
+        return "
+            <div class='alert $type alert-dismissible' role='alert'>
+                <button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
+                $msg
+            </div>
+        ";
     }
 }

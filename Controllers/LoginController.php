@@ -84,7 +84,6 @@ class LoginController extends BaseController
 
         session_start();
         $_SESSION['authenticated'] = true;
-        var_dump($_SESSION);
 
         return "<script>location.href='/admin/admin.php';</script>;";
     }
