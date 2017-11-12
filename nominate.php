@@ -2,9 +2,6 @@
     //Turn on error reporting
     ini_set('display_errors', 'On');
 
-	//TEMP value (database from a previous class)
-	//we'll change this to connect to Employee recognition db
-    //Connects to the database
     require_once __DIR__ . '/Config/database.php';
     $mysqli = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
 
@@ -75,14 +72,14 @@
 		
 		
 			
-			<form method="post" action="sendAward.php">
+			<form method="post" action="storeAward.php">
 				<div  id="nominationForm">
 					
 					<h2>Nominate a Co-worker</h2>
 					<p>
 					
 					<label>Recipient Name:	</label>
-					<select name="employeeNames">
+					<select name="nomineeID">
 					<?php
 					if(!($stmt = $mysqli->prepare("SELECT id, fname, lname FROM Employees"))){
 						echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
@@ -95,7 +92,7 @@
 						echo "Bind failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
 					}
 					while($stmt->fetch()){
-					 echo '<option value=" '. $empID . ' "> ' . $fname .' '. $lname .'</option>\n';
+					 echo '<option value=" '. $id . ' "> ' . $fname .' '. $lname .'</option>\n';
 					}
 					$stmt->close();
 					?>
@@ -121,12 +118,30 @@
 
 					<label for="awardType">Choose an award type: </label>
 					<div>
-						<input type="radio" name="awardType" value="1" onclick="hideCustom();"checked>Employee of the Week <a href="/pdf/week.pdf">(preview pdf)</a><br>
-						<input type="radio" name="awardType" value="2" onclick="hideCustom();">Employee of the Month <a href="/pdf/month.pdf">(preview pdf)</a><br>
-						<input type="radio" name="awardType" value="3">Custom <a href="/pdf/custom.pdf">(preview pdf)</a><br>
+						<input type="radio" name="awardType" value="3" onclick="hideCustom();"checked>Employee of the Week <a href="/pdf/week.pdf">(preview pdf)</a><br>
+						<input type="radio" name="awardType" value="4" onclick="hideCustom();">Employee of the Month <a href="/pdf/month.pdf">(preview pdf)</a><br>
+						<input type="radio" name="awardType" value="5">Custom <a href="/pdf/custom.pdf">(preview pdf)</a><br>
 					</div>
 				
 					<p>
+
+					<div id="awardDate">
+        				<label for="date">Choose an Award Date:</label>
+        				<div>
+        					<input type="date" name="chosenDate">
+        				</div>
+        			</div>
+
+        			<p>
+
+            		<div id="awardTime">
+             			<label for="time">Choose an Award Time:</label>
+              			<div>
+                			<input type="time" name="chosenTime">
+              			</div>
+            		</div>
+
+            		<p>
 					
 					<label>Send your nominee a message:	</label><p>
 
