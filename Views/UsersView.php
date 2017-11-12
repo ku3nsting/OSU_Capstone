@@ -43,7 +43,7 @@ class UsersView
         // create the users tables rows
         $userRows = '';
         foreach ($users as $user) {
-            $userRows .= "<tr onclick='manageUsers.editUserForm({$user['ID']})'>
+            $userRows .= "<tr onclick='manageUsers.editUserForm({$user['ID']})' style='cursor: pointer;'>
                 <td>{$user['ID']}</td>
                 <td>{$user['fullName']}</td>
                 <td>{$user['hireDate']}</td>
