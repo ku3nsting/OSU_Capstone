@@ -61,8 +61,10 @@ class ReportsController extends BaseController
     {
         $awardsQueryBuilder = new AwardsQueryBuilder();
         try {
+            $groupBy = !empty($request['createChart']) && !empty($request['group-by-1'])
+                ? ['group-by-1' => $request['group-by-1']] : [];
             $selectFields = isset($request['selectQueryFields']) ? $request['selectQueryFields'] : [];
-            $awards = $awardsQueryBuilder->runQuery(json_decode($request['rules'], true), $selectFields);
+            $awards = $awardsQueryBuilder->runQuery(json_decode($request['rules'], true), $selectFields, $groupBy);
         } catch (\Exception $exception) {
             header('HTTP/1.1 500 Internal Server Error');
             echo '<div class="alert alert-danger">' . $exception->getMessage() . '</div>';
@@ -71,6 +73,13 @@ class ReportsController extends BaseController
 
         if (!empty($request['csvExport'])) {
             return $this->exportToCsv($awards, $selectFields);
+        }
+
+        if (!empty($request['createChart'])) {
+            echo '<pre>';
+            var_dump($awards);
+            echo '</pre>';
+            return;
         }
 
         return ReportsViews::resultsTableView($awards, $selectFields);

@@ -83,6 +83,15 @@ class AwardsQueryBuilder
         ],
     ];
 
+    private static $groupByFields = [
+        "month" => [
+            "dbfield" => "month"
+        ],
+        "year" => [
+            "dbfield" => "year"
+        ],
+    ];
+
     /**
      * Definition of available operators and their traits
      * @var array
@@ -210,16 +219,17 @@ class AwardsQueryBuilder
     /**
      * @param array $rules
      * @param array $selectFields
+     * @param array $groupBy
      * @return array|null
      * @throws \Exception
      */
-    public function runQuery(array $rules, array $selectFields)
+    public function runQuery(array $rules, array $selectFields, $groupBy = [])
     {
         if (empty($selectFields)) {
             throw new \Exception('No Select Fields were chosen for the Query');
         }
 
-        $query = $this->buildQuery($rules, $selectFields);
+        $query = $this->buildQuery($rules, $selectFields, $groupBy);
 
         $stmt = $this->mysqli->prepare($query);
 
@@ -245,20 +255,26 @@ class AwardsQueryBuilder
     /**
      * @param array $rules
      * @param array $selectFields
+     * @param array $groupBy
      * @return string
      * @throws \Exception
      */
-    public function buildQuery(array $rules, array $selectFields)
+    public function buildQuery(array $rules, array $selectFields, $groupBy = [])
     {
         $select = $this->getSelectSql($selectFields);
 
         $whereClause = $this->buildWhereClause($rules);
 
-        if(!empty($whereClause) && !empty($selectFields)) {
-            return $select . self::$query . ' AND ' . $whereClause;
+        if(empty($whereClause) || empty($selectFields)) {
+            throw new \Exception('Missing select or where clause');
+        }
+        $query = $select . self::$query . ' AND ' . $whereClause;
+
+        if (!empty($groupBy)) {
+            $query = $this->addGroupBy($query, $groupBy);
         }
 
-        throw new \Exception('Missing select or where clause');
+        return $query;
     }
 
     /**
@@ -389,6 +405,25 @@ class AwardsQueryBuilder
             }
             $selectDbFields[] = $this->fields[$selectField]['dbfield'] . " AS $selectField";
         }
-        return 'SELECT ' . implode(', ', $selectDbFields) . ' ';
+        return 'SELECT MONTHNAME(Awards_Given.AwardDate) as month, 
+            MONTH(Awards_Given.AwardDate) as monthIndex,
+            YEAR(Awards_Given.AwardDate) as year,'
+            . implode(', ', $selectDbFields) . ' ';
+    }
+
+    /**
+     * @param string $query
+     * @param array $groupBy
+     * @return string
+     */
+    private function addGroupBy($query, array $groupBy)
+    {
+        $groupByField = self::$groupByFields[$groupBy['group-by-1']];
+
+        $query = "SELECT {$groupByField['dbfield']}, COUNT(*)
+            FROM ($query) AS subquery
+            GROUP BY {$groupByField['dbfield']}";
+
+        return $query;
     }
 }

@@ -2,6 +2,7 @@ var report = {
     runQuery: function () {
         var rules = $("#builder").queryBuilder('getRules', {skip_empty: true});
         $('#csvExport').val(0);
+        $('#createChart').val(0);
         $.ajax({
             url: $("#selectQueryForm").attr('action'),
             method: "POST",
@@ -20,9 +21,30 @@ var report = {
         var rules = $("#builder").queryBuilder('getRules', {skip_empty: true});
 
         $('#csvExport').val(1);
+        $('#createChart').val(0);
         $('#rules').val(JSON.stringify(rules));
 
         document.forms['selectQueryForm'].submit();
+    },
+    createChart: function () {
+        var rules = $("#builder").queryBuilder('getRules', {skip_empty: true});
+        $('#csvExport').val(0);
+        $('#createChart').val(1);
+        $.ajax({
+            url: $("#selectQueryForm").attr('action'),
+            method: "POST",
+            data: $("#selectQueryForm").serialize() + '&rules=' + JSON.stringify(rules)
+        }).done(function (data) {
+
+            $('#query-results').html(data);
+
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            if (jqXHR.responseText !== undefined) {
+                $('#query-results').html(jqXHR.responseText);
+            } else {
+                $('#query-results').html(errorThrown);
+            }
+        });
     },
     init: function () {
         var stringOperators = [
@@ -111,95 +133,14 @@ var report = {
             ]
         });
 
-        // $('#builder').queryBuilder('setRules', testRules);
+        $('#builder').queryBuilder('setRules', testRules1);
     }
 };
 
-var testRules = {
-    "condition": "AND",
-    "rules": [
-        {
-            "id": "AwardLabel",
-            "field": "AwardLabel",
-            "type": "string",
-            "input": "text",
-            "operator": "equal",
-            "value": "Employee of the Month"
-        },
-        {
-            "condition": "OR",
-            "rules": [
-                {
-                    "id": "lName",
-                    "field": "lName",
-                    "type": "string",
-                    "input": "text",
-                    "operator": "begins_with",
-                    "value": "A"
-                },
-                {
-                    "id": "AwardDate",
-                    "field": "AwardDate",
-                    "type": "date",
-                    "input": "text",
-                    "operator": "greater",
-                    "value": "01/01/2017"
-                },
-                {
-                    "id": "lName",
-                    "field": "lName",
-                    "type": "string",
-                    "input": "text",
-                    "operator": "begins_with",
-                    "value": "B"
-                },
-                {
-                    "id": "lName",
-                    "field": "lName",
-                    "type": "string",
-                    "input": "text",
-                    "operator": "begins_with",
-                    "value": "C"
-                },
-                {
-                    "condition": "OR",
-                    "rules": [
-                        {
-                            "id": "lName",
-                            "field": "lName",
-                            "type": "string",
-                            "input": "text",
-                            "operator": "begins_with",
-                            "value": "D"
-                        },
-                        {
-                            "id": "lName",
-                            "field": "lName",
-                            "type": "string",
-                            "input": "text",
-                            "operator": "begins_with",
-                            "value": "E"
-                        }
-                    ]
-                },
-                {
-                    "id": "AwardDate",
-                    "field": "AwardDate",
-                    "type": "date",
-                    "input": "text",
-                    "operator": "greater",
-                    "value": "01/01/2017"
-                }
-            ]
-        },
-        {
-            "id": "AwardDate",
-            "field": "AwardDate",
-            "type": "date",
-            "input": "text",
-            "operator": "greater",
-            "value": "01/01/2017"
-        }
+var testRules1 = {
+    "condition":"AND",
+    "rules":[
+        {"id":"lName","field":"lName","type":"string","input":"text","operator":"not_begins_with","value":"z"}
     ],
-    "valid": true
+    "valid":true
 };

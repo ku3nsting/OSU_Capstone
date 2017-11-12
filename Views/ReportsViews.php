@@ -60,7 +60,8 @@ class ReportsViews
                 <h2>Report Query Builder</h2>
                 <input type="hidden" value="run-query" id="action" name="action">
                 <input type="hidden" value="" id="rules" name="rules">
-                <input type="hidden" value="" id="csvExport" name="csvExport">
+                <input type="hidden" value="0" id="csvExport" name="csvExport">
+                <input type="hidden" value="0" id="createChart" name="createChart">
                 <div class="form-group">
                     <label for="selectQueryFields">SELECT Fields</label>
                     <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="cursor: help;" title="To select multiple click and drag mouse or hold Control and Click with mouse"></span>
@@ -68,8 +69,33 @@ class ReportsViews
                 </div>
                 <label>WHERE</label>
                 <div id="builder"></div>
-                <a class="btn btn-primary btn-sm" href="#" role="button" onclick="report.runQuery();">Submit</a>
-                <a class="btn btn-primary btn-sm" href="#" role="button" onclick="report.exportCsv();">Export to CSV</a>
+                <div class="form-group">
+                    <a class="btn btn-primary btn-sm" href="#" role="button" onclick="report.runQuery();">Submit</a>
+                    <a class="btn btn-primary btn-sm" href="#" role="button" onclick="report.exportCsv();">Export to CSV</a>
+                </div>
+                <div class="panel panel-default" style="border: 1px solid #DCC896;">
+                    <div class="panel-heading" style="background: rgba(250,240,210,.5);">Charting Actions</div>
+                    <div class="panel-body">
+                        <div class="form-group">
+                            <label for="group-by-1">Group By</label>
+                            <select id="group-by-1" name="group-by-1" class="form-control">
+                                <option value="">Please Select For Charting Actions ...</option>
+                                <option value="month">Month</option>
+                                <option value="year">Year</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="chart-type">Chart Type</label>
+                            <select id="chart-type" name="chart-type" class="form-control">
+                                <option value="">Please Select For Charting Actions ...</option>
+                                <option value="bar">Bar</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <a class="btn btn-primary btn-sm" href="javascript: void(0);" role="button" onclick="report.createChart()">Create Chart</a>
+                        </div>
+                    </div>
+                </div>
             </form>
             <h2>Results</h2>
             <div id="query-results"></div>
