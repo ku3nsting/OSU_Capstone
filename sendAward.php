@@ -1,14 +1,65 @@
 <?php
+//Turn on error reporting
+//no awarded-by field yet -- I was afraid it would break things since we don't have a signed-in value to pull from
+ini_set('display_errors', 'On');
+require 'vendor/autoload.php';
+require_once __DIR__ . '/Config/database.php';
+include("header.php");
+$mysqli3 = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
 
 require '/var/www/html/vendor/autoload.php';
 
-$senderName = FILL THIS IN;
+$senderName = "FILL THIS IN";
+$dbsuccess = false;
+$emailsuccess = false;
 
 // setup variables from webpage
-$email = $_REQUEST['email'];
-$employeeName = $_REQUEST['fname']." ".$_REQUEST['lname'];
-$awardType = $_REQUEST['awardType'];
+$empID = $_POST['empID'];
+$awardType = $_POST['awardType'];
+$currentUser = $_SESSION["authenticated"];
+$curDate = date("Y-m-d H:i:s");
 
+
+//get other variables from database
+if(!($stmt = $mysqli3->prepare("SELECT fname, lname, email FROM Employees WHERE Employees.ID = ?"))){
+	echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
+}
+if(!($stmt->bind_param("i", $empID))){
+	echo "Bind failed: "  . $stmt->errno . " " . $stmt->error;
+}
+if(!$stmt->execute()){
+	echo "Execute failed: "  . $mysqli3->connect_errno . " " . $mysqli3->connect_error;
+}
+if(!$stmt->bind_result($fname, $lname, $email)){
+	echo "Bind failed: "  . $mysqli3->connect_errno . " " . $mysqli3->connect_error;
+}
+while($stmt->fetch()){
+}
+$stmt->close();
+
+
+//SEND AWARD TO DB
+$conn = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
+if(!$conn || $conn->connect_errno){
+	echo "Connection error " . $conn->connect_errno . " " . $conn->connect_error;
+	}
+if(!($stmt = $conn->prepare("INSERT INTO Awards_Given(awardid, employeeid, awarddate, awardedbyid) VALUES (?, ?, ?, ?)"))){
+	echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
+}
+if(!($stmt->bind_param("iisi", $awardType, $empID, $curDate, $currentUser))){
+	echo "Bind failed: "  . $stmt->errno . " " . $stmt->error;
+}
+if(!$stmt->execute()){
+	echo "Execute failed: "  . $stmt->errno . " " . $stmt->error;
+} else {
+	$dbsuccess = true;
+}
+
+//finish assigning values to vars
+$employeeName = $fname." ".$lname;
+
+
+//EMAIL AWARD TO WINNER
 // new PHPMailer object and to smtp
 $mail = new PHPMailer;
 $mail->isSMTP();
@@ -47,30 +98,15 @@ $mail->AltBody = "Congratulations. You have received an award.";
 
 // send the email and echo success
 if($mail->send()) {
-	echo "Award was sent!";
+	$emailsuccess = true;
 } else {
 	echo "Award was not sent.";
 }
 
-//Turn on error reporting
-//no awarded-by field yet -- I was afraid it would break things since we don't have a signed-in value to pull from
-ini_set('display_errors', 'On');
+//Redirect to success page
+if($dbsuccess == true && $emailsuccess == true){
+	header("Location: nomSuccess.php"); /* Redirect browser */
+	ob_end_flush();
+}
 
-//Connects to the database
-$mysqli2 = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
-if(!$mysqli2 || $mysqli2->connect_errno){
-	echo "Connection error " . $mysqli2->connect_errno . " " . $mysqli2->connect_error;
-	}
-	
-if(!($stmt = $mysqli2->prepare("INSERT INTO Awards_Given(AwardID, EmployeeID, AwardDate) VALUES (?,?,NOW())"))){
-	echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
-}
-if(!($stmt->bind_param("ii",$_POST['awardType'], $_POST['empID']))){
-	echo "Bind failed: "  . $stmt->errno . " " . $stmt->error;
-}
-if(!$stmt->execute()){
-	echo "Execute failed: "  . $stmt->errno . " " . $stmt->error;
-} else {
-	echo "Nomination completed sucessfully";
-}
 ?>

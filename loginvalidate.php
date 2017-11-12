@@ -3,6 +3,15 @@
     header("LOCATION:cindex.php"); /* REDIRECT USER TO INDEX PAGE */
 	}
 	
+	//Turn on error reporting
+	ini_set('display_errors', 'On');
+
+	//TEMP value (database from a previous class)
+	//we'll change this to connect to Employee recognition db
+	//Connects to the database
+	require_once __DIR__ . '/Config/database.php';
+	$mysqli = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
+	
 	?>
 
 <!DOCTYPE html>
@@ -38,6 +47,9 @@
       </label>
 	  </div>
       <button class="btn btn-lg btn-primary btn-block" id="submit" type="submit">Submit</button>   
+	  <p>
+	  <p>
+	  <a href = "recoverPassword.php">Forgot Password?</a>
     </form>
 </form>
 

@@ -1,5 +1,18 @@
 <?php
+<?php
+session_start();
+ob_start();
+$hasDB = false;
+
 $dbservername = 'localhost';
 $dbusername = 'root';
 $dbpassword = '*****';
 $dbname = 'gemini';
+
+$mySQL = new mysqli($dbservername,$dbusername,$dbpassword,$dbname);
+if ($mySQL->connect_error)
+{
+    die('Connect Error (' . $mySQL->connect_errno . ') '. $mySQL->connect_error);
+}
+
+?>
