@@ -12,7 +12,7 @@ ini_set('display_errors', 'On');
 //Connects to the database
 $newx =  new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
 
-if(!($stmt = $newx->prepare("SELECT Employees.Password, Employees.Email FROM Employees WHERE Employees.Email = ?"))){
+if(!($stmt = $newx->prepare("SELECT Employees.ID, Employees.Password, Employees.Email FROM Employees WHERE Employees.Email = ?"))){
 	//echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
 }
 
@@ -25,6 +25,7 @@ if(!($stmt->bind_param("s",$_POST['email']))){
 if(!$stmt->execute()){
 	//echo "Execute failed: "  . $newx->connect_errno . " " . $newx->connect_error;
 }
+
 if(!$stmt->bind_result($passwordencr, $dbemail)){
 	//echo "Bind failed: "  . $newx->connect_errno . " " . $newx->connect_error;
 }
@@ -37,7 +38,6 @@ $stmt->close();
 	
 	//compare user-input to stored hash
 	if($passwordIsGood){
-		
 		global $mySQL;
 		if ($SQL = $mySQL->prepare("SELECT `ID` FROM `Employees` WHERE `Email` = ?"))
 		{

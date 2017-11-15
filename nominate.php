@@ -2,9 +2,6 @@
     //Turn on error reporting
     ini_set('display_errors', 'On');
 
-	//TEMP value (database from a previous class)
-	//we'll change this to connect to Employee recognition db
-    //Connects to the database
     require_once __DIR__ . '/Config/database.php';
 	include("header.php");
     $mysqli = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
@@ -53,7 +50,6 @@
 		
 			<form method="post" action="sendAward.php">
 				<div id="nominationForm">
-				
 					<h2>Nominate a Co-worker</h2>
 					<p>
 					

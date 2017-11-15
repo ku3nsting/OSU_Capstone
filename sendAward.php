@@ -1,4 +1,7 @@
 <?php
+// AWS documentation was used as a guide for this code:
+// docs.aws.amazon.com/ses/latest/DeveloperGuide/send-using-smtp-php.html
+
 //Turn on error reporting
 //no awarded-by field yet -- I was afraid it would break things since we don't have a signed-in value to pull from
 ini_set('display_errors', 'On');
@@ -7,6 +10,7 @@ require_once __DIR__ . '/Config/database.php';
 include("header.php");
 $mysqli3 = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
 
+// files required by PHPMailer class
 require '/var/www/html/vendor/autoload.php';
 
 $senderName = "FILL THIS IN";
@@ -61,31 +65,32 @@ $employeeName = $fname." ".$lname;
 
 //EMAIL AWARD TO WINNER
 // new PHPMailer object and to smtp
+
 $mail = new PHPMailer;
 $mail->isSMTP();
 
-// email sender info
+// set email sender info
 $mail->setFrom($senderName, 'OSU Employee Recognition');
 
-// email recipient info
+// set email recipient info
 $mail->addAddress($email, $employeeName);
 
-// smtp username and password from aws
-$mail->Username = $dbusername;
-$mail->Password = $dbpassword;
+// smtp username and password from AWS
+$mail->Username = '*******************';
+$mail->Password = '*******************';
     
-// set the smtp host
-$mail->Host = $dbservername;
+// set the SMTP host
+$mail->Host = '*******************';
 
 // contents of the email
 $mail->Subject = 'Employee award';
 $mail->Body = '<h1>Congratulations!</h1>
-    <h3>Hello, '.$employeeName.'. You have received an award.</h3>';
+    <h3>Hello, '.$employeeName.'. You have received an award.</h3><p>'.$awardMessage.'</p>';
 
-// attach the pdf's here
+// attach the pdf here
 $mail->AddAttachment('/var/www/html/pdf/'.$awardType.'.pdf');
 
-// smtp auth and tls encryption/port setup
+// more SMTP and port setup
 $mail->SMTPAuth = true;
 $mail->SMTPSecure = 'tls';
 $mail->Port = 587;
@@ -93,15 +98,23 @@ $mail->Port = 587;
 // set mail format to HTML
 $mail->isHTML(true);
 
-// alt body for users not using HTML email
+// alternative body content for users without HTML-capable email
 $mail->AltBody = "Congratulations. You have received an award.";
 
-// send the email and echo success
+// send the email and echo success/failure
 if($mail->send()) {
 	$emailsuccess = true;
 } else {
-	echo "Award was not sent.";
+	$error = '<div class="alert alert-danger" role="alert"><p><strong>Award could not be sent :(</div>';
 }
+?>
+
+<!-- HTML to display after email is sent -->
+<!DOCTYPE html>
+<html>
+<head>
+ 
+	<title>Employee Recognition Application</title>
 
 //Redirect to success page
 if($dbsuccess == true && $emailsuccess == true){
