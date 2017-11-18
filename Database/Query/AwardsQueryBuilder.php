@@ -94,6 +94,11 @@ class AwardsQueryBuilder
             "groupby" => "year",
             "orderby" => "year"
         ],
+        "month-year" => [
+            "dbfield" => "CONCAT(month, ' ', year)",
+            "groupby" => "monthIndex, month, year",
+            "orderby" => "year, monthIndex"
+        ],
     ];
 
     /**
@@ -424,7 +429,7 @@ class AwardsQueryBuilder
     {
         $groupByField = self::$groupByFields[$groupBy['group-by-1']];
 
-        $query = "SELECT {$groupByField['dbfield']}, COUNT(*)
+        $query = "SELECT {$groupByField['dbfield']} as label, COUNT(*) as `count`
             FROM ($query) AS subquery
             GROUP BY {$groupByField['groupby']}
             ORDER BY {$groupByField['orderby']}";

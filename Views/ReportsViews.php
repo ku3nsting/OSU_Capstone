@@ -82,6 +82,7 @@ class ReportsViews
                                 <option value="">Please Select For Charting Actions ...</option>
                                 <option value="month">Award Month</option>
                                 <option value="year">Award Year</option>
+                                <option value="month-year">Award Month/Year</option>
                             </select>
                         </div>
                         <div class="form-group">
