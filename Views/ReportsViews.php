@@ -80,8 +80,8 @@ class ReportsViews
                             <label for="group-by-1">Group By</label>
                             <select id="group-by-1" name="group-by-1" class="form-control">
                                 <option value="">Please Select For Charting Actions ...</option>
-                                <option value="month">Month</option>
-                                <option value="year">Year</option>
+                                <option value="month">Award Month</option>
+                                <option value="year">Award Year</option>
                             </select>
                         </div>
                         <div class="form-group">

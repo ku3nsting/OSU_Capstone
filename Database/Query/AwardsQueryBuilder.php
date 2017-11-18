@@ -85,10 +85,14 @@ class AwardsQueryBuilder
 
     private static $groupByFields = [
         "month" => [
-            "dbfield" => "month"
+            "dbfield" => "month",
+            "groupby" => "monthIndex, month",
+            "orderby" => "monthIndex"
         ],
         "year" => [
-            "dbfield" => "year"
+            "dbfield" => "year",
+            "groupby" => "year",
+            "orderby" => "year"
         ],
     ];
 
@@ -422,7 +426,8 @@ class AwardsQueryBuilder
 
         $query = "SELECT {$groupByField['dbfield']}, COUNT(*)
             FROM ($query) AS subquery
-            GROUP BY {$groupByField['dbfield']}";
+            GROUP BY {$groupByField['groupby']}
+            ORDER BY {$groupByField['orderby']}";
 
         return $query;
     }
