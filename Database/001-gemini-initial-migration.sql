@@ -66,3 +66,8 @@ CREATE TABLE `UserType` (
   KEY `fk_UserType_EmployeeID_idx` (`EmployeeID`),
   CONSTRAINT `fk_UserType_EmployeeID` FOREIGN KEY (`EmployeeID`) REFERENCES `Employees` (`ID`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+--
+-- Adding the Bio column to the Employees table
+--
+ALTER TABLE `Employees` ADD COLUMN `Bio` VARCHAR(500);
