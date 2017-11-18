@@ -8,6 +8,8 @@
 namespace views;
 
 
+use controllers\UsersController;
+
 class UsersView
 {
     /**
@@ -98,7 +100,7 @@ class UsersView
         } else {
             $signFileHtml = "
                 <div class='form-group' id='signature-div'>
-                    <label for='siganture'>Signature File</label>
+                    <label for='siganture'>Signature File Upload (" . implode(',', UsersController::$signFileTypes) . ")</label>
                     <input type='file' id='signature' name='signature'>
                 </div>";
         }

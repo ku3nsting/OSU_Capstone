@@ -20,6 +20,8 @@ require_once __DIR__ . '/../Models/UsersModel.php';
 
 class UsersController extends BaseController
 {
+    public static $signFileTypes = ['image/png' => 'png'];
+
     /**
      * @param $request
      * @return string
@@ -163,8 +165,9 @@ class UsersController extends BaseController
         // get user and validate user exists
         $user = UsersModel::getUser($userId)[0];
 
-        if (file_exists($this->getUserSignFile($userId))) {
-            $user['signFile'] = $this->getUserSignFile($userId, 'src');
+        $fileName = self::getExistingUserSignFile($userId, 'src');
+        if (!empty($fileName)) {
+            $user['signFile'] = $fileName;
         }
 
         return $user;
@@ -182,7 +185,10 @@ class UsersController extends BaseController
             return '';
         }
 
-        if (move_uploaded_file($_FILES['signature']['tmp_name'], $this->getUserSignFile($request['userId']))) {
+        if (move_uploaded_file(
+            $_FILES['signature']['tmp_name'],
+            self::getUserSignFile($request['userId'], 'full-path', $_FILES['signature']['type'])
+        )) {
             return BaseTemplateView::alert('alert-success', "Successfully stored the signature file");
         }
 
@@ -198,9 +204,8 @@ class UsersController extends BaseController
      */
     private function deleteUserSignature($request)
     {
-        $fileName = $this->getUserSignFile($request['userId']);
-
-        if (file_exists($fileName)) {
+        $fileName = self::getExistingUserSignFile($request['userId']);
+        if (!empty($fileName)) {
             unlink($fileName);
         }
 
@@ -210,17 +215,44 @@ class UsersController extends BaseController
     /**
      * @param $userId
      * @param string $type
+     * @param string $mimeType
      * @return string
      */
-    private function getUserSignFile($userId, $type = 'full-path')
+    public static function getUserSignFile($userId, $type = 'full-path', $mimeType = '')
     {
-        $fileLocation = '/uploads/signatureEmployeeId' . $userId;
+        $extension = empty($mimeType) ? '' : '.' . self::$signFileTypes[$mimeType];
+        $fileLocation = '/uploads/signatureEmployeeId' . $userId . $extension;
 
         if ($type === 'full-path') {
             return $_SERVER['DOCUMENT_ROOT'] . $fileLocation;
         }
 
         return $fileLocation;
+    }
+
+    /**
+     * Get the existing user signature file name
+     *
+     * @param $userId
+     * @param string $type
+     * @return bool|string
+     */
+    public static function getExistingUserSignFile($userId, $type = 'full-path')
+    {
+        $fileName = self::getUserSignFile($userId);
+
+        if (file_exists($fileName)) {
+            return self::getUserSignFile($userId, $type);
+        }
+
+        foreach (self::$signFileTypes as $mimeType => $ext) {
+            $fileNameWithExt = "$fileName.$ext";
+            if (file_exists($fileNameWithExt)) {
+                return self::getUserSignFile($userId, $type, $mimeType);
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -306,6 +338,13 @@ class UsersController extends BaseController
 
         if (empty($request['Type']) || !in_array($request['Type'], ['admin', 'user'])) {
             $formErrors[] = 'User Type must be Admin or Normal User';
+        }
+
+        if (!empty($_FILES['signature']['tmp_name']) &&
+            !in_array($_FILES['signature']['type'], array_keys(self::$signFileTypes))
+        ) {
+            $formErrors[] = 'Employee signature must be one of the following image types: ('
+                . implode(',', self::$signFileTypes) . ')';
         }
 
         return $formErrors;
