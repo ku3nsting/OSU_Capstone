@@ -83,21 +83,30 @@ class AwardsQueryBuilder
         ],
     ];
 
-    private static $groupByFields = [
+    public static $groupByFields = [
         "month" => [
             "dbfield" => "month",
             "groupby" => "monthIndex, month",
-            "orderby" => "monthIndex"
+            "orderby" => "monthIndex",
+            "option-label" => "Award Month",
         ],
         "year" => [
             "dbfield" => "year",
             "groupby" => "year",
-            "orderby" => "year"
+            "orderby" => "year",
+            "option-label" => "Award Year",
         ],
         "month-year" => [
             "dbfield" => "CONCAT(month, ' ', year)",
             "groupby" => "monthIndex, month, year",
-            "orderby" => "year, monthIndex"
+            "orderby" => "year, monthIndex",
+            "option-label" => "Award Month/Year",
+        ],
+        "award-type" => [
+            "dbfield" => "AwardLabel",
+            "groupby" => "AwardLabel",
+            "orderby" => "AwardLabel",
+            "option-label" => "Award Type",
         ],
     ];
 
@@ -234,10 +243,6 @@ class AwardsQueryBuilder
      */
     public function runQuery(array $rules, array $selectFields, $groupBy = [])
     {
-        if (empty($selectFields)) {
-            throw new \Exception('No Select Fields were chosen for the Query');
-        }
-
         $query = $this->buildQuery($rules, $selectFields, $groupBy);
 
         $stmt = $this->mysqli->prepare($query);
@@ -270,11 +275,15 @@ class AwardsQueryBuilder
      */
     public function buildQuery(array $rules, array $selectFields, $groupBy = [])
     {
-        $select = $this->getSelectSql($selectFields);
+        if (!empty($groupBy)) {
+            $select = $this->getGroupBySelectSql();
+        } else {
+            $select = $this->getSelectSql($selectFields);
+        }
 
         $whereClause = $this->buildWhereClause($rules);
 
-        if(empty($whereClause) || empty($selectFields)) {
+        if(empty($whereClause) || empty($select)) {
             throw new \Exception('Missing select or where clause');
         }
         $query = $select . self::$query . ' AND ' . $whereClause;
@@ -407,6 +416,10 @@ class AwardsQueryBuilder
      */
     private function getSelectSql($selectFields)
     {
+        if (empty($selectFields)) {
+            throw new \Exception('No Select Fields were chosen for the Query', 422);
+        }
+
         $selectDbFields = [];
         foreach ($selectFields as $selectField) {
             if (!array_key_exists($selectField, $this->fields)) {
@@ -414,10 +427,20 @@ class AwardsQueryBuilder
             }
             $selectDbFields[] = $this->fields[$selectField]['dbfield'] . " AS $selectField";
         }
-        return 'SELECT MONTHNAME(Awards_Given.AwardDate) as month, 
+        return 'SELECT ' . implode(', ', $selectDbFields) . ' ';
+    }
+
+    /**
+     * @return string
+     */
+    private function getGroupBySelectSql()
+    {
+        $select = $this->getSelectSql(array_keys($this->fields));
+        $select .= ', 
+            MONTHNAME(Awards_Given.AwardDate) as month, 
             MONTH(Awards_Given.AwardDate) as monthIndex,
-            YEAR(Awards_Given.AwardDate) as year,'
-            . implode(', ', $selectDbFields) . ' ';
+            YEAR(Awards_Given.AwardDate) as year';
+        return $select;
     }
 
     /**
