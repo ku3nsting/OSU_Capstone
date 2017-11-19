@@ -54,7 +54,6 @@ class UsersController extends BaseController
     /**
      * Return the Admin Reports Page
      * @return string
-     * @throws \Exception
      */
     private function index()
     {

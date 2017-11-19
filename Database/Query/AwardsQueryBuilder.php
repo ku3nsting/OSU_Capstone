@@ -391,17 +391,17 @@ class AwardsQueryBuilder
 
         // Validate the field is a valid filter field
         if (!array_key_exists($field, $this->fields)) {
-            throw new \Exception("Field, $field, does not exist");
+            throw new \Exception("Field, $field, does not exist", 422);
         }
 
         // Validate the type passed through is valid
         if ($this->fields[$field]['type'] !== $type) {
-            throw new \Exception("Invalid type, $type, with field, $field");
+            throw new \Exception("Invalid type, $type, with field, $field", 422);
         }
 
         // Validate operator
         if (!array_key_exists($operator, $this->operators[$type])) {
-            throw new \Exception("Invalid operator, $operator, for field, $field, of type, $type");
+            throw new \Exception("Invalid operator, $operator, for field, $field, of type, $type", 422);
         }
 
         // TODO: validate value (only for date)
@@ -459,7 +459,7 @@ class AwardsQueryBuilder
         $selectDbFields = [];
         foreach ($selectFields as $selectField) {
             if (!array_key_exists($selectField, $this->fields)) {
-                throw new \Exception("Field, $selectField, is not a valid select field");
+                throw new \Exception("Field, $selectField, is not a valid select field", 422);
             }
             $selectDbFields[] = $this->fields[$selectField]['dbfield'] . " AS $selectField";
         }

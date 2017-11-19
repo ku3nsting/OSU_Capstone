@@ -74,8 +74,13 @@ class ReportsController extends BaseController
             $selectFields = isset($request['selectQueryFields']) ? $request['selectQueryFields'] : [];
             $awards = $awardsQueryBuilder->runQuery(json_decode($request['rules'], true), $selectFields, $groupBy);
         } catch (\Exception $exception) {
-            header('HTTP/1.1 500 Internal Server Error');
-            echo '<div class="alert alert-danger">' . $exception->getMessage() . '</div>';
+            $code = !empty($exception->getCode()) ? $exception->getCode() : 500;
+            http_response_code($code);
+            if ($code >= 500) {
+                echo '<div class="alert alert-danger">Oops something went wrong. Please contact your site administrator.</div>';
+            } else {
+                echo '<div class="alert alert-danger">' . $exception->getMessage() . '</div>';
+            }
             exit();
         }
 
