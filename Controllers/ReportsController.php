@@ -84,10 +84,7 @@ class ReportsController extends BaseController
         }
 
         if (!empty($request['createChart'])) {
-            echo '<pre>';
-            var_dump($awards);
-            echo '</pre>';
-            return;
+            return ReportsViews::groupByTableView($awards);
         }
 
         return ReportsViews::resultsTableView($awards, $selectFields);

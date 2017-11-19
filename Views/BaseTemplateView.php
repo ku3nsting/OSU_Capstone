@@ -117,6 +117,11 @@ class BaseTemplateView
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+        <!-- Highcharts libraries -->
+        <script src="https://code.highcharts.com/highcharts.js"></script>
+        <script src="https://code.highcharts.com/modules/data.js"></script>
+        <script src="https://code.highcharts.com/modules/exporting.js"></script>
+
         <script src="../assets/js/query-builder.standalone.min.js"></script>
         <script src="../assets/js/reports.js?' . filemtime('../assets/js/reports.js') . '"></script>
         <script src="../assets/js/manage-users.js?' . filemtime('../assets/js/manage-users.js') . '"></script>

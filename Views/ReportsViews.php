@@ -77,6 +77,10 @@ class ReportsViews
                     <div class="panel-heading" style="background: rgba(250,240,210,.5);">Charting Actions</div>
                     <div class="panel-body">
                         <div class="form-group">
+                            <label for="chart-title">Chart Title</label>
+                            <input id="chart-title" class="form-control" name="chart-title" type="text">
+                        </div>
+                        <div class="form-group">
                             <label for="group-by-1">Group By</label>
                             <select id="group-by-1" name="group-by-1" class="form-control">
                                 <option value="">Please Select For Charting Actions ...</option>
@@ -100,6 +104,7 @@ class ReportsViews
             </form>
             <h2>Results</h2>
             <div id="query-results"></div>
+            <div id="chart-container"></div>
         ';
     }
 
@@ -154,4 +159,43 @@ class ReportsViews
         return $html;
     }
 
+    /**
+     * @param $awards
+     * @return string
+     */
+    public static function groupByTableView($awards)
+    {
+        if (empty($awards)) {
+            return '<div class="alert alert-info">No awards given for the specified filters</div>';
+        }
+
+        // initiate table
+        $html = "<table id='datatable' class='table table-hover hidden'>";
+
+        // add the header row
+        $html .= '
+            <thead>
+                <tr>
+                    <th></th>
+                    <th>Award Count</th>
+                </tr>
+            </thead>';
+
+        // add the body rows
+        $html .= '<tbody>';
+        foreach ($awards as $award) {
+            $html .= "
+                <tr>
+                    <td>{$award['label']}</td>
+                    <td>{$award['count']}</td>
+                </tr>
+            ";
+        }
+        $html .= '</tbody>';
+
+        // close and return the table
+        $html .= '</table>';
+
+        return $html;
+    }
 }

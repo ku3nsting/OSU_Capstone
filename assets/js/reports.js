@@ -37,6 +37,32 @@ var report = {
         }).done(function (data) {
 
             $('#query-results').html(data);
+            // Modified from highcharts demo
+            // http://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/demo/column-parsed/
+            Highcharts.chart('chart-container', {
+                data: {
+                    table: 'datatable'
+                },
+                chart: {
+                    type: 'column'
+                },
+                title: {
+                    text: $('#chart-title').val()
+                },
+                yAxis: {
+                    allowDecimals: false,
+                    title: {
+                        text: 'Units (each)'
+                    }
+                },
+                tooltip: {
+                    formatter: function () {
+                        var name = this.point.name === undefined ? this.point.x : this.point.name;
+                        return '<b>' + this.series.name + '</b><br/>' +
+                            name + ': ' + this.point.y;
+                    }
+                }
+            });
 
         }).fail(function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.responseText !== undefined) {
