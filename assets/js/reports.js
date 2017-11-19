@@ -9,6 +9,7 @@ var report = {
             data: $("#selectQueryForm").serialize() + '&rules=' + JSON.stringify(rules)
         }).done(function (data) {
             $('#query-results').html(data);
+            $('#chart-container').addClass('hidden');
         }).fail(function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.responseText !== undefined) {
                 $('#query-results').html(jqXHR.responseText);
@@ -37,6 +38,7 @@ var report = {
         }).done(function (data) {
 
             $('#query-results').html(data);
+            $('#chart-container').removeClass('hidden');
             // Modified from highcharts demo
             // http://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/demo/column-parsed/
             Highcharts.chart('chart-container', {
