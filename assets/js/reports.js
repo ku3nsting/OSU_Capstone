@@ -36,12 +36,15 @@ var report = {
             method: "POST",
             data: $("#selectQueryForm").serialize() + '&rules=' + JSON.stringify(rules)
         }).done(function (data) {
-            $('#query-results').html(data);
             $('#chart-container').removeClass('hidden');
             var chartType = $('#chart-type').val();
             switch (chartType) {
                 case 'bar':
+                    $('#query-results').html(data);
                     report.createBarChart();
+                    break;
+                case 'line':
+                    report.createLineChart(data);
                     break;
             }
         }).fail(function(jqXHR, textStatus, errorThrown) {
@@ -89,6 +92,26 @@ var report = {
                         name + ': ' + this.point.y;
                 }
             }
+        });
+    },
+    createLineChart: function (data) {
+        var chartData = JSON.parse(data);
+        Highcharts.chart('chart-container', {
+            title: {
+                text: $('#chart-title').val()
+            },
+            xAxis: {
+                categories: chartData.categories
+            },
+            yAxis: {
+                title: {
+                    text: 'Award Count'
+                }
+            },
+            series: [{
+                name: 'Award Count',
+                data: chartData.data
+            }]
         });
     },
     init: function () {

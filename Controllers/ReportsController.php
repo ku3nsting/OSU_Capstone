@@ -84,7 +84,14 @@ class ReportsController extends BaseController
         }
 
         if (!empty($request['createChart'])) {
-            return ReportsViews::groupByTableView($awards);
+            switch ($request['chart-type']) {
+                case 'bar':
+                    return ReportsViews::groupByTableView($awards);
+                    break;
+                case 'line':
+                    return json_encode($this->lineChartData($awards));
+                    break;
+            }
         }
 
         return ReportsViews::resultsTableView($awards, $selectFields);
@@ -125,5 +132,14 @@ class ReportsController extends BaseController
         fclose($out);
 
         exit();
+    }
+
+    private function lineChartData($awards)
+    {
+        $chartData = [
+            'categories' => array_column($awards, 'label'),
+            'data' => array_column($awards, 'count')
+        ];
+        return $chartData;
     }
 }

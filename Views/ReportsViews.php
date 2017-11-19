@@ -99,6 +99,7 @@ class ReportsViews
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="cursor: help;" title="*Required with Create Chart"></span>
                             <select id="chart-type" name="chart-type" class="form-control">
                                 <option value="bar">Bar</option>
+                                <option value="line">Line</option>
                             </select>
                         </div>
                         <div class="form-group">
