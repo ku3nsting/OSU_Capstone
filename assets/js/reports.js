@@ -59,7 +59,8 @@ var report = {
                     formatter: function () {
                         var name;
                         if (this.point.name === undefined) {
-                            if ($('#group-by-1').val() === 'award-date') {
+                            var groupBy = $('#group-by-1').val();
+                            if (groupBy === 'award-date' || groupBy === 'awardee-hire-date') {
                                 var date = new Date(this.point.x);
                                 name = date.toDateString();
                             } else {
