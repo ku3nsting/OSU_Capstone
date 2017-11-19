@@ -36,52 +36,58 @@ var report = {
             method: "POST",
             data: $("#selectQueryForm").serialize() + '&rules=' + JSON.stringify(rules)
         }).done(function (data) {
-
             $('#query-results').html(data);
             $('#chart-container').removeClass('hidden');
-            // Modified from highcharts demo
-            // http://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/demo/column-parsed/
-            Highcharts.chart('chart-container', {
-                data: {
-                    table: 'datatable'
-                },
-                chart: {
-                    type: 'column'
-                },
-                title: {
-                    text: $('#chart-title').val()
-                },
-                yAxis: {
-                    allowDecimals: false,
-                    title: {
-                        text: 'Units (each)'
-                    }
-                },
-                tooltip: {
-                    formatter: function () {
-                        var name;
-                        if (this.point.name === undefined) {
-                            var groupBy = $('#group-by-1').val();
-                            if (groupBy === 'award-date' || groupBy === 'awardee-hire-date') {
-                                var date = new Date(this.point.x);
-                                name = date.toDateString();
-                            } else {
-                                name = this.point.x;
-                            }
-                        } else {
-                            name = this.point.name;
-                        }
-                        return '<b>' + this.series.name + '</b><br/>' +
-                            name + ': ' + this.point.y;
-                    }
-                }
-            });
-
+            var chartType = $('#chart-type').val();
+            switch (chartType) {
+                case 'bar':
+                    report.createBarChart();
+                    break;
+            }
         }).fail(function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.responseText !== undefined) {
                 $('#query-results').html(jqXHR.responseText);
             } else {
                 $('#query-results').html(errorThrown);
+            }
+        });
+    },
+    createBarChart: function () {
+        // Modified from highcharts demo
+        // http://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/demo/column-parsed/
+        Highcharts.chart('chart-container', {
+            data: {
+                table: 'datatable'
+            },
+            chart: {
+                type: 'column'
+            },
+            title: {
+                text: $('#chart-title').val()
+            },
+            yAxis: {
+                allowDecimals: false,
+                title: {
+                    text: 'Units (each)'
+                }
+            },
+            tooltip: {
+                formatter: function () {
+                    var name;
+                    if (this.point.name === undefined) {
+                        var groupBy = $('#group-by-1').val();
+                        if (groupBy === 'award-date' || groupBy === 'awardee-hire-date') {
+                            var date = new Date(this.point.x);
+                            name = date.toDateString();
+                        } else {
+                            name = this.point.x;
+                        }
+                    } else {
+                        name = this.point.name;
+                    }
+                    return '<b>' + this.series.name + '</b><br/>' +
+                        name + ': ' + this.point.y;
+                }
             }
         });
     },
