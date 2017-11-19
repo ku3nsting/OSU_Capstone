@@ -61,16 +61,48 @@ class ReportsController extends BaseController
     {
         $awardsQueryBuilder = new AwardsQueryBuilder();
         try {
+            if (!empty($request['createChart']) &&
+                (
+                    empty($request['group-by-1']) ||
+                    empty($request['chart-type'])
+                )
+            ) {
+                return $this->respondWithErrors(['Error: Group By and Chart Type are required fields'], 422);
+            }
+            $groupBy = !empty($request['createChart']) && !empty($request['group-by-1'])
+                ? ['group-by-1' => $request['group-by-1']] : [];
             $selectFields = isset($request['selectQueryFields']) ? $request['selectQueryFields'] : [];
-            $awards = $awardsQueryBuilder->runQuery(json_decode($request['rules'], true), $selectFields);
+            $awards = $awardsQueryBuilder->runQuery(json_decode($request['rules'], true), $selectFields, $groupBy);
         } catch (\Exception $exception) {
-            header('HTTP/1.1 500 Internal Server Error');
-            echo '<div class="alert alert-danger">' . $exception->getMessage() . '</div>';
+            $code = !empty($exception->getCode()) ? $exception->getCode() : 500;
+            http_response_code($code);
+            if ($code >= 500) {
+                echo '<div class="alert alert-danger">Oops something went wrong. Please contact your site administrator.</div>';
+            } else {
+                echo '<div class="alert alert-danger">' . $exception->getMessage() . '</div>';
+            }
             exit();
         }
 
         if (!empty($request['csvExport'])) {
             return $this->exportToCsv($awards, $selectFields);
+        }
+
+        if (!empty($request['createChart'])) {
+            $response['noData'] = empty($awards);
+            $response['noDataMsg'] = empty($awards) ? '<div class="alert alert-info">No awards given for the specified filters</div>' : '';
+            switch ($request['chart-type']) {
+                case 'bar':
+                    $response['data'] = ReportsViews::groupByTableView($awards);
+                    break;
+                case 'line':
+                    $response['data'] = $this->lineChartData($awards);
+                    break;
+                case 'pie':
+                     $response['data'] = $this->pieChartData($awards);
+                    break;
+            }
+            return json_encode($response);
         }
 
         return ReportsViews::resultsTableView($awards, $selectFields);
@@ -111,5 +143,23 @@ class ReportsController extends BaseController
         fclose($out);
 
         exit();
+    }
+
+    private function lineChartData($awards)
+    {
+        $chartData = [
+            'categories' => array_column($awards, 'label'),
+            'data' => array_column($awards, 'count')
+        ];
+        return $chartData;
+    }
+
+    private function pieChartData($awards)
+    {
+        $data = [];
+        foreach($awards as $award) {
+            $data[] = ['name' => $award['label'], 'y' => $award['count']];
+        }
+        return $data;
     }
 }
