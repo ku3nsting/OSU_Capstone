@@ -114,6 +114,36 @@ class AwardsQueryBuilder
             "orderby" => "AwardDate",
             "option-label" => "Award Date",
         ],
+        "awardee-email" => [
+            "dbfield" => "Email",
+            "groupby" => "Email",
+            "orderby" => "Email",
+            "option-label" => "Awardee Email",
+        ],
+        "awardee" => [
+            "dbfield" => "CONCAT(fName, ' ', lName)",
+            "groupby" => "EmployeeId, fName, lName",
+            "orderby" => "lName",
+            "option-label" => "Awardee",
+        ],
+        "awardee-hire-date" => [
+            "dbfield" => "hireDate",
+            "groupby" => "hireDate",
+            "orderby" => "hireDate",
+            "option-label" => "Awardee Hire Date",
+        ],
+        "giver-email" => [
+            "dbfield" => "GiverEmail",
+            "groupby" => "GiverEmail",
+            "orderby" => "GiverEmail",
+            "option-label" => "Giver Email",
+        ],
+        "giver" => [
+            "dbfield" => "CONCAT(GiverFirstName, ' ', GiverLastName)",
+            "groupby" => "GiverEmployeeId, GiverFirstName, GiverLastName",
+            "orderby" => "GiverLastName",
+            "option-label" => "Giver",
+        ],
     ];
 
     /**
@@ -445,7 +475,9 @@ class AwardsQueryBuilder
         $select .= ', 
             MONTHNAME(Awards_Given.AwardDate) as month, 
             MONTH(Awards_Given.AwardDate) as monthIndex,
-            YEAR(Awards_Given.AwardDate) as year';
+            YEAR(Awards_Given.AwardDate) as year,
+            Employees.ID as EmployeeId,
+            Giver.ID as GiverEmployeeId';
         return $select;
     }
 
