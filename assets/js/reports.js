@@ -3,6 +3,8 @@ var report = {
         var rules = $("#builder").queryBuilder('getRules', {skip_empty: true});
         $('#csvExport').val(0);
         $('#createChart').val(0);
+        $("#msg").html('');
+
         $.ajax({
             url: $("#selectQueryForm").attr('action'),
             method: "POST",
@@ -20,13 +22,20 @@ var report = {
         $('#csvExport').val(1);
         $('#createChart').val(0);
         $('#rules').val(JSON.stringify(rules));
+        $("#msg").html('');
 
-        document.forms['selectQueryForm'].submit();
+        if ($("select[name='selectQueryFields[]'] option:selected").length > 0) {
+            document.forms['selectQueryForm'].submit();
+        } else {
+            $("#msg").html('<div class="alert alert-danger">No Select Fields were chosen for the Query</div>');
+        }
     },
     createChart: function () {
         var rules = $("#builder").queryBuilder('getRules', {skip_empty: true});
         $('#csvExport').val(0);
         $('#createChart').val(1);
+        $("#msg").html('');
+
         $.ajax({
             url: $("#selectQueryForm").attr('action'),
             method: "POST",
@@ -227,15 +236,5 @@ var report = {
                 }
             ]
         });
-
-        $('#builder').queryBuilder('setRules', testRules1);
     }
-};
-
-var testRules1 = {
-    "condition":"AND",
-    "rules":[
-        {"id":"lName","field":"lName","type":"string","input":"text","operator":"not_begins_with","value":"z"}
-    ],
-    "valid":true
 };
