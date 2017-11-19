@@ -78,8 +78,8 @@ class ReportsViews
                 <label>* WHERE</label>
                 <div id="builder"></div>
                 <div class="form-group">
-                    <a class="btn btn-primary btn-sm" href="#" role="button" onclick="report.runQuery();">Generate Table</a>
-                    <a class="btn btn-primary btn-sm" href="#" role="button" onclick="report.exportCsv();">Export to CSV</a>
+                    <a class="btn btn-primary btn-sm" href="javascript: void(0)" role="button" onclick="report.runQuery();">Generate Table</a>
+                    <a class="btn btn-primary btn-sm" href="javascript: void(0)" role="button" onclick="report.exportCsv();">Export to CSV</a>
                 </div>
                 <div class="panel panel-default" style="border: 1px solid #DCC896;">
                     <div class="panel-heading" style="background: rgba(250,240,210,.5);">Charting Actions</div>

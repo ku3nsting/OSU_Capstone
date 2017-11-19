@@ -178,11 +178,19 @@ var report = {
             'greater_or_equal'
         ];
         var builder = $("#builder").queryBuilder({
+            plugins: ['bt-tooltip-errors'],
+
             filters: [
                 {
                     id: "AwardLabel",
                     label: "Award Type",
                     type: "string",
+                    input: "select",
+                    values: {
+                        "Employee of the Week": "Employee of the Week",
+                        "Employee of the Month": "Employee of the Month",
+                        "Honorable Mention": "Honorable Mention"
+                    },
                     operators: stringOperators
 
                 },
@@ -190,7 +198,14 @@ var report = {
                     id: "AwardDate",
                     label: "Award Date",
                     type: "date",
-                    operators: dateOperators
+                    operators: dateOperators,
+                    plugin: 'datepicker',
+                    plugin_config: {
+                        format: 'yyyy-mm-dd',
+                        todayBtn: 'linked',
+                        todayHighlight: true,
+                        autoclose: true
+                    }
                 },
                 {
                     id: "Email",
@@ -214,7 +229,14 @@ var report = {
                     id: "hireDate",
                     label: "Awardee Hire Date",
                     type: "date",
-                    operators: dateOperators
+                    operators: dateOperators,
+                    plugin: 'datepicker',
+                    plugin_config: {
+                        format: 'yyyy-mm-dd',
+                        todayBtn: 'linked',
+                        todayHighlight: true,
+                        autoclose: true
+                    }
                 },
                 {
                     id: "GiverFirstName",
