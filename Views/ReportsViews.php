@@ -98,7 +98,6 @@ class ReportsViews
                             <label for="chart-type">* Chart Type</label>
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="cursor: help;" title="*Required with Create Chart"></span>
                             <select id="chart-type" name="chart-type" class="form-control">
-                                <option value="">Please Select For Charting Actions ...</option>
                                 <option value="bar">Bar</option>
                             </select>
                         </div>

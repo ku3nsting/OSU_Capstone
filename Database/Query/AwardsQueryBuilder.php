@@ -108,6 +108,12 @@ class AwardsQueryBuilder
             "orderby" => "AwardLabel",
             "option-label" => "Award Type",
         ],
+        "award-date" => [
+            "dbfield" => "AwardDate",
+            "groupby" => "AwardDate",
+            "orderby" => "AwardDate",
+            "option-label" => "Award Date",
+        ],
     ];
 
     /**

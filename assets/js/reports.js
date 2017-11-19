@@ -57,7 +57,17 @@ var report = {
                 },
                 tooltip: {
                     formatter: function () {
-                        var name = this.point.name === undefined ? this.point.x : this.point.name;
+                        var name;
+                        if (this.point.name === undefined) {
+                            if ($('#group-by-1').val() === 'award-date') {
+                                var date = new Date(this.point.x);
+                                name = date.toDateString();
+                            } else {
+                                name = this.point.x;
+                            }
+                        } else {
+                            name = this.point.name;
+                        }
                         return '<b>' + this.series.name + '</b><br/>' +
                             name + ': ' + this.point.y;
                     }
