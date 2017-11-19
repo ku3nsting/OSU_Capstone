@@ -91,6 +91,9 @@ class ReportsController extends BaseController
                 case 'line':
                     return json_encode($this->lineChartData($awards));
                     break;
+                case 'pie':
+                    return json_encode($this->pieChartData($awards));
+                    break;
             }
         }
 
@@ -141,5 +144,14 @@ class ReportsController extends BaseController
             'data' => array_column($awards, 'count')
         ];
         return $chartData;
+    }
+
+    private function pieChartData($awards)
+    {
+        $data = [];
+        foreach($awards as $award) {
+            $data[] = ['name' => $award['label'], 'y' => $award['count']];
+        }
+        return $data;
     }
 }

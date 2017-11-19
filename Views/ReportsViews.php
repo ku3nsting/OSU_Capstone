@@ -63,6 +63,7 @@ class ReportsViews
         }
 
         return '
+            <div id="msg"></div>
             <form id="selectQueryForm" action="/admin/reports.php">
                 <h2>Report Query Builder</h2>
                 <input type="hidden" value="run-query" id="action" name="action">
@@ -100,6 +101,7 @@ class ReportsViews
                             <select id="chart-type" name="chart-type" class="form-control">
                                 <option value="bar">Bar</option>
                                 <option value="line">Line</option>
+                                <option value="pie">Pie</option>
                             </select>
                         </div>
                         <div class="form-group">

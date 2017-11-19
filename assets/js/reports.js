@@ -9,14 +9,10 @@ var report = {
             data: $("#selectQueryForm").serialize() + '&rules=' + JSON.stringify(rules)
         }).done(function (data) {
             $('#query-results').html(data);
+            $('#msg').html('');
             $('#chart-container').addClass('hidden');
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            if (jqXHR.responseText !== undefined) {
-                $('#query-results').html(jqXHR.responseText);
-            } else {
-                $('#query-results').html(errorThrown);
-            }
-        });
+            $('html, body').animate({scrollTop: $('#query-results').offset().top}, 0);
+        }).fail(report.handleErrorMsg);
     },
     exportCsv: function () {
         var rules = $("#builder").queryBuilder('getRules', {skip_empty: true});
@@ -46,14 +42,19 @@ var report = {
                 case 'line':
                     report.createLineChart(data);
                     break;
+                case 'pie':
+                    report.createPieChart(data);
+                    break;
             }
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            if (jqXHR.responseText !== undefined) {
-                $('#query-results').html(jqXHR.responseText);
-            } else {
-                $('#query-results').html(errorThrown);
-            }
-        });
+            $('html, body').animate({scrollTop: $('#chart-container').offset().top}, 0);
+        }).fail(report.handleErrorMsg);
+    },
+    handleErrorMsg: function(jqXHR, textStatus, errorThrown) {
+        if (jqXHR.responseText !== undefined) {
+            $('#msg').html(jqXHR.responseText);
+        } else {
+            $('#msg').html(errorThrown);
+        }
     },
     createBarChart: function () {
         // Modified from highcharts demo
@@ -114,6 +115,40 @@ var report = {
             }]
         });
     },
+    createPieChart: function (data) {
+        Highcharts.chart('chart-container', {
+            chart: {
+                plotBackgroundColor: null,
+                plotBorderWidth: null,
+                plotShadow: false,
+                type: 'pie'
+            },
+            title: {
+                text: $('#chart-title').val()
+            },
+            tooltip: {
+                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+            },
+            plotOptions: {
+                pie: {
+                    allowPointSelect: true,
+                    cursor: 'pointer',
+                    dataLabels: {
+                        enabled: true,
+                        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
+                        style: {
+                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
+                        }
+                    }
+                }
+            },
+            series: [{
+                name: 'Brands',
+                colorByPoint: true,
+                data: JSON.parse(data)
+            }]
+        });
+    },
     init: function () {
         var stringOperators = [
             'equal',
@@ -123,11 +158,7 @@ var report = {
             'contains',
             'not_contains',
             'ends_with',
-            'not_ends_with',
-            // 'is_empty',
-            // 'is_not_empty',
-            // 'is_null',
-            // 'is_not_null'
+            'not_ends_with'
         ];
         var dateOperators = [
             'equal',
@@ -135,11 +166,7 @@ var report = {
             'less',
             'less_or_equal',
             'greater',
-            'greater_or_equal',
-            // 'between',
-            // 'not_between',
-            // 'is_null',
-            // 'is_not_null'
+            'greater_or_equal'
         ];
         var builder = $("#builder").queryBuilder({
             filters: [
