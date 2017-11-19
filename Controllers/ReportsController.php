@@ -89,17 +89,20 @@ class ReportsController extends BaseController
         }
 
         if (!empty($request['createChart'])) {
+            $response['noData'] = empty($awards);
+            $response['noDataMsg'] = empty($awards) ? '<div class="alert alert-info">No awards given for the specified filters</div>' : '';
             switch ($request['chart-type']) {
                 case 'bar':
-                    return ReportsViews::groupByTableView($awards);
+                    $response['data'] = ReportsViews::groupByTableView($awards);
                     break;
                 case 'line':
-                    return json_encode($this->lineChartData($awards));
+                    $response['data'] = $this->lineChartData($awards);
                     break;
                 case 'pie':
-                    return json_encode($this->pieChartData($awards));
+                     $response['data'] = $this->pieChartData($awards);
                     break;
             }
+            return json_encode($response);
         }
 
         return ReportsViews::resultsTableView($awards, $selectFields);

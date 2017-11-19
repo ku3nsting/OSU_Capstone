@@ -100,7 +100,7 @@ class AwardsQueryBuilder
             "dbfield" => "CONCAT(month, ' ', year)",
             "groupby" => "monthIndex, month, year",
             "orderby" => "year, monthIndex",
-            "option-label" => "Award Month/Year",
+            "option-label" => "Award Month and Year",
         ],
         "award-type" => [
             "dbfield" => "AwardLabel",

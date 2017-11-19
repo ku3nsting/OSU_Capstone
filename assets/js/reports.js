@@ -35,27 +35,35 @@ var report = {
         $('#csvExport').val(0);
         $('#createChart').val(1);
         $("#msg").html('');
+        $("#query-results").html('');
 
         $.ajax({
             url: $("#selectQueryForm").attr('action'),
             method: "POST",
             data: $("#selectQueryForm").serialize() + '&rules=' + JSON.stringify(rules)
-        }).done(function (data) {
-            $('#chart-container').removeClass('hidden');
-            var chartType = $('#chart-type').val();
-            switch (chartType) {
-                case 'bar':
-                    $('#query-results').html(data);
-                    report.createBarChart();
-                    break;
-                case 'line':
-                    report.createLineChart(data);
-                    break;
-                case 'pie':
-                    report.createPieChart(data);
-                    break;
+        }).done(function (response) {
+            response = JSON.parse(response);
+            if (response.noData === true) {
+                $('#query-results').html(response.noDataMsg);
+                $('#chart-container').html('');
+                $('html, body').animate({scrollTop: $('#query-results').offset().top}, 0);
+            } else {
+                $('#chart-container').removeClass('hidden');
+                var chartType = $('#chart-type').val();
+                switch (chartType) {
+                    case 'bar':
+                        $('#query-results').html(response.data);
+                        report.createBarChart();
+                        break;
+                    case 'line':
+                        report.createLineChart(response.data);
+                        break;
+                    case 'pie':
+                        report.createPieChart(response.data);
+                        break;
+                }
+                $('html, body').animate({scrollTop: $('#chart-container').offset().top}, 0);
             }
-            $('html, body').animate({scrollTop: $('#chart-container').offset().top}, 0);
         }).fail(report.handleErrorMsg);
     },
     handleErrorMsg: function(jqXHR, textStatus, errorThrown) {
@@ -64,6 +72,8 @@ var report = {
         } else {
             $('#msg').html(errorThrown);
         }
+        $('#chart-container').html('');
+        $('#query-results').html('');
     },
     createBarChart: function () {
         // Modified from highcharts demo
@@ -105,7 +115,7 @@ var report = {
         });
     },
     createLineChart: function (data) {
-        var chartData = JSON.parse(data);
+        var chartData = data;
         Highcharts.chart('chart-container', {
             title: {
                 text: $('#chart-title').val()
@@ -154,7 +164,7 @@ var report = {
             series: [{
                 name: 'Brands',
                 colorByPoint: true,
-                data: JSON.parse(data)
+                data: data
             }]
         });
     },
