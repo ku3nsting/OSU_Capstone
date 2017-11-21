@@ -37,7 +37,7 @@ class UsersModel extends BaseModel
     public static function getUser($userId)
     {
         $query = "
-            SELECT e.ID, e.fName, e.lName, e.hireDate, e.Email, t.Type,
+            SELECT e.ID, e.fName, e.lName, e.hireDate, e.Email, t.Type, e.Bio,
              (SELECT COUNT(Awards_Given.ID) FROM Awards_Given WHERE Awards_Given.EmployeeID = e.ID) awardCount
             FROM Employees e
             JOIN UserType t ON e.ID = t.EmployeeID
@@ -81,15 +81,16 @@ class UsersModel extends BaseModel
         $email = $data['Email'];
         $password = $data['Password'];
         $type = $data['Type'];
+        $bio = $data['Bio'];
 
         $query = "
-            INSERT INTO Employees (fName, lName, hireDate, Email, Password, CreatedOn)
-            VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
+            INSERT INTO Employees (fName, lName, hireDate, Email, Password, CreatedOn, Bio)
+            VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)
         ";
 
         $employeeId = self::runQuery(
             $query,
-            ['sssss', $firstName, $lastName, $hireDate, $email, $password],
+            ['ssssss', $firstName, $lastName, $hireDate, $email, $password, $bio],
             'insert_get_id'
         );
 
@@ -115,9 +116,10 @@ class UsersModel extends BaseModel
         $hireDate = $data['hireDate'];
         $email = $data['Email'];
         $type = $data['Type'];
+        $bio = $data['Bio'];
 
-        $query = "UPDATE Employees SET fName = ?, lName = ?, hireDate = ?, Email = ? WHERE ID = ?";
-        self::runQuery($query, ['ssssi', $firstName, $lastName, $hireDate, $email, $employeeId], 'update');
+        $query = "UPDATE Employees SET fName = ?, lName = ?, hireDate = ?, Email = ?, Bio = ? WHERE ID = ?";
+        self::runQuery($query, ['sssssi', $firstName, $lastName, $hireDate, $email, $bio, $employeeId], 'update');
 
         $query = "UPDATE UserType SET UserType.Type = ? WHERE EmployeeID = ?";
         self::runQuery($query, ['si', $type, $employeeId], 'update');

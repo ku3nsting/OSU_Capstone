@@ -8,6 +8,8 @@
 namespace views;
 
 
+use controllers\UsersController;
+
 class UsersView
 {
     /**
@@ -80,9 +82,10 @@ class UsersView
             $hireDate = $user['hireDate'];
             $Email = $user['Email'];
             $Type = $user['Type'];
+            $Bio = $user['Bio'];
         } else {
             $action = 'add-user';
-            $fName = $lName = $hireDate = $Email = $Type = '';
+            $fName = $lName = $hireDate = $Email = $Type = $Bio = '';
         }
 
         if (!empty($user['signFile'])) {
@@ -97,7 +100,7 @@ class UsersView
         } else {
             $signFileHtml = "
                 <div class='form-group' id='signature-div'>
-                    <label for='siganture'>Signature File</label>
+                    <label for='siganture'>Signature File Upload (" . implode(',', UsersController::$signFileTypes) . ")</label>
                     <input type='file' id='signature' name='signature'>
                 </div>";
         }
@@ -149,6 +152,10 @@ class UsersView
                         <option value='user' " . ($Type === 'user' ? 'selected' : '') . ">Normal User</option>
                         <option value='admin' " . ($Type === 'admin' ? 'selected' : '') . ">Admin User</option>
                      </select>
+                </div>
+                <div class='form-group'>
+                     <label for='Bio'>Bio</label>
+                     <textarea id='Bio' name='Bio' class='form-control'>$Bio</textarea>
                 </div>
                 " . ($action === 'add-user'
                     ? "<a class='btn btn-primary' href='#' role='button' id='addUserBtn'>Add User</a>"
