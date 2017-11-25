@@ -13,7 +13,11 @@ var admin = {
             data: data
         }).done(function (response) {
             response = JSON.parse(response);
-            report.createPieChart(response.data, 'chart-container-1', 'Employee of the Month - ' + year);
+            if (response.noData === true) {
+                $('#chart-container-1').html('<div class="alert alert-info">No Data for Employee of the Month Pie Chart</div>');
+            } else {
+                report.createPieChart(response.data, 'chart-container-1', 'Employee of the Month - ' + year);
+            }
         }).fail(function(jqXHR, textStatus, errorThrown) {
             $('#chart-container-1').html('<div class="alert alert-danger">Error: Employee of the Month Pie Chart failed to load</div>');
         });
