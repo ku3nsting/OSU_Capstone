@@ -65,7 +65,16 @@ class ReportsController extends BaseController
             if (!empty($request['createChart']) && (empty($request['group-by-1']) || empty($request['chart-type']))) {
                 return $this->respondWithErrors(['Error: Group By and Chart Type are required fields'], 422);
             }
-            $groupBy = !empty($request['createChart']) && !empty($request['group-by-1']) ? ['group-by-1' => $request['group-by-1']] : [];
+            $groupBy = [];
+            if (!empty($request['createChart'])) {
+                $groupBy = [
+                    'group-by-1' => !empty($request['group-by-1']) ? $request['group-by-1'] : ''
+                ];
+
+                if (in_array($request['chart-type'], ['bar'])) {
+                    $groupBy['group-by-2'] = !empty($request['group-by-2']) ? $request['group-by-2'] : '';
+                }
+            }
 
             // Set the select fields and run the query (this can be empty for chart)
             $selectFields = isset($request['selectQueryFields']) ? $request['selectQueryFields'] : [];
@@ -90,7 +99,12 @@ class ReportsController extends BaseController
             $response['noDataMsg'] = empty($awards) ? '<div class="alert alert-info">No awards given for the specified filters</div>' : '';
             switch ($request['chart-type']) {
                 case 'bar':
-                    $response['data'] = ReportsViews::groupByTableView($awards);
+                    if (!empty($groupBy['group-by-2'])) {
+                        list($seriesLabels, $results) = $this->processData($awards);
+                        $response['data'] = ReportsViews::groupByTableWithSeriesView($results, $seriesLabels);
+                    } else {
+                        $response['data'] = ReportsViews::groupByTableView($awards);
+                    }
                     break;
                 case 'line':
                     $response['data'] = $this->lineChartData($awards);
@@ -142,6 +156,10 @@ class ReportsController extends BaseController
         exit();
     }
 
+    /**
+     * @param $awards
+     * @return array
+     */
     private function lineChartData($awards)
     {
         $chartData = [
@@ -151,6 +169,10 @@ class ReportsController extends BaseController
         return $chartData;
     }
 
+    /**
+     * @param $awards
+     * @return array
+     */
     private function pieChartData($awards)
     {
         $data = [];
@@ -158,5 +180,21 @@ class ReportsController extends BaseController
             $data[] = ['name' => $award['label'], 'y' => $award['count']];
         }
         return $data;
+    }
+
+    /**
+     * @param $results
+     * @return array
+     */
+    private function processData($results)
+    {
+        $seriesLabels = array_unique(array_column($results, 'seriesLabel'));
+
+        $newResults = [];
+        foreach ($results as $result) {
+            $newResults[$result['label']][$result['seriesLabel']] = $result['count'];
+        }
+
+        return [$seriesLabels, $newResults];
     }
 }
