@@ -47,6 +47,10 @@ class UsersController extends BaseController
             case 'delete-signature':
                 return self::deleteUserSignature($request);
 
+            case 'page':
+                return self::usersTablePage($request);
+                break;
+
             case 'index':
             default:
                 return self::index();
@@ -59,15 +63,39 @@ class UsersController extends BaseController
      */
     private function index()
     {
-        $users = UsersModel::getUsers();
+        $users = UsersModel::getUsers(0);
+        $userCount = UsersModel::userCount()[0]['userCount'];
 
         // make necessary queries calls through models
         // return views related to the initial reports landing page
         return BaseTemplateView::baseTemplateView(
             'admin',
-            UsersView::indexView($users),
+            UsersView::indexView($users, 0, $userCount),
             'manageUsers.init();'
         );
+    }
+
+    /**
+     * Returns the page of the users table
+     *
+     * @param $request
+     * @return string
+     * @throws \Exception
+     */
+    private function usersTablePage($request)
+    {
+        $offset = isset($request['offset']) ? $request['offset'] : 0;
+        $offset = filter_var($offset,FILTER_VALIDATE_INT);
+
+        $userCount = UsersModel::userCount()[0]['userCount'];
+
+        if (!is_int($offset) || $offset % 15 !== 0 || $offset >= $userCount) {
+            throw new \Exception('Invalid page offset', 422);
+        }
+
+        $users = UsersModel::getUsers($offset);
+
+        return UsersView::usersTable($users, $offset, $userCount) . '<script>manageUsers.init();</script>';
     }
 
     /**

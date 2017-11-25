@@ -13,11 +13,14 @@ use controllers\UsersController;
 class UsersView
 {
     /**
+     * @param $users
+     * @param $offset
+     * @param $userCount
      * @return string
      */
-    public static function indexView($users)
+    public static function indexView($users, $offset, $userCount)
     {
-        $userTable = self::usersTable($users);
+        $userTable = self::usersTable($users, $offset, $userCount);
 
         return '<div class="row">
             <h2 class="col-sm-9" id="manage-users-title">Manage Users</h2>
@@ -34,9 +37,10 @@ class UsersView
 
     /**
      * @param $users
+     * @param $offset
      * @return string
      */
-    public static function usersTable($users)
+    public static function usersTable($users, $offset, $userCount)
     {
         if (empty($users)) {
             return "<div class='alert alert-info'>No users in database</div>";
@@ -53,6 +57,11 @@ class UsersView
             </tr>";
         }
 
+        $prev = $offset - 15;
+        $prevClass = $prev < 0 ? 'hidden' : '';
+        $next = $offset + 15;
+        $nextClass = $next > $userCount ? 'hidden' : '';
+
         // create the users table
         return "
             <table class='table table-hover'>
@@ -66,6 +75,12 @@ class UsersView
                 </thead>
                 <tbody>$userRows</tbody>
             </table>
+            <nav aria-label=''>
+              <ul class='pager'>
+                <li class='$prevClass'><a href='javascript: void(0);' onclick='manageUsers.changePage($prev)' >Previous</a></li>
+                <li class='$nextClass'><a href='javascript: void(0);' onclick='manageUsers.changePage($next)'>Next</a></li>
+              </ul>
+            </nav>
         ";
     }
 

@@ -16,14 +16,18 @@ class UsersModel extends BaseModel
     /**
      * Get all the users
      *
+     * @param $offset
      * @return array
-     * @throws Exception
      */
-    public static function getUsers()
+    public static function getUsers($offset)
     {
         $query = "SELECT e.ID, CONCAT_WS(' ', e.fName, e.lName) fullName, e.hireDate, t.Type
             FROM Employees e
-            JOIN UserType t ON e.ID = t.EmployeeID";
+            JOIN UserType t ON e.ID = t.EmployeeID
+            ORDER BY t.Type, e.lName, e.ID
+            LIMIT 15
+            OFFSET $offset
+            ";
 
         return self::runQuery($query);
     }
@@ -45,6 +49,19 @@ class UsersModel extends BaseModel
         ";
 
         return self::runQuery($query, ['i', $userId]);
+    }
+
+    /**
+     * Returns a user count
+     * @return array
+     */
+    public static function userCount()
+    {
+        $query = "SELECT COUNT(e.ID) as userCount
+            FROM Employees e
+            JOIN UserType t ON e.ID = t.EmployeeID";
+
+        return self::runQuery($query);
     }
 
     /**
