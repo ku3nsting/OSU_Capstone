@@ -172,6 +172,7 @@ class BaseTemplateView
             </p>
             <h2>Current Trends: </h2>
             <div id='chart-container-1'></div>
+            <br />
             <div id='chart-table-2' class='hidden'></div>
             <div id='chart-container-2'></div>
         ";

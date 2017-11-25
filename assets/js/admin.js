@@ -21,5 +21,29 @@ var admin = {
         }).fail(function(jqXHR, textStatus, errorThrown) {
             $('#chart-container-1').html('<div class="alert alert-danger">Error: Employee of the Month Pie Chart failed to load</div>');
         });
+
+
+        var data2 = {
+            "action": 'run-query',
+            "group-by-1": 'award-type',
+            "createChart": true,
+            "chart-type": 'bar',
+            "rules": '{ "condition": "AND", "rules": [ { "id": "AwardDate", "field": "AwardDate", "type": "date", "input": "text", "operator": "greater_or_equal", "value": "' + date + '" } ], "valid": true }'
+        };
+        $.ajax({
+            url: '/admin/reports.php',
+            method: "POST",
+            data: data2
+        }).done(function (response) {
+            response = JSON.parse(response);
+            if (response.noData === true) {
+                $('#chart-container-2').html('<div class="alert alert-info">No Data for Employee of the Month Pie Chart</div>');
+            } else {
+                $('#chart-table-2').html(response.data);
+                report.createBarChart('chart-container-2', 'Award Count By Type - ' + year, 'award-type');
+            }
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            $('#chart-container-2').html('<div class="alert alert-danger">Error: Employee of the Month Pie Chart failed to load</div>');
+        });
     }
 };

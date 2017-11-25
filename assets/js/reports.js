@@ -75,10 +75,13 @@ var report = {
         $('#chart-container').html('');
         $('#query-results').html('');
     },
-    createBarChart: function () {
+    createBarChart: function (container, title, groupByOne) {
+        container = container !== undefined ? container : 'chart-container';
+        title = title !== undefined ? title : $('#chart-title').val();
+        groupByOne = groupByOne !== undefined ? groupByOne : $('#group-by-1').val();
         // Modified from highcharts demo
         // http://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/demo/column-parsed/
-        Highcharts.chart('chart-container', {
+        Highcharts.chart(container, {
             data: {
                 table: 'datatable'
             },
@@ -86,7 +89,7 @@ var report = {
                 type: 'column'
             },
             title: {
-                text: $('#chart-title').val()
+                text: title
             },
             yAxis: {
                 allowDecimals: false,
@@ -98,8 +101,7 @@ var report = {
                 formatter: function () {
                     var name;
                     if (this.point.name === undefined) {
-                        var groupBy = $('#group-by-1').val();
-                        if (groupBy === 'award-date' || groupBy === 'awardee-hire-date') {
+                        if (groupByOne === 'award-date' || groupByOne === 'awardee-hire-date') {
                             var date = new Date(this.point.x);
                             name = date.toDateString();
                         } else {
