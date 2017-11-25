@@ -119,5 +119,18 @@ var manageUsers = {
                 $('#msg-div').html(errorThrown);
             }
         });
+    },
+    changePage: function (offset) {
+        $.ajax({
+            url: '/admin/manage-users.php?action=page&offset=' + offset
+        }).done(function (data) {
+            $('#manage-users-content').html(data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            if (jqXHR.responseText !== undefined) {
+                $('#msg-div').html(jqXHR.responseText);
+            } else {
+                $('#msg-div').html(errorThrown);
+            }
+        });
     }
 };
