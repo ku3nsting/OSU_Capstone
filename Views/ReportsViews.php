@@ -95,10 +95,18 @@ class ReportsViews
                                 ' . $groupBySelectOptions . '
                             </select>
                         </div>
+                        <div class="form-group" id="series-form-group">
+                            <label for="group-by-2">Series Group By</label>
+                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="cursor: help;" title="*Only with Bar Chart"></span>
+                            <select id="group-by-2" name="group-by-2" class="form-control">
+                                <option value="">Award Count</option>
+                                ' . $groupBySelectOptions . '
+                            </select>
+                        </div>
                         <div class="form-group">
                             <label for="chart-type">* Chart Type</label>
                             <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="cursor: help;" title="*Required with Create Chart"></span>
-                            <select id="chart-type" name="chart-type" class="form-control">
+                            <select id="chart-type" name="chart-type" class="form-control" onchange="report.changeFields(this.value);">
                                 <option value="bar">Bar</option>
                                 <option value="line">Line</option>
                                 <option value="pie">Pie</option>
@@ -198,6 +206,45 @@ class ReportsViews
                     <td>{$award['count']}</td>
                 </tr>
             ";
+        }
+        $html .= '</tbody>';
+
+        // close and return the table
+        $html .= '</table>';
+
+        return $html;
+    }
+
+    /**
+     * @param $results
+     * @param $seriesLabels
+     * @return string
+     */
+    public static function groupByTableWithSeriesView($results, $seriesLabels)
+    {
+        if (empty($results)) {
+            return '<div class="alert alert-info">No awards given for the specified filters</div>';
+        }
+
+        // initiate table
+        $html = "<table id='datatable' class='table table-hover hidden'>";
+
+        // add the header row
+        $html .= '<thead><tr><th></th>';
+        foreach ($seriesLabels as $label) {
+            $html .= "<th>$label</th>";
+        }
+        $html .= '</tr></thead>';
+
+        // add the body rows
+        $html .= '<tbody>';
+        foreach ($results as $key => $result) {
+            $html .= "<tr><td>$key</td>";
+            foreach ($seriesLabels as $label) {
+                $value = !empty($result[$label]) ? $result[$label] : '';
+                $html .= "<td>$value</td>";
+            }
+            $html .= '</tr>';
         }
         $html .= '</tbody>';
 

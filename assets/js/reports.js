@@ -172,6 +172,13 @@ var report = {
             }]
         });
     },
+    changeFields: function(value) {
+        if (value === 'bar') {
+            $('#series-form-group').removeClass('hidden')
+        } else {
+            $('#series-form-group').addClass('hidden')
+        }
+    },
     init: function () {
         var stringOperators = [
             'equal',

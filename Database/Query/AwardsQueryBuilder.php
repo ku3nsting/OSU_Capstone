@@ -501,11 +501,21 @@ class AwardsQueryBuilder
     private function addGroupBy($query, array $groupBy)
     {
         $groupByField = self::$groupByFields[$groupBy['group-by-1']];
+        $seriesDbField = $seriesGroupBy = $seriesOrderBy = '';
+        if (!empty(self::$groupByFields[$groupBy['group-by-2']])) {
+            $seriesField = self::$groupByFields[$groupBy['group-by-2']];
+            $seriesDbField = ', ' . $seriesField['dbfield'] . ' as seriesLabel';
+            $seriesGroupBy = ', ' . $seriesField['groupby'];
+            $seriesOrderBy = ', ' . $seriesField['orderby'];
+        }
 
-        $query = "SELECT {$groupByField['dbfield']} as label, COUNT(*) as `count`
+        $query = "
+            SELECT {$groupByField['dbfield']} as label,
+                COUNT(*) as `count`
+                $seriesDbField
             FROM ($query) AS subquery
-            GROUP BY {$groupByField['groupby']}
-            ORDER BY {$groupByField['orderby']}";
+            GROUP BY {$groupByField['groupby']} $seriesGroupBy
+            ORDER BY {$groupByField['orderby']} $seriesOrderBy";
 
         return $query;
     }
