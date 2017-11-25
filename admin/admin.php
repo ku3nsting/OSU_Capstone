@@ -9,4 +9,4 @@ if (empty($_SESSION['authenticated'])) {
     exit();
 }
 
-echo BaseTemplateView::baseTemplateView('admin', 'Welcome to Admin Home', '');
+echo BaseTemplateView::baseTemplateView('admin', BaseTemplateView::homeView(), 'admin.adminCharts();');

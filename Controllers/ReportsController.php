@@ -61,16 +61,13 @@ class ReportsController extends BaseController
     {
         $awardsQueryBuilder = new AwardsQueryBuilder();
         try {
-            if (!empty($request['createChart']) &&
-                (
-                    empty($request['group-by-1']) ||
-                    empty($request['chart-type'])
-                )
-            ) {
+            // If generate chart data, validate chart params
+            if (!empty($request['createChart']) && (empty($request['group-by-1']) || empty($request['chart-type']))) {
                 return $this->respondWithErrors(['Error: Group By and Chart Type are required fields'], 422);
             }
-            $groupBy = !empty($request['createChart']) && !empty($request['group-by-1'])
-                ? ['group-by-1' => $request['group-by-1']] : [];
+            $groupBy = !empty($request['createChart']) && !empty($request['group-by-1']) ? ['group-by-1' => $request['group-by-1']] : [];
+
+            // Set the select fields and run the query (this can be empty for chart)
             $selectFields = isset($request['selectQueryFields']) ? $request['selectQueryFields'] : [];
             $awards = $awardsQueryBuilder->runQuery(json_decode($request['rules'], true), $selectFields, $groupBy);
         } catch (\Exception $exception) {

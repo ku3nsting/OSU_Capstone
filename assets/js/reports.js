@@ -134,8 +134,10 @@ var report = {
             }]
         });
     },
-    createPieChart: function (data) {
-        Highcharts.chart('chart-container', {
+    createPieChart: function (data, container, title) {
+        container = container !== undefined ? container : 'chart-container';
+        title = title !== undefined ? title : $('#chart-title').val();
+        Highcharts.chart(container, {
             chart: {
                 plotBackgroundColor: null,
                 plotBorderWidth: null,
@@ -143,7 +145,7 @@ var report = {
                 type: 'pie'
             },
             title: {
-                text: $('#chart-title').val()
+                text: title
             },
             tooltip: {
                 pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
@@ -162,7 +164,7 @@ var report = {
                 }
             },
             series: [{
-                name: 'Brands',
+                name: 'Award Share',
                 colorByPoint: true,
                 data: data
             }]

@@ -19,21 +19,6 @@ class BaseTemplateView
      */
     public static function baseTemplateView($type, $html = '', $scripts = '')
     {
-        $userLinks = [
-            'manage-account' => [
-                'href' => '#',
-                'text' => 'Manage Account'
-            ],
-            'manage-my-awards' => [
-                'href' => '#',
-                'text' => 'Manage My Awards'
-            ],
-            'nominate' => [
-                'href' => '#',
-                'text' => 'Nominate'
-            ],
-        ];
-
         if (!empty($_SESSION['authenticated'])) {
             $adminLinks = [
                 'manage-users' => [
@@ -56,9 +41,6 @@ class BaseTemplateView
 
         $navBarLinks = '';
         switch ($type) {
-            case 'user':
-                $navBarLinks = self::navBarList($userLinks);
-                break;
             case 'admin':
                 $navBarLinks = self::navBarList($adminLinks);
                 break;
@@ -129,6 +111,7 @@ class BaseTemplateView
         <script src="../assets/js/query-builder.standalone.min.js"></script>
         <script src="../assets/js/reports.js?' . filemtime('../assets/js/reports.js') . '"></script>
         <script src="../assets/js/manage-users.js?' . filemtime('../assets/js/manage-users.js') . '"></script>
+        <script src="../assets/js/admin.js?' . filemtime('../assets/js/admin.js') . '"></script>
         <script>
             $(document).ready(function() {
                 ' . $scripts. '
@@ -163,13 +146,33 @@ class BaseTemplateView
         return $navBarList;
     }
 
+    /**
+     * @param string $type
+     * @param string $msg
+     * @return string
+     */
     public static function alert($type, $msg)
     {
         return "
             <div class='alert $type alert-dismissible' role='alert'>
-                <button type='button' class='close' data-dismiss='alert' aria-label='Close'><span aria-hidden='true'>&times;</span></button>
+                <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
+                    <span aria-hidden='true'>&times;</span>
+                </button>
                 $msg
             </div>
+        ";
+    }
+
+    public static function homeView()
+    {
+        return "<h2>Welcome</h2>
+            <p>
+                This is the administration home page for the Gemini Employee Awards Application. 
+                The administration application allows you to manage users and report on awards given.
+            </p>
+            <h2>Current Trends: </h2>
+            <div id='chart-container-1'></div>
+            <div id='chart-container-2'></div>
         ";
     }
 }
