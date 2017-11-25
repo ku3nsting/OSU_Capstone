@@ -9,6 +9,8 @@ namespace database;
 
 
 require_once __DIR__ . '/../../Config/database.php';
+
+use DateTime;
 use mysqli;
 
 class AwardsQueryBuilder
@@ -404,7 +406,17 @@ class AwardsQueryBuilder
             throw new \Exception("Invalid operator, $operator, for field, $field, of type, $type", 422);
         }
 
-        // TODO: validate value (only for date)
+        if ($this->fields[$field]['type'] === 'date') {
+            $date = DateTime::createFromFormat('Y-m-d', $rule['value']);
+            // PHP allows overflow on the day when creating a date. So if March 32nd is given it will generate April 1
+            // so we check if the date is empty/false or if when the created date is formatted it matches it's original string representation
+            if (empty($date) || $date->format('Y-m-d') !== $rule['value']) {
+                throw new \Exception(
+                    "Invalid date, {$rule['value']}, given for field, $field. 'Y-m-d' is the valid date format.",
+                    422
+                );
+            }
+        }
     }
 
     /**
