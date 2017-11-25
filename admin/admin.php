@@ -9,4 +9,12 @@ if (empty($_SESSION['authenticated'])) {
     exit();
 }
 
-echo BaseTemplateView::baseTemplateView('admin', 'Welcome to Admin Home', '');
+$firstDayOfYear = new DateTime('first day of January ' . date('Y'));
+$dateString = $firstDayOfYear->format('Y-m-d');
+$yearString = $firstDayOfYear->format('Y');
+
+echo BaseTemplateView::baseTemplateView(
+    'admin',
+    BaseTemplateView::homeView(),
+    "admin.adminCharts('$dateString', '$yearString');"
+);

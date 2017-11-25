@@ -20,7 +20,7 @@ class UsersView
         $userTable = self::usersTable($users);
 
         return '<div class="row">
-            <h1 class="col-sm-9" id="manage-users-title">Manage Users</h1>
+            <h2 class="col-sm-9" id="manage-users-title">Manage Users</h2>
             <div class="col-sm-2 pull-right">
                 <a href="#" id="addUserFormBtn" class="btn btn-primary" style="margin-top: 20px">Add User Form</a>
             </div>
