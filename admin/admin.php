@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../Views/BaseTemplateView.php';
+require_once __DIR__ . '/common.php';
 use views\BaseTemplateView;
 
 session_start();

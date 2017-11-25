@@ -60,35 +60,25 @@ class ReportsController extends BaseController
     private function runQuery($request)
     {
         $awardsQueryBuilder = new AwardsQueryBuilder();
-        try {
-            // If generate chart data, validate chart params
-            if (!empty($request['createChart']) && (empty($request['group-by-1']) || empty($request['chart-type']))) {
-                return $this->respondWithErrors(['Error: Group By and Chart Type are required fields'], 422);
-            }
-            $groupBy = [];
-            if (!empty($request['createChart'])) {
-                $groupBy = [
-                    'group-by-1' => !empty($request['group-by-1']) ? $request['group-by-1'] : ''
-                ];
 
-                if (in_array($request['chart-type'], ['bar'])) {
-                    $groupBy['group-by-2'] = !empty($request['group-by-2']) ? $request['group-by-2'] : '';
-                }
-            }
-
-            // Set the select fields and run the query (this can be empty for chart)
-            $selectFields = isset($request['selectQueryFields']) ? $request['selectQueryFields'] : [];
-            $awards = $awardsQueryBuilder->runQuery(json_decode($request['rules'], true), $selectFields, $groupBy);
-        } catch (\Exception $exception) {
-            $code = !empty($exception->getCode()) ? $exception->getCode() : 500;
-            http_response_code($code);
-            if ($code >= 500) {
-                echo '<div class="alert alert-danger">Oops something went wrong. Please contact your site administrator.</div>';
-            } else {
-                echo '<div class="alert alert-danger">' . $exception->getMessage() . '</div>';
-            }
-            exit();
+        // If generate chart data, validate chart params
+        if (!empty($request['createChart']) && (empty($request['group-by-1']) || empty($request['chart-type']))) {
+            return $this->respondWithErrors(['Error: Group By and Chart Type are required fields'], 422);
         }
+        $groupBy = [];
+        if (!empty($request['createChart'])) {
+            $groupBy = [
+                'group-by-1' => !empty($request['group-by-1']) ? $request['group-by-1'] : ''
+            ];
+
+            if (in_array($request['chart-type'], ['bar'])) {
+                $groupBy['group-by-2'] = !empty($request['group-by-2']) ? $request['group-by-2'] : '';
+            }
+        }
+
+        // Set the select fields and run the query (this can be empty for chart)
+        $selectFields = isset($request['selectQueryFields']) ? $request['selectQueryFields'] : [];
+        $awards = $awardsQueryBuilder->runQuery(json_decode($request['rules'], true), $selectFields, $groupBy);
 
         if (!empty($request['csvExport'])) {
             return $this->exportToCsv($awards, $selectFields);

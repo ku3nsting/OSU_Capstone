@@ -25,7 +25,7 @@ abstract class BaseController
 
         $html = '<div class="alert alert-danger"><ul>';
         foreach ($errors as $error) {
-            $html .= "<li>$error</li>";
+            $html .= "<li>" . html($error) . "</li>";
         }
         $html .= '</ul></div>';
 

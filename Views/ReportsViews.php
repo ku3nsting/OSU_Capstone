@@ -155,7 +155,7 @@ class ReportsViews
         // add the header row
         $html .= '<thead><tr>';
         foreach ($selectFields as $columnKey) {
-            $html .= "<th>" . self::$fields[$columnKey]['label'] . "</th>";
+            $html .= "<th>" . html(self::$fields[$columnKey]['label']) . "</th>";
         }
         $html .= '</tr></thead>';
 
@@ -164,7 +164,7 @@ class ReportsViews
         foreach ($awards as $award) {
             $html .= '<tr>';
             foreach ($selectFields as $columnKey) {
-                $html .= "<td>" . $award[$columnKey] . "</td>";
+                $html .= "<td>" . html($award[$columnKey]) . "</td>";
             }
             $html .= '</tr>';
         }
@@ -202,8 +202,8 @@ class ReportsViews
         foreach ($awards as $award) {
             $html .= "
                 <tr>
-                    <td>{$award['label']}</td>
-                    <td>{$award['count']}</td>
+                    <td>" . html($award['label']) . "</td>
+                    <td>" . html($award['count']) . "</td>
                 </tr>
             ";
         }
@@ -232,16 +232,16 @@ class ReportsViews
         // add the header row
         $html .= '<thead><tr><th></th>';
         foreach ($seriesLabels as $label) {
-            $html .= "<th>$label</th>";
+            $html .= "<th>" . html($label) . "</th>";
         }
         $html .= '</tr></thead>';
 
         // add the body rows
         $html .= '<tbody>';
         foreach ($results as $key => $result) {
-            $html .= "<tr><td>$key</td>";
+            $html .= "<tr><td>" . html($key) . "</td>";
             foreach ($seriesLabels as $label) {
-                $value = !empty($result[$label]) ? $result[$label] : '';
+                $value = !empty($result[$label]) ? html($result[$label]) : '';
                 $html .= "<td>$value</td>";
             }
             $html .= '</tr>';

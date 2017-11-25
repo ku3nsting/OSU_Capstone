@@ -38,6 +38,7 @@ class UsersView
     /**
      * @param $users
      * @param $offset
+     * @param $userCount
      * @return string
      */
     public static function usersTable($users, $offset, $userCount)
@@ -49,11 +50,11 @@ class UsersView
         // create the users tables rows
         $userRows = '';
         foreach ($users as $user) {
-            $userRows .= "<tr onclick='manageUsers.editUserForm({$user['ID']})' style='cursor: pointer;'>
-                <td>{$user['ID']}</td>
-                <td>{$user['fullName']}</td>
-                <td>{$user['hireDate']}</td>
-                <td>" . ucfirst($user['Type']) . "</td>
+            $userRows .= "<tr onclick='manageUsers.editUserForm(" . html($user['ID']) . ")' style='cursor: pointer;'>
+                <td>" . html($user['ID']) . "</td>
+                <td>" . html($user['fullName']) . "</td>
+                <td>" . html($user['hireDate']) . "</td>
+                <td>" . html(ucfirst($user['Type'])) . "</td>
             </tr>";
         }
 
@@ -92,12 +93,12 @@ class UsersView
     {
         if (!empty($user)) {
             $action = 'edit-user';
-            $fName = $user['fName'];
-            $lName = $user['lName'];
-            $hireDate = $user['hireDate'];
-            $Email = $user['Email'];
-            $Type = $user['Type'];
-            $Bio = $user['Bio'];
+            $fName = html($user['fName']);
+            $lName = html($user['lName']);
+            $hireDate = html($user['hireDate']);
+            $Email = html($user['Email']);
+            $Type = html($user['Type']);
+            $Bio = html($user['Bio']);
         } else {
             $action = 'add-user';
             $fName = $lName = $hireDate = $Email = $Type = $Bio = '';
@@ -108,7 +109,7 @@ class UsersView
                 <div class='form-group' id='signature-div'>
                     <label for='siganture'>Signature</label>
                     <div>
-                        <img src='{$user['signFile']}' style='max-height: 100px;'>
+                        <img src='" . html($user['signFile']) . "' style='max-height: 100px;'>
                         <span class='glyphicon glyphicon-remove' style='color: darkred;' onclick='manageUsers.deleteSignature();'></span>
                     </div>
                 </div>";
@@ -120,6 +121,7 @@ class UsersView
                 </div>";
         }
 
+        $user['ID'] = html($user['ID']);
         return "
             <form id='user-form' enctype='multipart/form-data'>
                 <input class='hidden' id='action' name='action' value='$action'>

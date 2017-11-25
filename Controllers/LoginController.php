@@ -43,7 +43,7 @@ class LoginController extends BaseController
      */
     private function index($errorMsg = '')
     {
-        $errorMsg = !empty($errorMsg) ? "<div class='alert alert-danger'>$errorMsg</div>" : '';
+        $errorMsg = !empty($errorMsg) ? "<div class='alert alert-danger'>" . html($errorMsg) . "</div>" : '';
 
         // html pulled and minorly edited from bootstrap login form example
         $loginForm = "

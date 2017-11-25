@@ -1,6 +1,7 @@
 <?php
 
 require_once __DIR__ . '/../Controllers/UsersController.php';
+require_once __DIR__ . '/common.php';
 
 session_start();
 if (empty($_SESSION['authenticated'])) {
@@ -17,7 +18,7 @@ try {
     if ($code >= 500) {
         $response = '<div class="alert alert-danger">Oops something went wrong. Please contact your site administrator.</div>';
     } else {
-        $response = '<div class="alert alert-danger">' . $exception->getMessage() . '</div>';
+        $response = '<div class="alert alert-danger">' . html($exception->getMessage()) . '</div>';
     }
 }
 echo $response;
