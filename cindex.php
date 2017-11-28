@@ -38,7 +38,7 @@
 		  <li><a href="account.php">Account</a></li>
 		  <li><a href="awards.php">My Awards</a></li>
 		  <li><a href="nominate.php">Nominate</a></li>
-		  <li style="float:right"><a class="active" href="loginvalidate.php">Sign Out</a></li>
+		  <li style="float:right"><a class="active" href="signout.php">Sign Out</a></li>
 		</ul>
 		
 		</td>
