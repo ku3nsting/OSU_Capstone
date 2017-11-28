@@ -1,5 +1,24 @@
 <?php
-$dbservername = 'localhost';
-$dbusername = 'root';
-$dbpassword = '*****';
-$dbname = 'gemini';
+session_start();
+ob_start();
+$hasDB = false;
+$dbservername = 'oniddb.cws.oregonstate.edu';
+$dbusername = 'kuenstir-db';
+$dbpassword = '596vXbwYMGgNDk7e';
+$dbname = 'kuenstir-db';
+$mySQL = new mysqli($dbservername,$dbusername,$dbpassword,$dbname);
+if ($mySQL->connect_error)
+{
+    die('Connect Error (' . $mySQL->connect_errno . ') '. $mySQL->connect_error);
+}
+ 
+
+
+//$dbservername = 'localhost';
+//$dbusername = 'root';
+//$dbpassword = '*****';
+//$dbname = 'gemini';
+
+//"oniddb.cws.oregonstate.edu","kuenstir-db","596vXbwYMGgNDk7e","kuenstir-db"
+
+?>

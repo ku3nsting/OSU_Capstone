@@ -8,11 +8,9 @@
 namespace views;
 
 
-use database\AwardsQueryBuilder;
-
 class ReportsViews
 {
-    public static $fields = [
+    private static $fields = [
         "AwardLabel" => [
             "label" => "Award Type",
             "type" => "string",
@@ -57,70 +55,21 @@ class ReportsViews
      */
     public static function indexView()
     {
-        $groupBySelectOptions = '';
-        foreach (AwardsQueryBuilder::$groupByFields as $value => $groupByField) {
-            $groupBySelectOptions .= "<option value='$value'>{$groupByField['option-label']}</option>";
-        }
-
         return '
-            <div id="msg"></div>
             <form id="selectQueryForm" action="/admin/reports.php">
                 <h2>Report Query Builder</h2>
                 <input type="hidden" value="run-query" id="action" name="action">
-                <input type="hidden" value="" id="rules" name="rules">
-                <input type="hidden" value="0" id="csvExport" name="csvExport">
-                <input type="hidden" value="0" id="createChart" name="createChart">
                 <div class="form-group">
-                    <label for="selectQueryFields">* SELECT Fields</label>
-                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="cursor: help;" title="To select multiple click and drag mouse or hold Control and Click with mouse. *Required with Generate Table or CSV"></span>
+                    <label for="selectQueryFields">SELECT Fields</label>
+                    <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="cursor: help;" title="To select multiple click and drag mouse or hold Control and Click with mouse"></span>
                     ' . self::selectQueryFields() . '
                 </div>
-                <label>* WHERE</label>
+                <label>WHERE</label>
                 <div id="builder"></div>
-                <div class="form-group">
-                    <a class="btn btn-primary btn-sm" href="javascript: void(0)" role="button" onclick="report.runQuery();">Generate Table</a>
-                    <a class="btn btn-primary btn-sm" href="javascript: void(0)" role="button" onclick="report.exportCsv();">Export to CSV</a>
-                </div>
-                <div class="panel panel-default" style="border: 1px solid #DCC896;">
-                    <div class="panel-heading" style="background: rgba(250,240,210,.5);">Charting Actions</div>
-                    <div class="panel-body">
-                        <div class="form-group">
-                            <label for="chart-title">Chart Title</label>
-                            <input id="chart-title" class="form-control" name="chart-title" type="text">
-                        </div>
-                        <div class="form-group">
-                            <label for="group-by-1">* Group By</label>
-                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="cursor: help;" title="*Required with Create Chart"></span>
-                            <select id="group-by-1" name="group-by-1" class="form-control">
-                                ' . $groupBySelectOptions . '
-                            </select>
-                        </div>
-                        <div class="form-group" id="series-form-group">
-                            <label for="group-by-2">Series Group By</label>
-                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="cursor: help;" title="*Only with Bar Chart"></span>
-                            <select id="group-by-2" name="group-by-2" class="form-control">
-                                <option value="">Award Count</option>
-                                ' . $groupBySelectOptions . '
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label for="chart-type">* Chart Type</label>
-                            <span class="glyphicon glyphicon-info-sign" aria-hidden="true" style="cursor: help;" title="*Required with Create Chart"></span>
-                            <select id="chart-type" name="chart-type" class="form-control" onchange="report.changeFields(this.value);">
-                                <option value="bar">Bar</option>
-                                <option value="line">Line</option>
-                                <option value="pie">Pie</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <a class="btn btn-primary btn-sm" href="javascript: void(0);" role="button" onclick="report.createChart()">Create Chart</a>
-                        </div>
-                    </div>
-                </div>
+                <a class="btn btn-primary btn-sm" href="#" role="button" onclick="report.runQuery();">Submit</a>
             </form>
             <h2>Results</h2>
             <div id="query-results"></div>
-            <div id="chart-container"></div>
         ';
     }
 
@@ -155,7 +104,7 @@ class ReportsViews
         // add the header row
         $html .= '<thead><tr>';
         foreach ($selectFields as $columnKey) {
-            $html .= "<th>" . html(self::$fields[$columnKey]['label']) . "</th>";
+            $html .= "<th>" . self::$fields[$columnKey]['label'] . "</th>";
         }
         $html .= '</tr></thead>';
 
@@ -164,7 +113,7 @@ class ReportsViews
         foreach ($awards as $award) {
             $html .= '<tr>';
             foreach ($selectFields as $columnKey) {
-                $html .= "<td>" . html($award[$columnKey]) . "</td>";
+                $html .= "<td>" . $award[$columnKey] . "</td>";
             }
             $html .= '</tr>';
         }
@@ -175,82 +124,4 @@ class ReportsViews
         return $html;
     }
 
-    /**
-     * @param $awards
-     * @return string
-     */
-    public static function groupByTableView($awards)
-    {
-        if (empty($awards)) {
-            return '<div class="alert alert-info">No awards given for the specified filters</div>';
-        }
-
-        // initiate table
-        $html = "<table id='datatable' class='table table-hover hidden'>";
-
-        // add the header row
-        $html .= '
-            <thead>
-                <tr>
-                    <th></th>
-                    <th>Award Count</th>
-                </tr>
-            </thead>';
-
-        // add the body rows
-        $html .= '<tbody>';
-        foreach ($awards as $award) {
-            $html .= "
-                <tr>
-                    <td>" . html($award['label']) . "</td>
-                    <td>" . html($award['count']) . "</td>
-                </tr>
-            ";
-        }
-        $html .= '</tbody>';
-
-        // close and return the table
-        $html .= '</table>';
-
-        return $html;
-    }
-
-    /**
-     * @param $results
-     * @param $seriesLabels
-     * @return string
-     */
-    public static function groupByTableWithSeriesView($results, $seriesLabels)
-    {
-        if (empty($results)) {
-            return '<div class="alert alert-info">No awards given for the specified filters</div>';
-        }
-
-        // initiate table
-        $html = "<table id='datatable' class='table table-hover hidden'>";
-
-        // add the header row
-        $html .= '<thead><tr><th></th>';
-        foreach ($seriesLabels as $label) {
-            $html .= "<th>" . html($label) . "</th>";
-        }
-        $html .= '</tr></thead>';
-
-        // add the body rows
-        $html .= '<tbody>';
-        foreach ($results as $key => $result) {
-            $html .= "<tr><td>" . html($key) . "</td>";
-            foreach ($seriesLabels as $label) {
-                $value = !empty($result[$label]) ? html($result[$label]) : '';
-                $html .= "<td>$value</td>";
-            }
-            $html .= '</tr>';
-        }
-        $html .= '</tbody>';
-
-        // close and return the table
-        $html .= '</table>';
-
-        return $html;
-    }
 }

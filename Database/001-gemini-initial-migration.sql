@@ -1,11 +1,9 @@
-CREATE DATABASE gemini;
-USE gemini;
-
 -- Drop the tables
 DROP TABLE IF EXISTS `Awards_Given`;
 DROP TABLE IF EXISTS `UserType`;
 DROP TABLE IF EXISTS `Awards`;
 DROP TABLE IF EXISTS `Employees`;
+DROP TABLE IF EXISTS `Recovery_Email`;
 
 --
 -- Table structure for table `Awards`
@@ -68,6 +66,12 @@ CREATE TABLE `UserType` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
 --
--- Adding the Bio column to the Employees table
---
-ALTER TABLE `Employees` ADD COLUMN `Bio` VARCHAR(500);
+--  Table structure for table '
+
+CREATE TABLE `Recovery_Email` (
+  `ID` bigint(20) unsigned zerofill NOT NULL auto_increment,
+  `Employee_Email` varchar(255) NOT NULL,
+  `Key` varchar(32) NOT NULL,
+  `expDate` datetime NOT NULL,
+  PRIMARY KEY  (`ID`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1 AUTO_INCREMENT=1 ;

@@ -8,56 +8,31 @@ include("header.php");
 $mysqli3 = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
 
 $senderName = "FILL THIS IN";
-$dbsuccess = false;
-$emailsuccess = false;
 
 // setup variables from webpage
 $empID = $_POST['empID'];
-$awardType = $_POST['awardType'];
 $currentUser = $_SESSION["authenticated"];
-$curDate = date("Y-m-d H:i:s");
+$awardType = $_POST['awardType'];
 
-
-//get other variables from database
 if(!($stmt = $mysqli3->prepare("SELECT fname, lname, email FROM Employees WHERE Employees.ID = ?"))){
-	echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
-}
-if(!($stmt->bind_param("i", $empID))){
-	echo "Bind failed: "  . $stmt->errno . " " . $stmt->error;
-}
-if(!$stmt->execute()){
-	echo "Execute failed: "  . $mysqli3->connect_errno . " " . $mysqli3->connect_error;
-}
-if(!$stmt->bind_result($fname, $lname, $email)){
-	echo "Bind failed: "  . $mysqli3->connect_errno . " " . $mysqli3->connect_error;
-}
-while($stmt->fetch()){
-}
-$stmt->close();
+					echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
+				}
+				if(!($stmt->bind_param("i", $empID))){
+					echo "Bind failed: "  . $stmt->errno . " " . $stmt->error;
+				}
+				if(!$stmt->execute()){
+					echo "Execute failed: "  . $mysqli3->connect_errno . " " . $mysqli3->connect_error;
+				}
+				if(!$stmt->bind_result($fname, $lname, $email)){
+					echo "Bind failed: "  . $mysqli3->connect_errno . " " . $mysqli3->connect_error;
+				}
+				while($stmt->fetch()){
+				}
+				$stmt->close();
 
-
-//SEND AWARD TO DB
-$conn = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
-if(!$conn || $conn->connect_errno){
-	echo "Connection error " . $conn->connect_errno . " " . $conn->connect_error;
-	}
-if(!($stmt = $conn->prepare("INSERT INTO Awards_Given(awardid, employeeid, awarddate, awardedbyid) VALUES (?, ?, ?, ?)"))){
-	echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
-}
-if(!($stmt->bind_param("iisi", $awardType, $empID, $curDate, $currentUser))){
-	echo "Bind failed: "  . $stmt->errno . " " . $stmt->error;
-}
-if(!$stmt->execute()){
-	echo "Execute failed: "  . $stmt->errno . " " . $stmt->error;
-} else {
-	$dbsuccess = true;
-}
-
-//finish assigning values to vars
 $employeeName = $fname." ".$lname;
 
 
-//EMAIL AWARD TO WINNER
 // new PHPMailer object and to smtp
 $mail = new PHPMailer;
 $mail->isSMTP();
@@ -96,15 +71,25 @@ $mail->AltBody = "Congratulations. You have received an award.";
 
 // send the email and echo success
 if($mail->send()) {
-	$emailsuccess = true;
 } else {
-	echo "Award was not sent.";
 }
 
-//Redirect to success page
-if($dbsuccess == true && $emailsuccess == true){
+//Connect to the database
+$curDate = date("Y-m-d H:i:s");
+
+if(!$mysqli3 || $mysqli3->connect_errno){
+	echo "Connection error " . $mysqli3->connect_errno . " " . $mysqli3->connect_error;
+	}
+if(!($stmt = $mysqli3->prepare("INSERT INTO Awards_Given(AwardID, EmployeeID, AwardedByID, AwardDate) VALUES (?, ?, ?, ?)"))){
+	echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
+}
+if(!($stmt->bind_param("iiis", $awardType, $empID, $currentUser, $curDate))){
+	echo "Bind failed: "  . $stmt->errno . " " . $stmt->error;
+}
+if($stmt->execute()){
+	//Redirect to success page
 	header("Location: nomSuccess.php"); /* Redirect browser */
 	ob_end_flush();
-}
+}	
 
 ?>

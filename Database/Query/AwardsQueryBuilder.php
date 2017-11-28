@@ -9,8 +9,6 @@ namespace database;
 
 
 require_once __DIR__ . '/../../Config/database.php';
-
-use DateTime;
 use mysqli;
 
 class AwardsQueryBuilder
@@ -82,69 +80,6 @@ class AwardsQueryBuilder
         "GiverEmail" => [
             "dbfield" => "Giver.Email",
             "type" => "string",
-        ],
-    ];
-
-    public static $groupByFields = [
-        "month" => [
-            "dbfield" => "month",
-            "groupby" => "monthIndex, month",
-            "orderby" => "monthIndex",
-            "option-label" => "Award Month",
-        ],
-        "year" => [
-            "dbfield" => "year",
-            "groupby" => "year",
-            "orderby" => "year",
-            "option-label" => "Award Year",
-        ],
-        "month-year" => [
-            "dbfield" => "CONCAT(month, ' ', year)",
-            "groupby" => "monthIndex, month, year",
-            "orderby" => "year, monthIndex",
-            "option-label" => "Award Month and Year",
-        ],
-        "award-type" => [
-            "dbfield" => "AwardLabel",
-            "groupby" => "AwardLabel",
-            "orderby" => "AwardLabel",
-            "option-label" => "Award Type",
-        ],
-        "award-date" => [
-            "dbfield" => "AwardDate",
-            "groupby" => "AwardDate",
-            "orderby" => "AwardDate",
-            "option-label" => "Award Date",
-        ],
-        "awardee-email" => [
-            "dbfield" => "Email",
-            "groupby" => "Email",
-            "orderby" => "Email",
-            "option-label" => "Awardee Email",
-        ],
-        "awardee" => [
-            "dbfield" => "CONCAT(fName, ' ', lName)",
-            "groupby" => "EmployeeId, fName, lName",
-            "orderby" => "lName",
-            "option-label" => "Awardee",
-        ],
-        "awardee-hire-date" => [
-            "dbfield" => "hireDate",
-            "groupby" => "hireDate",
-            "orderby" => "hireDate",
-            "option-label" => "Awardee Hire Date",
-        ],
-        "giver-email" => [
-            "dbfield" => "GiverEmail",
-            "groupby" => "GiverEmail",
-            "orderby" => "GiverEmail",
-            "option-label" => "Giver Email",
-        ],
-        "giver" => [
-            "dbfield" => "CONCAT(GiverFirstName, ' ', GiverLastName)",
-            "groupby" => "GiverEmployeeId, GiverFirstName, GiverLastName",
-            "orderby" => "GiverLastName",
-            "option-label" => "Giver",
         ],
     ];
 
@@ -275,13 +210,16 @@ class AwardsQueryBuilder
     /**
      * @param array $rules
      * @param array $selectFields
-     * @param array $groupBy
      * @return array|null
      * @throws \Exception
      */
-    public function runQuery(array $rules, array $selectFields, $groupBy = [])
+    public function runQuery(array $rules, array $selectFields)
     {
-        $query = $this->buildQuery($rules, $selectFields, $groupBy);
+        if (empty($selectFields)) {
+            throw new \Exception('No Select Fields were chosen for the Query');
+        }
+
+        $query = $this->buildQuery($rules, $selectFields);
 
         $stmt = $this->mysqli->prepare($query);
 
@@ -307,30 +245,20 @@ class AwardsQueryBuilder
     /**
      * @param array $rules
      * @param array $selectFields
-     * @param array $groupBy
      * @return string
      * @throws \Exception
      */
-    public function buildQuery(array $rules, array $selectFields, $groupBy = [])
+    public function buildQuery(array $rules, array $selectFields)
     {
-        if (!empty($groupBy)) {
-            $select = $this->getGroupBySelectSql();
-        } else {
-            $select = $this->getSelectSql($selectFields);
-        }
+        $select = $this->getSelectSql($selectFields);
 
         $whereClause = $this->buildWhereClause($rules);
 
-        if(empty($whereClause) || empty($select)) {
-            throw new \Exception('Missing select or where clause');
-        }
-        $query = $select . self::$query . ' AND ' . $whereClause;
-
-        if (!empty($groupBy)) {
-            $query = $this->addGroupBy($query, $groupBy);
+        if(!empty($whereClause) && !empty($selectFields)) {
+            return $select . self::$query . ' AND ' . $whereClause;
         }
 
-        return $query;
+        throw new \Exception('Missing select or where clause');
     }
 
     /**
@@ -393,30 +321,20 @@ class AwardsQueryBuilder
 
         // Validate the field is a valid filter field
         if (!array_key_exists($field, $this->fields)) {
-            throw new \Exception("Field, $field, does not exist", 422);
+            throw new \Exception("Field, $field, does not exist");
         }
 
         // Validate the type passed through is valid
         if ($this->fields[$field]['type'] !== $type) {
-            throw new \Exception("Invalid type, $type, with field, $field", 422);
+            throw new \Exception("Invalid type, $type, with field, $field");
         }
 
         // Validate operator
         if (!array_key_exists($operator, $this->operators[$type])) {
-            throw new \Exception("Invalid operator, $operator, for field, $field, of type, $type", 422);
+            throw new \Exception("Invalid operator, $operator, for field, $field, of type, $type");
         }
 
-        if ($this->fields[$field]['type'] === 'date') {
-            $date = DateTime::createFromFormat('Y-m-d', $rule['value']);
-            // PHP allows overflow on the day when creating a date. So if March 32nd is given it will generate April 1
-            // so we check if the date is empty/false or if when the created date is formatted it matches it's original string representation
-            if (empty($date) || $date->format('Y-m-d') !== $rule['value']) {
-                throw new \Exception(
-                    "Invalid date, {$rule['value']}, given for field, $field. 'Y-m-d' is the valid date format.",
-                    422
-                );
-            }
-        }
+        // TODO: validate value (only for date)
     }
 
     /**
@@ -464,59 +382,13 @@ class AwardsQueryBuilder
      */
     private function getSelectSql($selectFields)
     {
-        if (empty($selectFields)) {
-            throw new \Exception('No Select Fields were chosen for the Query', 422);
-        }
-
         $selectDbFields = [];
         foreach ($selectFields as $selectField) {
             if (!array_key_exists($selectField, $this->fields)) {
-                throw new \Exception("Field, $selectField, is not a valid select field", 422);
+                throw new \Exception("Field, $selectField, is not a valid select field");
             }
             $selectDbFields[] = $this->fields[$selectField]['dbfield'] . " AS $selectField";
         }
         return 'SELECT ' . implode(', ', $selectDbFields) . ' ';
-    }
-
-    /**
-     * @return string
-     */
-    private function getGroupBySelectSql()
-    {
-        $select = $this->getSelectSql(array_keys($this->fields));
-        $select .= ', 
-            MONTHNAME(Awards_Given.AwardDate) as month, 
-            MONTH(Awards_Given.AwardDate) as monthIndex,
-            YEAR(Awards_Given.AwardDate) as year,
-            Employees.ID as EmployeeId,
-            Giver.ID as GiverEmployeeId';
-        return $select;
-    }
-
-    /**
-     * @param string $query
-     * @param array $groupBy
-     * @return string
-     */
-    private function addGroupBy($query, array $groupBy)
-    {
-        $groupByField = self::$groupByFields[$groupBy['group-by-1']];
-        $seriesDbField = $seriesGroupBy = $seriesOrderBy = '';
-        if (!empty(self::$groupByFields[$groupBy['group-by-2']])) {
-            $seriesField = self::$groupByFields[$groupBy['group-by-2']];
-            $seriesDbField = ', ' . $seriesField['dbfield'] . ' as seriesLabel';
-            $seriesGroupBy = ', ' . $seriesField['groupby'];
-            $seriesOrderBy = ', ' . $seriesField['orderby'];
-        }
-
-        $query = "
-            SELECT {$groupByField['dbfield']} as label,
-                COUNT(*) as `count`
-                $seriesDbField
-            FROM ($query) AS subquery
-            GROUP BY {$groupByField['groupby']} $seriesGroupBy
-            ORDER BY {$groupByField['orderby']} $seriesOrderBy";
-
-        return $query;
     }
 }

@@ -19,6 +19,21 @@ class BaseTemplateView
      */
     public static function baseTemplateView($type, $html = '', $scripts = '')
     {
+        $userLinks = [
+            'manage-account' => [
+                'href' => '#',
+                'text' => 'Manage Account'
+            ],
+            'manage-my-awards' => [
+                'href' => '#',
+                'text' => 'Manage My Awards'
+            ],
+            'nominate' => [
+                'href' => '#',
+                'text' => 'Nominate'
+            ],
+        ];
+
         if (!empty($_SESSION['authenticated'])) {
             $adminLinks = [
                 'manage-users' => [
@@ -41,6 +56,9 @@ class BaseTemplateView
 
         $navBarLinks = '';
         switch ($type) {
+            case 'user':
+                $navBarLinks = self::navBarList($userLinks);
+                break;
             case 'admin':
                 $navBarLinks = self::navBarList($adminLinks);
                 break;
@@ -62,7 +80,6 @@ class BaseTemplateView
         <!-- Bootswatch theme -->
         <link href="https://maxcdn.bootstrapcdn.com/bootswatch/3.3.7/sandstone/bootstrap.min.css" rel="stylesheet" integrity="sha384-G3G7OsJCbOk1USkOY4RfeX1z27YaWrZ1YuaQ5tbuawed9IoreRDpWpTkZLXQfPm3" crossorigin="anonymous">
 
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/css/bootstrap-datepicker.min.css" />
         <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
         <!-- WARNING: Respond.js doesn\'t work if you view the page via file:// -->
         <!--[if lt IE 9]>
@@ -98,20 +115,11 @@ class BaseTemplateView
 
         <!-- jQuery (necessary for Bootstrap\'s JavaScript plugins) -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.7.1/js/bootstrap-datepicker.min.js"></script>
-        
         <!-- Include all compiled plugins (below), or include individual files as needed -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
-
-        <!-- Highcharts libraries -->
-        <script src="https://code.highcharts.com/highcharts.js"></script>
-        <script src="https://code.highcharts.com/modules/data.js"></script>
-        <script src="https://code.highcharts.com/modules/exporting.js"></script>
-
         <script src="../assets/js/query-builder.standalone.min.js"></script>
-        <script src="../assets/js/reports.js?' . filemtime('../assets/js/reports.js') . '"></script>
-        <script src="../assets/js/manage-users.js?' . filemtime('../assets/js/manage-users.js') . '"></script>
-        <script src="../assets/js/admin.js?' . filemtime('../assets/js/admin.js') . '"></script>
+        <script src="../assets/js/reports.js"></script>
+        <script src="../assets/js/manage-users.js"></script>
         <script>
             $(document).ready(function() {
                 ' . $scripts. '
@@ -144,37 +152,5 @@ class BaseTemplateView
         $navBarList .= '</ul>';
 
         return $navBarList;
-    }
-
-    /**
-     * @param string $type
-     * @param string $msg
-     * @return string
-     */
-    public static function alert($type, $msg)
-    {
-        return "
-            <div class='alert $type alert-dismissible' role='alert'>
-                <button type='button' class='close' data-dismiss='alert' aria-label='Close'>
-                    <span aria-hidden='true'>&times;</span>
-                </button>
-                " . html($msg) . "
-            </div>
-        ";
-    }
-
-    public static function homeView()
-    {
-        return "<h2>Welcome</h2>
-            <p>
-                This is the administration home page for the Gemini Employee Awards Application. 
-                The administration application allows you to manage users and report on awards given.
-            </p>
-            <h2>Current Trends: </h2>
-            <div id='chart-container-1'></div>
-            <br />
-            <div id='chart-table-2' class='hidden'></div>
-            <div id='chart-container-2'></div>
-        ";
     }
 }

@@ -43,7 +43,7 @@ class LoginController extends BaseController
      */
     private function index($errorMsg = '')
     {
-        $errorMsg = !empty($errorMsg) ? "<div class='alert alert-danger'>" . html($errorMsg) . "</div>" : '';
+        $errorMsg = !empty($errorMsg) ? "<div class='alert alert-danger'>$errorMsg</div>" : '';
 
         // html pulled and minorly edited from bootstrap login form example
         $loginForm = "
@@ -84,6 +84,7 @@ class LoginController extends BaseController
 
         session_start();
         $_SESSION['authenticated'] = true;
+        var_dump($_SESSION);
 
         return "<script>location.href='/admin/admin.php';</script>;";
     }

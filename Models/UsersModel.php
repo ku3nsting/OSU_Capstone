@@ -16,18 +16,14 @@ class UsersModel extends BaseModel
     /**
      * Get all the users
      *
-     * @param $offset
      * @return array
+     * @throws Exception
      */
-    public static function getUsers($offset)
+    public static function getUsers()
     {
         $query = "SELECT e.ID, CONCAT_WS(' ', e.fName, e.lName) fullName, e.hireDate, t.Type
             FROM Employees e
-            JOIN UserType t ON e.ID = t.EmployeeID
-            ORDER BY t.Type, e.lName, e.ID
-            LIMIT 15
-            OFFSET $offset
-            ";
+            JOIN UserType t ON e.ID = t.EmployeeID";
 
         return self::runQuery($query);
     }
@@ -41,7 +37,7 @@ class UsersModel extends BaseModel
     public static function getUser($userId)
     {
         $query = "
-            SELECT e.ID, e.fName, e.lName, e.hireDate, e.Email, t.Type, e.Bio,
+            SELECT e.ID, e.fName, e.lName, e.hireDate, e.Email, t.Type,
              (SELECT COUNT(Awards_Given.ID) FROM Awards_Given WHERE Awards_Given.EmployeeID = e.ID) awardCount
             FROM Employees e
             JOIN UserType t ON e.ID = t.EmployeeID
@@ -49,19 +45,6 @@ class UsersModel extends BaseModel
         ";
 
         return self::runQuery($query, ['i', $userId]);
-    }
-
-    /**
-     * Returns a user count
-     * @return array
-     */
-    public static function userCount()
-    {
-        $query = "SELECT COUNT(e.ID) as userCount
-            FROM Employees e
-            JOIN UserType t ON e.ID = t.EmployeeID";
-
-        return self::runQuery($query);
     }
 
     /**
@@ -98,16 +81,15 @@ class UsersModel extends BaseModel
         $email = $data['Email'];
         $password = $data['Password'];
         $type = $data['Type'];
-        $bio = $data['Bio'];
 
         $query = "
-            INSERT INTO Employees (fName, lName, hireDate, Email, Password, CreatedOn, Bio)
-            VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP, ?)
+            INSERT INTO Employees (fName, lName, hireDate, Email, Password, CreatedOn)
+            VALUES (?, ?, ?, ?, ?, CURRENT_TIMESTAMP)
         ";
 
         $employeeId = self::runQuery(
             $query,
-            ['ssssss', $firstName, $lastName, $hireDate, $email, $password, $bio],
+            ['sssss', $firstName, $lastName, $hireDate, $email, $password],
             'insert_get_id'
         );
 
@@ -133,10 +115,9 @@ class UsersModel extends BaseModel
         $hireDate = $data['hireDate'];
         $email = $data['Email'];
         $type = $data['Type'];
-        $bio = $data['Bio'];
 
-        $query = "UPDATE Employees SET fName = ?, lName = ?, hireDate = ?, Email = ?, Bio = ? WHERE ID = ?";
-        self::runQuery($query, ['sssssi', $firstName, $lastName, $hireDate, $email, $bio, $employeeId], 'update');
+        $query = "UPDATE Employees SET fName = ?, lName = ?, hireDate = ?, Email = ? WHERE ID = ?";
+        self::runQuery($query, ['ssssi', $firstName, $lastName, $hireDate, $email, $employeeId], 'update');
 
         $query = "UPDATE UserType SET UserType.Type = ? WHERE EmployeeID = ?";
         self::runQuery($query, ['si', $type, $employeeId], 'update');

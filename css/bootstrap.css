@@ -14,7 +14,7 @@ html {
 }
 
 body {
-	background-color:LightSteelBlue;
+	background-color:#f3f3f3;
 	
 }
 
@@ -30,7 +30,7 @@ ul {
     margin: 0;
     padding: 0;
     overflow: hidden;
-    background-color: #f3f3f3;
+    background-color: #ffffff;
 	width: 100%;
 }
 
@@ -38,7 +38,7 @@ ul {
 	display: inline-block;
 	font-family: "Century Gothic", "Times Roman", sans-serif;
 	padding-top:30px;
-	background-color: LightSteelBlue;
+	background-color: #f3f3f3;
 	width: 100%;
 }
 
@@ -52,7 +52,7 @@ ul {
 	padding-bottom:5px;
 	padding-left: 20px;
 	padding-right: 20px;
-	background-color: #f3f3f3;
+	background-color: #ffffff;
 	/* border: 1px solid red; */
 	border-radius: 25px;
 	width: 90%;
@@ -62,16 +62,39 @@ ul {
 	margin-left: auto;
 	margin-right: auto;
 	text-align: center;
-	height: 280px;
+	display: block;
+	overflow: auto;
 	font-family: "Century Gothic", "Times Roman", sans-serif;
 	padding-top:10px;
 	padding-bottom:10px;
 	padding-left: 20px;
 	padding-right: 20px;
-	background-color: #f3f3f3;
-	/* border: 1px solid red; */
+	background-color: #ffffff;
+	/*border: 1px solid red;*/
 	border-radius: 25px;
 	width: 86%;
+}
+
+#nominationForm {
+	margin-left: 30%;
+	margin-right: auto%;
+	width: 60%;
+	text-align: left;
+	padding-top: 20px;
+}
+
+#leftContainer{
+	margin-right: auto%;
+	width: 60%;
+	text-align: left;
+	position: relative;
+	font-family: "Century Gothic", "Times Roman", sans-serif;
+	padding-top:10px;
+	padding-bottom:10px;
+	padding-left: 20px;
+	padding-right: 20px;
+	/* border: 1px solid red; */
+
 }
 
 #tableContainer{
@@ -80,8 +103,8 @@ ul {
 	padding-top:10px;
 	padding-bottom:10px;
 	padding-right: 20px;
-	background-color: #f3f3f3;
-	/* border: 1px solid red; */
+	background-color: #ffffff;
+	/*border: 1px solid red;*/
 }
 
 #EM{
@@ -146,7 +169,7 @@ li a.active {
 
 .button {
 	font-family: "Century Gothic", "Times Roman", sans-serif; ;
-    background-color: LightSteelBlue;
+    background-color: #2e75b6;
 	border-radius: 12px;
 	font-weight: bold;
     border: none;
@@ -163,17 +186,22 @@ li a.active {
 }
 
 .button:hover {
-    background-color: lightcyan;
+    background-color: #84b4e0;
     color: black;
 }
 
 #pageDiv{
+	position: relative;
 	font-family: "Century Gothic", "Times Roman", sans-serif;
 	padding-top:10px;
+	padding-bottom:10px;
 	width: 100%;
-	margin-left: 20px;
-	margin-right: 5px;
+	height: 30px;
+	margin-left: auto;
+	margin-right: auto;
 	font-size: 20px;
+	clear:both;
+	/*border: 1px solid red;*/
 }
 
 #table{
@@ -190,15 +218,19 @@ li a.active {
 	margin-left: auto;
 	margin-right: auto;
 	border-spacing: 15px;
+	/*border: 1px solid red;*/
 }
 
 
 #welcome{
+	position: relative;
 	display: inline-block;
+	margin-left: 50px;
 	float: left;
 	font-family: "Century Gothic", "Times Roman", sans-serif;
 	font-size: 20px;
-	margin-bottom: 15px;
+	/*border: 1px solid red;*/
+	clear:both;
 }
 
 #bodyDiv {
@@ -206,13 +238,24 @@ li a.active {
 	height: 100%;
 	margin-left: auto;
 	margin-right: auto;
-	background-color: LightSteelBlue;
+	background-color: #f3f3f3;
+}
+
+#middle {
+	max-width: 400px;
+	margin: 0 auto;
+	margin-top: 100px;
+	background-color: #fff;
+	border: 1px solid rgba(0,0,0,0.1);
+	font-family: "Century Gothic", "Times Roman", sans-serif;
+	font-size: 16px;
+	text-align: center;
+	padding: 15px 35px 45px;
 }
 
 #checkboxThing{
 	/*!border-style: solid;
 	border-color: red;*/
-	left-margin: 200px;
 	text-align: center;
 	margin-top: 10px;
 }
@@ -250,6 +293,7 @@ li a.active {
 		  z-index: 2;
 		}
 	}
+}
 
 	input[type="text"] {
 	  margin-bottom: -1px;

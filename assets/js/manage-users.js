@@ -50,7 +50,12 @@ var manageUsers = {
             $('#manage-users-content').html(data);
             msg = msg !== undefined ? msg : '';
             $('#msg-div').html(msg);
-            manageUsers.initEditUserFormButtons();
+            $('#updateUserBtn').click(function () {
+                manageUsers.updateUser();
+            });
+            $('#deleteUserBtn').click(function () {
+                manageUsers.deleteUser();
+            });
             $('#addUserFormBtn').addClass('hidden');
             $('#manage-users-title').html('User Form');
         }).fail(function(jqXHR, textStatus, errorThrown) {
@@ -61,28 +66,13 @@ var manageUsers = {
             }
         });
     },
-    initEditUserFormButtons: function () {
-        $('#updateUserBtn').click(function () {
-            manageUsers.updateUser();
-        });
-        $('#deleteUserBtn').click(function () {
-            manageUsers.deleteUser();
-        });
-    },
     updateUser: function () {
-        var myForm = document.getElementById('user-form');
-        var formData = new FormData(myForm);
         $.ajax({
             url: '/admin/manage-users.php',
             method: 'POST',
-            processData: false,
-            contentType: false,
-            data: formData
+            data: $('#user-form').serialize()
         }).done(function (data) {
-            var response = JSON.parse(data);
-            $('#msg-div').html(response['msg']);
-            $('#manage-users-content').html(response['userForm']);
-            manageUsers.initEditUserFormButtons();
+            $('#msg-div').html(data);
         }).fail(function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.responseText !== undefined) {
                 $('#msg-div').html(jqXHR.responseText);
@@ -98,33 +88,6 @@ var manageUsers = {
         }).done(function (data) {
             $('#msg-div').html(data);
             $('#manage-users-content').html('');
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            if (jqXHR.responseText !== undefined) {
-                $('#msg-div').html(jqXHR.responseText);
-            } else {
-                $('#msg-div').html(errorThrown);
-            }
-        });
-    },
-    deleteSignature: function() {
-        $.ajax({
-            url: '/admin/manage-users.php?action=delete-signature&userId=' + encodeURIComponent($('#userId').val()),
-            method: 'POST'
-        }).done(function (data) {
-            $('#signature-div').html(data);
-        }).fail(function(jqXHR, textStatus, errorThrown) {
-            if (jqXHR.responseText !== undefined) {
-                $('#msg-div').html(jqXHR.responseText);
-            } else {
-                $('#msg-div').html(errorThrown);
-            }
-        });
-    },
-    changePage: function (offset) {
-        $.ajax({
-            url: '/admin/manage-users.php?action=page&offset=' + offset
-        }).done(function (data) {
-            $('#manage-users-content').html(data);
         }).fail(function(jqXHR, textStatus, errorThrown) {
             if (jqXHR.responseText !== undefined) {
                 $('#msg-div').html(jqXHR.responseText);

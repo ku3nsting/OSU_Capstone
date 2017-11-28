@@ -1,183 +1,19 @@
 var report = {
     runQuery: function () {
         var rules = $("#builder").queryBuilder('getRules', {skip_empty: true});
-        $('#csvExport').val(0);
-        $('#createChart').val(0);
-        $("#msg").html('');
-
         $.ajax({
             url: $("#selectQueryForm").attr('action'),
             method: "POST",
             data: $("#selectQueryForm").serialize() + '&rules=' + JSON.stringify(rules)
         }).done(function (data) {
             $('#query-results').html(data);
-            $('#msg').html('');
-            $('#chart-container').addClass('hidden');
-            $('html, body').animate({scrollTop: $('#query-results').offset().top}, 0);
-        }).fail(report.handleErrorMsg);
-    },
-    exportCsv: function () {
-        var rules = $("#builder").queryBuilder('getRules', {skip_empty: true});
-
-        $('#csvExport').val(1);
-        $('#createChart').val(0);
-        $('#rules').val(JSON.stringify(rules));
-        $("#msg").html('');
-
-        if ($("select[name='selectQueryFields[]'] option:selected").length > 0) {
-            document.forms['selectQueryForm'].submit();
-        } else {
-            $("#msg").html('<div class="alert alert-danger">No Select Fields were chosen for the Query</div>');
-        }
-    },
-    createChart: function () {
-        var rules = $("#builder").queryBuilder('getRules', {skip_empty: true});
-        $('#csvExport').val(0);
-        $('#createChart').val(1);
-        $("#msg").html('');
-        $("#query-results").html('');
-
-        $.ajax({
-            url: $("#selectQueryForm").attr('action'),
-            method: "POST",
-            data: $("#selectQueryForm").serialize() + '&rules=' + JSON.stringify(rules)
-        }).done(function (response) {
-            response = JSON.parse(response);
-            if (response.noData === true) {
-                $('#query-results').html(response.noDataMsg);
-                $('#chart-container').html('');
-                $('html, body').animate({scrollTop: $('#query-results').offset().top}, 0);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            if (jqXHR.responseText !== undefined) {
+                $('#query-results').html(jqXHR.responseText);
             } else {
-                $('#chart-container').removeClass('hidden');
-                var chartType = $('#chart-type').val();
-                switch (chartType) {
-                    case 'bar':
-                        $('#query-results').html(response.data);
-                        report.createBarChart();
-                        break;
-                    case 'line':
-                        report.createLineChart(response.data);
-                        break;
-                    case 'pie':
-                        report.createPieChart(response.data);
-                        break;
-                }
-                $('html, body').animate({scrollTop: $('#chart-container').offset().top}, 0);
-            }
-        }).fail(report.handleErrorMsg);
-    },
-    handleErrorMsg: function(jqXHR, textStatus, errorThrown) {
-        if (jqXHR.responseText !== undefined) {
-            $('#msg').html(jqXHR.responseText);
-        } else {
-            $('#msg').html(errorThrown);
-        }
-        $('#chart-container').html('');
-        $('#query-results').html('');
-    },
-    createBarChart: function (container, title, groupByOne) {
-        container = container !== undefined ? container : 'chart-container';
-        title = title !== undefined ? title : $('#chart-title').val();
-        groupByOne = groupByOne !== undefined ? groupByOne : $('#group-by-1').val();
-        // Modified from highcharts demo
-        // http://jsfiddle.net/gh/get/library/pure/highcharts/highcharts/tree/master/samples/highcharts/demo/column-parsed/
-        Highcharts.chart(container, {
-            data: {
-                table: 'datatable'
-            },
-            chart: {
-                type: 'column'
-            },
-            title: {
-                text: title
-            },
-            yAxis: {
-                allowDecimals: false,
-                title: {
-                    text: 'Units (each)'
-                }
-            },
-            tooltip: {
-                formatter: function () {
-                    var name;
-                    if (this.point.name === undefined) {
-                        if (groupByOne === 'award-date' || groupByOne === 'awardee-hire-date') {
-                            var date = new Date(this.point.x);
-                            name = date.toDateString();
-                        } else {
-                            name = this.point.x;
-                        }
-                    } else {
-                        name = this.point.name;
-                    }
-                    return '<b>' + this.series.name + '</b><br/>' +
-                        name + ': ' + this.point.y;
-                }
+                $('#query-results').html(errorThrown);
             }
         });
-    },
-    createLineChart: function (data) {
-        var chartData = data;
-        Highcharts.chart('chart-container', {
-            title: {
-                text: $('#chart-title').val()
-            },
-            xAxis: {
-                categories: chartData.categories
-            },
-            yAxis: {
-                title: {
-                    text: 'Award Count'
-                }
-            },
-            series: [{
-                name: 'Award Count',
-                data: chartData.data
-            }]
-        });
-    },
-    createPieChart: function (data, container, title) {
-        container = container !== undefined ? container : 'chart-container';
-        title = title !== undefined ? title : $('#chart-title').val();
-        Highcharts.chart(container, {
-            chart: {
-                plotBackgroundColor: null,
-                plotBorderWidth: null,
-                plotShadow: false,
-                type: 'pie'
-            },
-            title: {
-                text: title
-            },
-            tooltip: {
-                pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
-            },
-            plotOptions: {
-                pie: {
-                    allowPointSelect: true,
-                    cursor: 'pointer',
-                    dataLabels: {
-                        enabled: true,
-                        format: '<b>{point.name}</b>: {point.percentage:.1f} %',
-                        style: {
-                            color: (Highcharts.theme && Highcharts.theme.contrastTextColor) || 'black'
-                        }
-                    }
-                }
-            },
-            series: [{
-                name: 'Award Share',
-                colorByPoint: true,
-                data: data
-            }]
-        });
-    },
-    changeFields: function(value) {
-        if (value === 'bar') {
-            $('#series-form-group').removeClass('hidden')
-        } else {
-            $('#series-form-group').addClass('hidden')
-        }
     },
     init: function () {
         var stringOperators = [
@@ -188,7 +24,11 @@ var report = {
             'contains',
             'not_contains',
             'ends_with',
-            'not_ends_with'
+            'not_ends_with',
+            // 'is_empty',
+            // 'is_not_empty',
+            // 'is_null',
+            // 'is_not_null'
         ];
         var dateOperators = [
             'equal',
@@ -196,22 +36,18 @@ var report = {
             'less',
             'less_or_equal',
             'greater',
-            'greater_or_equal'
+            'greater_or_equal',
+            // 'between',
+            // 'not_between',
+            // 'is_null',
+            // 'is_not_null'
         ];
         var builder = $("#builder").queryBuilder({
-            plugins: ['bt-tooltip-errors'],
-
             filters: [
                 {
                     id: "AwardLabel",
                     label: "Award Type",
                     type: "string",
-                    input: "select",
-                    values: {
-                        "Employee of the Week": "Employee of the Week",
-                        "Employee of the Month": "Employee of the Month",
-                        "Honorable Mention": "Honorable Mention"
-                    },
                     operators: stringOperators
 
                 },
@@ -219,14 +55,7 @@ var report = {
                     id: "AwardDate",
                     label: "Award Date",
                     type: "date",
-                    operators: dateOperators,
-                    plugin: 'datepicker',
-                    plugin_config: {
-                        format: 'yyyy-mm-dd',
-                        todayBtn: 'linked',
-                        todayHighlight: true,
-                        autoclose: true
-                    }
+                    operators: dateOperators
                 },
                 {
                     id: "Email",
@@ -250,14 +79,7 @@ var report = {
                     id: "hireDate",
                     label: "Awardee Hire Date",
                     type: "date",
-                    operators: dateOperators,
-                    plugin: 'datepicker',
-                    plugin_config: {
-                        format: 'yyyy-mm-dd',
-                        todayBtn: 'linked',
-                        todayHighlight: true,
-                        autoclose: true
-                    }
+                    operators: dateOperators
                 },
                 {
                     id: "GiverFirstName",
@@ -279,5 +101,96 @@ var report = {
                 }
             ]
         });
+
+        // $('#builder').queryBuilder('setRules', testRules);
     }
+};
+
+var testRules = {
+    "condition": "AND",
+    "rules": [
+        {
+            "id": "AwardLabel",
+            "field": "AwardLabel",
+            "type": "string",
+            "input": "text",
+            "operator": "equal",
+            "value": "Employee of the Month"
+        },
+        {
+            "condition": "OR",
+            "rules": [
+                {
+                    "id": "lName",
+                    "field": "lName",
+                    "type": "string",
+                    "input": "text",
+                    "operator": "begins_with",
+                    "value": "A"
+                },
+                {
+                    "id": "AwardDate",
+                    "field": "AwardDate",
+                    "type": "date",
+                    "input": "text",
+                    "operator": "greater",
+                    "value": "01/01/2017"
+                },
+                {
+                    "id": "lName",
+                    "field": "lName",
+                    "type": "string",
+                    "input": "text",
+                    "operator": "begins_with",
+                    "value": "B"
+                },
+                {
+                    "id": "lName",
+                    "field": "lName",
+                    "type": "string",
+                    "input": "text",
+                    "operator": "begins_with",
+                    "value": "C"
+                },
+                {
+                    "condition": "OR",
+                    "rules": [
+                        {
+                            "id": "lName",
+                            "field": "lName",
+                            "type": "string",
+                            "input": "text",
+                            "operator": "begins_with",
+                            "value": "D"
+                        },
+                        {
+                            "id": "lName",
+                            "field": "lName",
+                            "type": "string",
+                            "input": "text",
+                            "operator": "begins_with",
+                            "value": "E"
+                        }
+                    ]
+                },
+                {
+                    "id": "AwardDate",
+                    "field": "AwardDate",
+                    "type": "date",
+                    "input": "text",
+                    "operator": "greater",
+                    "value": "01/01/2017"
+                }
+            ]
+        },
+        {
+            "id": "AwardDate",
+            "field": "AwardDate",
+            "type": "date",
+            "input": "text",
+            "operator": "greater",
+            "value": "01/01/2017"
+        }
+    ],
+    "valid": true
 };

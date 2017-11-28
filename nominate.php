@@ -2,6 +2,9 @@
     //Turn on error reporting
     ini_set('display_errors', 'On');
 
+	//TEMP value (database from a previous class)
+	//we'll change this to connect to Employee recognition db
+    //Connects to the database
     require_once __DIR__ . '/Config/database.php';
 	include("header.php");
     $mysqli = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
@@ -14,7 +17,6 @@
 <head>
  
 	<title>Employee Recognition Application</title>
-
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" /> 
    
 </head>
@@ -36,7 +38,7 @@
 		  <li><a href="account.php">Account</a></li>
 		  <li><a href="awards.php">My Awards</a></li>
 		  <li><a href="nominate.php">Nominate</a></li>
-		  <li style="float:right"><a class="active" href="signout.php">Sign Out</a></li>
+		  <li style="float:right"><a class="active" href="loginvalidate.php">Sign Out</a></li>
 		</ul>
 		
 		</td>
@@ -61,7 +63,6 @@
 					if(!($stmt = $mysqli->prepare("SELECT id, fname, lname FROM Employees"))){
 						echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
 					}
-
 					if(!$stmt->execute()){
 						echo "Execute failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
 					}
