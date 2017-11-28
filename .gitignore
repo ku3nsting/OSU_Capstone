@@ -1,2 +1,4 @@
 Config/database.php
 filter.php
+nominatebad.php
+sendAwardbad.php

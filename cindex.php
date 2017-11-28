@@ -1,7 +1,4 @@
 <?php
-
-	include("header.php");
-	
     //Turn on error reporting
     ini_set('display_errors', 'On');
 
@@ -9,6 +6,7 @@
 	//we'll change this to connect to Employee recognition db
     //Connects to the database
     require_once __DIR__ . '/Config/database.php';
+	include("header.php");
     $mysqli = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
 
 ?>
@@ -40,7 +38,7 @@
 		  <li><a href="account.php">Account</a></li>
 		  <li><a href="awards.php">My Awards</a></li>
 		  <li><a href="nominate.php">Nominate</a></li>
-		  <li style="float:right"><a class="active" href="login.html">Sign Out</a></li>
+		  <li style="float:right"><a class="active" href="signout.php">Sign Out</a></li>
 		</ul>
 		
 		</td>
@@ -57,10 +55,13 @@
 					<b>Welcome, </td></b>
 					
 				<?php
-				if(!($stmt = $mysqli->prepare("SELECT fname, lname FROM Employees WHERE Employees.ID = 3"))){
+				$empID = $_SESSION["authenticated"];
+				if(!($stmt = $mysqli->prepare("SELECT fname, lname FROM Employees WHERE Employees.ID = ?"))){
 					echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
 				}
-
+				if(!($stmt->bind_param("s", $empID))){
+					echo "Bind failed: "  . $stmt->errno . " " . $stmt->error;
+				}
 				if(!$stmt->execute()){
 					echo "Execute failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
 				}
@@ -85,10 +86,14 @@
 
 			Congratulations to
 			<br>
-			
-			<!-- Get awardee name -->
+			<!-- Get Employee of the Month awardee name - rationale here is that most recent employee of the month entry is current Employee of the month -->
 		<?php
-		if(!($stmt = $mysqli->prepare("SELECT fname, lname FROM Employees WHERE Employees.ID = 4"))){
+		if(!($stmt = $mysqli->prepare("SELECT Employees.fName, Employees.lName FROM Employees
+										INNER JOIN Awards_Given ON Awards_Given.EmployeeID = Employees.ID
+										INNER JOIN Awards ON Awards_Given.AwardID = Awards.ID
+										WHERE (Awards.AwardLabel = 'Employee of the Month')
+										ORDER BY Awards_Given.ID DESC
+										LIMIT 1"))){
 			echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
 		}
 
@@ -103,7 +108,7 @@
 		}
 		$stmt->close();
 		?>
-		<!-- /Get awardee name -->		
+		<!-- /Get Employee of the Month -->		
 		
 		<p>
 		<img src="resources/profile-icon.png" style="max-width:180px;">
@@ -130,9 +135,14 @@
 			<td width="30%">
 				Congratulations to
 			<br>
-					<!-- Get awardee name -->
+					<!-- Get Employee of the week. Rationale is that most recently submitted employee of the week is current one -->
 				<?php
-				if(!($stmt = $mysqli->prepare("SELECT fname, lname FROM Employees WHERE Employees.ID = 1"))){
+				if(!($stmt = $mysqli->prepare("SELECT Employees.fName, Employees.lName FROM Employees
+												INNER JOIN Awards_Given ON Awards_Given.EmployeeID = Employees.ID
+												INNER JOIN Awards ON Awards_Given.AwardID = Awards.ID
+												WHERE (Awards.AwardLabel = 'Employee of the Week')
+												ORDER BY Awards_Given.ID DESC
+												LIMIT 1"))){
 					echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
 				}
 
