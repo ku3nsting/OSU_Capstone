@@ -120,6 +120,20 @@ var manageUsers = {
             }
         });
     },
+    deleteProfilePhoto: function() {
+        $.ajax({
+            url: '/admin/manage-users.php?action=delete-profile-photo&userId=' + encodeURIComponent($('#userId').val()),
+            method: 'POST'
+        }).done(function (data) {
+            $('#profile-photo-div').html(data);
+        }).fail(function(jqXHR, textStatus, errorThrown) {
+            if (jqXHR.responseText !== undefined) {
+                $('#msg-div').html(jqXHR.responseText);
+            } else {
+                $('#msg-div').html(errorThrown);
+            }
+        });
+    },
     changePage: function (offset) {
         $.ajax({
             url: '/admin/manage-users.php?action=page&offset=' + offset

@@ -21,6 +21,11 @@ require_once __DIR__ . '/../Models/UsersModel.php';
 class UsersController extends BaseController
 {
     public static $signFileTypes = ['image/png' => 'png'];
+    public static $profilePhotoTypes = [
+        'image/png' => 'png',
+        'image/jpeg' => 'jpeg',
+        'image/bmp' => 'bmp'
+    ];
 
     /**
      * @param $request
@@ -46,6 +51,9 @@ class UsersController extends BaseController
 
             case 'delete-signature':
                 return self::deleteUserSignature($request);
+
+            case 'delete-profile-photo':
+                return self::deleteUserProfilePhoto($request);
 
             case 'page':
                 return self::usersTablePage($request);
@@ -170,6 +178,7 @@ class UsersController extends BaseController
         if (UsersModel::updateUser($request)) {
             // Set the messages
             $msg = $this->storeUserSignature($request);
+            $msg .= $this->storeUserProfilePhoto($request);
             $msg = BaseTemplateView::alert('alert-success', 'Successfully updated the employee') . $msg;
 
             // Get the user for the form
@@ -195,6 +204,11 @@ class UsersController extends BaseController
         $fileName = self::getExistingUserSignFile($userId, 'src');
         if (!empty($fileName)) {
             $user['signFile'] = $fileName;
+        }
+
+        $fileName = self::getExistingUserProfilePhoto($userId, 'src');
+        if (!empty($fileName)) {
+            $user['profilePhoto'] = $fileName;
         }
 
         return $user;
@@ -320,6 +334,7 @@ class UsersController extends BaseController
         }
 
         $this->deleteUserSignature($request);
+        $this->deleteUserProfilePhoto($request);
 
         return '<div class="alert alert-success">Successfully deleted user</div>';
     }
@@ -375,5 +390,87 @@ class UsersController extends BaseController
         }
 
         return $formErrors;
+    }
+
+    /**
+     * Store the user's signature file
+     *
+     * @param $request
+     * @return string
+     */
+    private function storeUserProfilePhoto($request)
+    {
+        if (empty($_FILES['profilePhoto']['tmp_name'])) {
+            return '';
+        }
+
+        if (move_uploaded_file(
+            $_FILES['profilePhoto']['tmp_name'],
+            self::getUserProfilePhoto($request['userId'], 'full-path', $_FILES['profilePhoto']['type'])
+        )) {
+            return BaseTemplateView::alert('alert-success', "Successfully stored the profile photo");
+        }
+
+        return BaseTemplateView::alert(
+            'alert-danger',
+            'Failed to store the profile photo. Please try again. If the problem persists please contact your site administrator'
+        );
+    }
+
+    /**
+     * @param $request
+     * @return string
+     */
+    private function deleteUserProfilePhoto($request)
+    {
+        $fileName = self::getExistingUserProfilePhoto($request['userId']);
+        if (!empty($fileName)) {
+            unlink($fileName);
+        }
+
+        return UsersView::userProfilePhotoFormField();
+    }
+
+    /**
+     * @param $userId
+     * @param string $type
+     * @param string $mimeType
+     * @return string
+     */
+    public static function getUserProfilePhoto($userId, $type = 'full-path', $mimeType = '')
+    {
+        $extension = empty($mimeType) ? '' : '.' . self::$profilePhotoTypes[$mimeType];
+        $fileLocation = '/uploads/profilePhotoEmployeeId' . $userId . $extension;
+
+        if ($type === 'full-path') {
+            return $_SERVER['DOCUMENT_ROOT'] . $fileLocation;
+        }
+
+        return $fileLocation;
+    }
+
+    /**
+     * Get the existing user signature file name
+     *
+     * @param $userId
+     * @param string $type
+     * @return bool|string
+     */
+    public static function getExistingUserProfilePhoto($userId, $type = 'full-path')
+    {
+        $fileName = self::getUserProfilePhoto($userId);
+
+        if (file_exists($fileName)) {
+            return self::getUserProfilePhoto($userId, $type);
+        }
+
+        foreach (self::$signFileTypes as $mimeType => $ext) {
+            $fileNameWithExt = "$fileName.$ext";
+            if (file_exists($fileNameWithExt)) {
+                return self::getUserProfilePhoto($userId, $type, $mimeType);
+            }
+        }
+
+        return false;
     }
 }
