@@ -99,6 +99,7 @@ class UsersView
             $Email = html($user['Email']);
             $Type = html($user['Type']);
             $Bio = html($user['Bio']);
+            $user['ID'] = html($user['ID']);
         } else {
             $action = 'add-user';
             $fName = $lName = $hireDate = $Email = $Type = $Bio = '';
@@ -107,21 +108,29 @@ class UsersView
         if (!empty($user['signFile'])) {
             $signFileHtml = "
                 <div class='form-group' id='signature-div'>
-                    <label for='siganture'>Signature</label>
+                    <label for='signature'>Signature</label>
                     <div>
-                        <img src='" . html($user['signFile']) . "' style='max-height: 100px;'>
+                        <img src='" . html($user['signFile']) . '?' . time() . "' style='max-height: 100px;'>
                         <span class='glyphicon glyphicon-remove' style='color: darkred;' onclick='manageUsers.deleteSignature();'></span>
                     </div>
                 </div>";
         } else {
-            $signFileHtml = "
-                <div class='form-group' id='signature-div'>
-                    <label for='siganture'>Signature File Upload (" . implode(',', UsersController::$signFileTypes) . ")</label>
-                    <input type='file' id='signature' name='signature'>
-                </div>";
+            $signFileHtml = self::userSignatureFormField();
         }
 
-        $user['ID'] = html($user['ID']);
+        if (!empty($user['profilePhoto'])) {
+            $profilePhotoHtml = "
+                <div class='form-group' id='profile-photo-div'>
+                    <label for='profilePhoto'>Profile Photo</label>
+                    <div>
+                        <img src='" . html($user['profilePhoto']) . '?' . time() . "' style='max-height: 100px;'>
+                        <span class='glyphicon glyphicon-remove' style='color: darkred;' onclick='manageUsers.deleteProfilePhoto();'></span>
+                    </div>
+                </div>";
+        } else {
+            $profilePhotoHtml = self::userProfilePhotoFormField();
+        }
+
         return "
             <form id='user-form' enctype='multipart/form-data'>
                 <input class='hidden' id='action' name='action' value='$action'>
@@ -157,8 +166,8 @@ class UsersView
                     : ''
                 ) .
 
-                (!empty($user) ? $signFileHtml
-                    : "<div class='alert alert-info'>Please create user first, then add signature file</div>"
+                (!empty($user) ? $signFileHtml . $profilePhotoHtml
+                    : "<div class='alert alert-info'>Please create user first, then add signature file and profile photo</div>"
                 )
 
                 . "
@@ -192,10 +201,18 @@ class UsersView
     public static function userSignatureFormField()
     {
         return "
-            <div class='form-group' id='signature-div'>
-                <label for='siganture'>Signature File</label>
-                <input type='file' id='signature' name='signature'>
-            </div>";
+                <div class='form-group' id='signature-div'>
+                    <label for='signature'>Signature File Upload (" . implode(',', UsersController::$signFileTypes) . ")</label>
+                    <input type='file' id='signature' name='signature'>
+                </div>";
+    }
 
+    public static function userProfilePhotoFormField()
+    {
+        return "
+            <div class='form-group' id='signature-div'>
+                <label for='profilePhoto'>Profile Photo File Upload (" . implode(',', UsersController::$profilePhotoTypes) . ")</label>
+                <input type='file' id='profilePhoto' name='profilePhoto'>
+            </div>";
     }
 }
