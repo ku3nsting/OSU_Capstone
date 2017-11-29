@@ -55,7 +55,7 @@
 					
 				<?php
 				$empID = $_SESSION["authenticated"];
-				if(!($stmt = $mysqli->prepare("SELECT fName, lName, hireDate, Email, CreatedOn FROM Employees WHERE Employees.ID = ?"))){
+				if(!($stmt = $mysqli->prepare("SELECT ID, fName, lName, hireDate, Email, Bio, CreatedOn FROM Employees WHERE Employees.ID = ?"))){
 					echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
 				}
 				if(!($stmt->bind_param("i", $empID))){
@@ -64,7 +64,7 @@
 				if(!$stmt->execute()){
 					echo "Execute failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
 				}
-				if(!$stmt->bind_result($fname, $lname, $hiredate, $email, $createdon)){
+				if(!$stmt->bind_result($id, $fname, $lname, $hiredate, $email, $bio, $createdon)){
 					echo "Bind failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
 				}
 				while($stmt->fetch()){
@@ -84,7 +84,7 @@
 	
 	<div id="leftContainer">
 	<br>
-	<img style="width:20%; height:20%;" src= "resources/profile-icon.png"><br>
+	<img style="width:20%; height:20%;" src= "uploads/profilePhotoEmployeeId<?php echo $id ?>.png"><br>
 	
 	<b>Email address:	</b> <?php echo $email ?><p>
 	
@@ -92,7 +92,14 @@
 	
 	<b>Hire date:	</b> <?php echo $hiredate ?><p>  <!-- correct this value according to however we store these -->
 	
-	<b>Signature on file?	</b> no<p>
+	<b>Your public Bio:	</b> 
+	<form method ="post" name="editBio" action="editBio.php">
+		<textarea name="bio" placeholder="<?php echo $bio ?>" style="width:50%;height:150px;"></textarea>
+		<input type="submit" value="Edit Bio">
+		</form>
+		<p>
+	
+	<b>Signature: </b> <img src="uploads/signatureEmployeeId<?php echo $id ?>.png" style="max-width:180px;"><p>
 	</div>
 	<p>
 

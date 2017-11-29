@@ -13,9 +13,9 @@ $emailsuccess = false;
 
 // setup variables from webpage
 $empID = $_POST['empID'];
+$awdDate = $_POST['awdDate'];
 $awardType = $_POST['awardType'];
 $currentUser = $_SESSION["authenticated"];
-$curDate = date("Y-m-d H:i:s");
 
 
 //get other variables from database
@@ -44,7 +44,7 @@ if(!$conn || $conn->connect_errno){
 if(!($stmt = $conn->prepare("INSERT INTO Awards_Given(awardid, employeeid, awarddate, awardedbyid) VALUES (?, ?, ?, ?)"))){
 	echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
 }
-if(!($stmt->bind_param("iisi", $awardType, $empID, $curDate, $currentUser))){
+if(!($stmt->bind_param("iisi", $awardType, $empID, $awdDate, $currentUser))){
 	echo "Bind failed: "  . $stmt->errno . " " . $stmt->error;
 }
 if(!$stmt->execute()){

@@ -75,6 +75,23 @@ ul {
 	width: 86%;
 }
 
+#centerContainerOverflow{
+	margin-left: auto;
+	margin-right: auto;
+	text-align: center;
+	display: block;
+	overflow: scroll;
+	font-family: "Century Gothic", "Times Roman", sans-serif;
+	padding-top:10px;
+	padding-bottom:10px;
+	padding-left: 20px;
+	padding-right: 20px;
+	background-color: #ffffff;
+	/*border: 1px solid red;*/
+	border-radius: 25px;
+	width: 86%;
+}
+
 #nominationForm {
 	margin-left: 30%;
 	margin-right: auto%;

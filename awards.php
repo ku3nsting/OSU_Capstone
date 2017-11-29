@@ -8,7 +8,6 @@
     require_once __DIR__ . '/Config/database.php';
 	include("header.php");
     $mysqli = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
-
 ?>
 
 <!DOCTYPE html>
@@ -78,7 +77,7 @@
 
 	<!-- end get username -->
 	
-<div id="centerContainer">
+<div id="centerContainerOverflow">
 		
 		<table id="boldTable">
 		Awards Received:
@@ -89,9 +88,10 @@
 			</tr>
 			
 		<?php
-		if(!($stmt = $mysqli->prepare("SELECT Awards_Given.AwardDate, Awards.AwardLabel, Awards_Given.AwardedByID FROM Awards_Given INNER JOIN Employees ON Employees.ID = Awards_Given.EmployeeID
+		if(!($stmt = $mysqli->prepare("SELECT Awards_Given.AwardDate, Awards.AwardLabel, Givers.fName, Givers.lName FROM Awards_Given 
+		INNER JOIN Employees AS Givers ON Givers.ID = Awards_Given.AwardedByID
 		INNER JOIN Awards ON Awards.ID = Awards_Given.AwardID	
-		WHERE Employees.ID = ?"))){
+		WHERE Awards_Given.EmployeeID = ?"))){
 		echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
 		}
 		if(!($stmt->bind_param("i", $empID))){
@@ -100,29 +100,32 @@
 		if(!$stmt->execute()){
 			echo "Execute failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
 		}
-		if(!$stmt->bind_result($date, $type, $givenby)){
+		if(!$stmt->bind_result($date, $type, $gfName, $glName)){
 			echo "Bind failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
 		}
 		while($stmt->fetch()){
-		 echo "<tr>\n<td>\n" . $date . "\n</td>\n<td>\n" . $type . "\n</td>\n<td>\n" . $givenby . "\n</td>\n</tr>\n";
+			
+		 echo "<tr>\n<td>\n" . $date . "\n</td>\n<td>\n" . $type . "\n</td>\n<td>\n" . $gfName . " " . $glName . "\n</td>\n</tr>\n";
 		}
 		$stmt->close();
 		?>
 		</table>
+		
 		<p>
 		<br>
 		
 		<table id="boldTable">
 		Awards Given:
 			<tr>
-			<th>Recipient ID</th>
+			<th>Recipient Name</th>
 			<th>Award Date</th>
 				<th>Award Type</th>
 				<th> </th>
 			</tr>
 			
 		<?php
-		if(!($stmt = $mysqli->prepare("SELECT Awards_Given.EmployeeID, Awards_Given.AwardDate, Awards.AwardLabel FROM Awards_Given INNER JOIN Employees ON Employees.ID = Awards_Given.EmployeeID
+		if(!($stmt = $mysqli->prepare("SELECT Getters.fName, Getters.lName, Awards_Given.ID, Awards_Given.EmployeeID, Awards_Given.AwardDate, Awards.AwardLabel FROM Awards_Given 
+		INNER JOIN Employees AS Getters ON Getters.ID = Awards_Given.EmployeeID
 		INNER JOIN Awards ON Awards.ID = Awards_Given.AwardID	
 		WHERE Awards_Given.AwardedByID = ?"))){
 		echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
@@ -133,11 +136,11 @@
 		if(!$stmt->execute()){
 			echo "Execute failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
 		}
-		if(!$stmt->bind_result($recipient, $date, $type)){
+		if(!$stmt->bind_result($getFname, $getLname, $id, $recipient, $date, $type)){
 			echo "Bind failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
 		}
 		while($stmt->fetch()){
-		 echo "<tr>\n<td>\n" . $recipient . "\n</td>\n<td>\n" . $date . "\n</td>\n<td>\n". $type . "\n</td>\n<td>\n<a href=deleteAward.php>\n</td>\n</tr>\n";
+		 echo "<tr>\n<td>\n" . $getFname. " " . $getLname . "\n</td>\n<td>\n" . $date . "\n</td>\n<td>\n" . $type . "\n</td>\n<td>\n<a href=delete.php?id=" . $id . ">\ndelete\n</a>\n</td>\n</tr>\n";
 		}
 		$stmt->close();
 		?>
