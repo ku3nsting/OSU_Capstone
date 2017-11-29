@@ -4,7 +4,31 @@
 
     require_once __DIR__ . '/Config/database.php';
     $mysqli = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
+	
 
+	$empID = $_SESSION["authenticated"];
+	
+	if(!($stmt = $mysqli->prepare("SELECT UserType.Type FROM UserType 
+		INNER JOIN Employees ON Employees.ID = UserType.EmployeeID
+		WHERE Employees.ID = ?"))){
+		echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
+	}
+	if(!($stmt->bind_param("i", $empID))){
+		echo "Bind failed: "  . $stmt->errno . " " . $stmt->error;
+	}
+	if(!$stmt->execute()){
+		echo "Execute failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
+	}
+	if(!$stmt->bind_result($userType)){
+		echo "Bind failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
+	}
+	while($stmt->fetch()){
+	}
+	$stmt->close();
+	
+	if($userType == 'admin'){
+		header('Location: adminNominate.php');
+	}
 ?>
 
 <!DOCTYPE html>
@@ -122,6 +146,9 @@
 						<input type="radio" name="awardType" value="4" onclick="hideCustom();">Employee of the Month <a href="/pdf/month.pdf">(preview pdf)</a><br>
 						<input type="radio" name="awardType" value="5">Custom <a href="/pdf/custom.pdf">(preview pdf)</a><br>
 					</div>
+					<p>
+					 Award date:
+					 <input type="date" name="awdDate">
 				
 					<p>
 
