@@ -99,6 +99,7 @@ class UsersView
             $Email = html($user['Email']);
             $Type = html($user['Type']);
             $Bio = html($user['Bio']);
+            $user['ID'] = html($user['ID']);
         } else {
             $action = 'add-user';
             $fName = $lName = $hireDate = $Email = $Type = $Bio = '';
@@ -121,7 +122,6 @@ class UsersView
                 </div>";
         }
 
-        $user['ID'] = html($user['ID']);
         return "
             <form id='user-form' enctype='multipart/form-data'>
                 <input class='hidden' id='action' name='action' value='$action'>
