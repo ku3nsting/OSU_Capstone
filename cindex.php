@@ -110,7 +110,6 @@
 			echo "Bind failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
 		}
 		while($stmt->fetch()){
-		 echo "\n<b>\n" . $fname . "\n\n" . $lname . "\n</b>\n";
 		}
 		$stmt->close();
 		
