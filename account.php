@@ -84,6 +84,13 @@
 	
 	<div id="leftContainer">
 	<br>
+	
+	<?php 
+	if(!file_exists("uploads/profilePhotoEmployeeId" . $id . ".png"))
+	{
+		$id = 'x';
+	}
+	?>	
 	<img style="width:20%; height:20%;" src= "uploads/profilePhotoEmployeeId<?php echo $id ?>.png"><br>
 	
 	<b>Email address:	</b> <?php echo $email ?><p>
@@ -99,7 +106,7 @@
 		</form>
 		<p>
 	
-	<b>Signature: </b> <img src="uploads/signatureEmployeeId<?php echo $id ?>.png" style="max-width:180px;"><p>
+	<b>Signature: </b> <br><img src="uploads/signatureEmployeeId<?php echo $id ?>.png" style="max-width:180px;"><p>
 	</div>
 	<p>
 
