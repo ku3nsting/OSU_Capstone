@@ -106,6 +106,13 @@
 		</form>
 		<p>
 	
+		<?php 
+	if(!file_exists("uploads/signatureEmployeeId" . $id . ".png"))
+	{
+		$id = 'x';
+	}
+	?>	
+	
 	<b>Signature: </b> <br><img src="uploads/signatureEmployeeId<?php echo $id ?>.png" style="max-width:180px;"><p>
 	</div>
 	<p>
