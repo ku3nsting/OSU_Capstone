@@ -121,7 +121,13 @@
 			$id = 'x';
 		}
 		?>
-		<!-- /Get Employee of the Month -->		
+		<!-- /Get Employee of the Month -->	
+		<?php 
+		if(!file_exists("uploads/profilePhotoEmployeeId" . $id . ".png"))
+		{
+			$id = 'x';
+		}
+		?>		
 		
 		<p>
 		<img src="uploads/profilePhotoEmployeeId<?php echo $id ?>.png" style="max-width:180px;">
@@ -185,6 +191,14 @@
 				
 				<!-- /Get awardee name -->		
 					<br>
+					
+					<?php 
+					if(!file_exists("uploads/profilePhotoEmployeeId" . $id . ".png"))
+					{
+						$id = 'x';
+					}
+					?>
+
 					<img src="uploads/profilePhotoEmployeeId<?php echo $id ?>.png" style="max-height:110px;width:110px">
 					<br>
 					Employee of the Week
@@ -245,7 +259,13 @@
 				}
 				?>
 				
-				<!-- /Get awardee name -->	
+				<!-- /Get awardee name -->
+				<?php 
+				if(!file_exists("uploads/profilePhotoEmployeeId" . $id . ".png"))
+				{
+					$id = 'x';
+				}
+				?>	
 					
 					<br>
 					<img src="uploads/profilePhotoEmployeeId<?php echo $id ?>.png" style="max-height:110px;width:110px">
@@ -301,6 +321,12 @@
 				?>
 				
 				<!-- /Get awardee name -->	
+				<?php 
+				if(!file_exists("uploads/profilePhotoEmployeeId" . $id . ".png"))
+				{
+					$id = 'x';
+				}
+				?>	
 					
 					<br>
 					<img src="uploads/profilePhotoEmployeeId<?php echo $id ?>.png" style="max-height:110px;width:110px">
