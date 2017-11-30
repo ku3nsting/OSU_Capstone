@@ -2,7 +2,11 @@
     //Turn on error reporting
     ini_set('display_errors', 'On');
 
+	//TEMP value (database from a previous class)
+	//we'll change this to connect to Employee recognition db
+    //Connects to the database
     require_once __DIR__ . '/Config/database.php';
+	include("header.php");
     $mysqli = new mysqli($dbservername, $dbusername, $dbpassword, $dbname);
 	
 
@@ -37,31 +41,7 @@
 <head>
  
 	<title>Employee Recognition Application</title>
-
 	<link rel="stylesheet" type="text/css" href="css/bootstrap.css" /> 
-
-	<style type="text/css">
-		#nomination {
-			width: 990px;
-			background-color: #F3F3F3;
-			border-radius: 20px;
-		}
-
-		#nominationForm {
-			margin-left: 300px;
-			padding-top: 20px;
-		}
-
-		#submitButton {
-			width: 1000px;
-			margin-left: 400px;
-			padding-bottom: 20px;
-		}
-
-		.button {
-			background-color: #008CBA;
-		}
-	</style>
    
 </head>
 
@@ -82,7 +62,7 @@
 		  <li><a href="account.php">Account</a></li>
 		  <li><a href="awards.php">My Awards</a></li>
 		  <li><a href="nominate.php">Nominate</a></li>
-		  <li style="float:right"><a class="active" href="login.html">Sign Out</a></li>
+		  <li style="float:right"><a class="active" href="signout.php">Sign Out</a></li>
 		</ul>
 		
 		</td>
@@ -92,91 +72,55 @@
 		
 		
 <!-- NOMINATION -->
-		<div id="nomination">
+		<div id="centerContainer">
 		
 		
-			
-			<form method="post" action="storeAward.php">
-				<div  id="nominationForm">
-					
+			<form method="post" action="sendAward.php">
+				<div id="nominationForm">
+				
 					<h2>Nominate a Co-worker</h2>
 					<p>
 					
 					<label>Recipient Name:	</label>
-					<select name="nomineeID">
+					<select name="empID">
 					<?php
 					if(!($stmt = $mysqli->prepare("SELECT id, fname, lname FROM Employees"))){
 						echo "Prepare failed: "  . $stmt->errno . " " . $stmt->error;
 					}
-
 					if(!$stmt->execute()){
 						echo "Execute failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
 					}
-					if(!$stmt->bind_result($id, $fname, $lname)){
+					if(!$stmt->bind_result($empID, $fname, $lname)){
 						echo "Bind failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
 					}
 					while($stmt->fetch()){
-					 echo '<option value=" '. $id . ' "> ' . $fname .' '. $lname .'</option>\n';
+					 echo '<option value="'.$empID.'"> ' . $fname .' '. $lname .'</option>\n';
 					}
 					$stmt->close();
+
 					?>
 					</select>
-					
-					
-
-					<p>
-
-					<label for="email">Enter an Email (FOR TESTING): </label>
-					<div>
-						<input name="email" id="email" type="text" />
-					</div>
-
-					<p>
-
-					<label for="nomineeName">Enter a name (FOR TESTING): </label>
-					<div>
-						<input name="nomineeName" id="nomineeName" type="text" />
-					</div>
 
 					<p>
 
 					<label for="awardType">Choose an award type: </label>
 					<div>
-						<input type="radio" name="awardType" value="3" onclick="hideCustom();"checked>Employee of the Week <a href="/pdf/week.pdf">(preview pdf)</a><br>
-						<input type="radio" name="awardType" value="4" onclick="hideCustom();">Employee of the Month <a href="/pdf/month.pdf">(preview pdf)</a><br>
-						<input type="radio" name="awardType" value="5">Custom <a href="/pdf/custom.pdf">(preview pdf)</a><br>
+						<input type="radio" name="awardType" value="1"; checked="checked" \>Employee of the Week <a href="/pdf/week.pdf">(preview pdf)</a><br>
+						<input type="radio" name="awardType" value="2";">Employee of the Month <a href="/pdf/month.pdf">(preview pdf)</a><br>
+						<input type="radio" name="awardType" value="3">Custom <a href="/pdf/custom.pdf">(preview pdf)</a><br>
 					</div>
 					<p>
 					 Award date:
 					 <input type="date" name="awdDate">
 				
 					<p>
-
-					<div id="awardDate">
-        				<label for="date">Choose an Award Date:</label>
-        				<div>
-        					<input type="date" name="chosenDate">
-        				</div>
-        			</div>
-
-        			<p>
-
-            		<div id="awardTime">
-             			<label for="time">Choose an Award Time:</label>
-              			<div>
-                			<input type="time" name="chosenTime">
-              			</div>
-            		</div>
-
-            		<p>
+					</div>
 					
 					<label>Send your nominee a message:	</label><p>
 
 					<textarea name="reason" placeholder="Type your message here" style="width:50%;height:150px;"></textarea>
 
 					<p>
-					
-				</div>
 		
 				<div id="submitButton">
 					<input class="button" type="submit" value="Nominate">
@@ -185,8 +129,7 @@
 			</form>
 
 		</div>
-		
-<p>
+
 
 	
 	
