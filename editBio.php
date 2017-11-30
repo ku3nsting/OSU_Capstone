@@ -17,8 +17,6 @@
    
 </head>
 
-<body>
-
 <div id="bodyDiv">
 
 <?php
@@ -33,21 +31,33 @@ if(!($stmt->bind_param("si", $empBio, $empID))){
 if(!$stmt->execute()){
 	echo "Execute failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
 }
-else{
-	echo "Updated Bio:" . $empBio ;
-}
 
 $stmt->close();
 ?>
 
+<body>
 
-				<p><div id="center">
+
+<!-- CONFIRMATION-->
+<p>
+		<div id="centerContainer">
+		
+
+				<p>
+			
 		<form action="account.php">
-					<input class="button" type="submit" value="Back to your account overview">
-					</form>
-				</div>
+					
 				
-				</div>
+					Updated bio: <?php echo $empBio ?>
+		
+		<p>
+		<input class="button" type="submit" value="Back to your account overview">
+					</form>
+					
+					</div>
+				
+				</div> <!-- bodydiv -->
+
 
 </body>
 </html>
