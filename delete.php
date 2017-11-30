@@ -32,20 +32,29 @@ if(!$stmt->execute()){
 	echo "Execute failed: "  . $mysqli->connect_errno . " " . $mysqli->connect_error;
 }
 else{
-	echo "Deleted award.";
 }
 
 $stmt->close();
 ?>
+<!-- CONFIRMATION-->
+<p>
+		<div id="centerContainer">
+		
 
-
-				<p><div id="center">
+				<p>
+			
 		<form action="awards.php">
-					<input class="button" type="submit" value="Back to your Awards overview">
-					</form>
-				</div>
+					
 				
-				</div>
+					Sucessfully deleted award
+		
+		<p>
+		<input class="button" type="submit" value="Back to your awards overview">
+					</form>
+					
+					</div>
+				
+				</div> <!-- bodydiv -->
 
 </body>
 </html>
