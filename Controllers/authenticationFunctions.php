@@ -41,7 +41,7 @@ function sendPasswordEmail($email)
             $SQL->bind_param('sss',$email,$key,$expDate);
             $SQL->execute();
             $SQL->close();
-            $passwordLink = "<a href=\"?a=recover&email=" . $key . "&u=" . urlencode(base64_encode($userID)) . "\">http://web.engr.oregonstate.edu/~kuenstir/Capstone33/recoverPassword.php?a=recover&email=" . $key . "&u=" . urlencode(base64_encode($userID)) . "</a>";
+            $passwordLink = "<a href=\"?a=recover&email=" . $key . "&u=" . urlencode(base64_encode($userID)) . "\">http://34.223.203.66/recoverPassword.php?a=recover&email=" . $key . "&u=" . urlencode(base64_encode($userID)) . "</a>";
             $message = "Dear $fname,\r\n";
             $message .= "Please visit the link below to reset your password:\r\n";
             $message .= "-----------------------\r\n";
@@ -50,7 +50,7 @@ function sendPasswordEmail($email)
             $message .= "Be sure to copy the entire link into your browser. This link will expire after 3 days for security reasons.\r\n\r\n";
             $message .= "If you did not request this forgotten password email, no action is needed, your password will not be reset as long as the link above is not visited. However, you may want to log into your account and change your password, as someone may have attempted to guess it.\r\n\r\n";
             $message .= "Thanks,\r\n";
-            $message .= "-- Our site team";
+            $message .= "-- Gemini team";
             $headers .= "From: Gemini Employee Recognition Website <kuenstir@oregonstate.edu> \n";
             $headers .= "To-Sender: \n";
             $headers .= "X-Mailer: PHP\n"; // mailer
@@ -59,7 +59,7 @@ function sendPasswordEmail($email)
             $headers .= "Content-Type: text/html; charset=iso-8859-1"; //Enc-type
             $subject = "Your Lost Password";
             @mail($email,$subject,$message,$headers);
-            return str_replace("\r\n","<br/ >",$message);
+            return str_replace("\r\n","<br/ >",$passwordLink);
         }
     }
 }

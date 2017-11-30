@@ -24,7 +24,7 @@ if (isset($_POST['subStep']) && !isset($_GET['a']) && $_SESSION['lockout'] != tr
             } else {
                 $error = false;
                 $show = 'successPage';
-                $passwordMessage = sendPasswordEmail($_POST['email']);
+                $passwordLink = sendPasswordEmail($_POST['email']);
                 $_SESSION['badCount'] = 0;
             }
         break;
@@ -104,9 +104,9 @@ if ($_SESSION['badCount'] >= 3)
 		
 	 <?php break; case 'successPage': ?><br>    
 	 <h2>Password Recovery</h2><br>    
-	 <p>An email has been sent to you with instructions on how to reset your password. <strong>(Mail will not send unless you have an smtp server running locally.)</strong><br /><br />
+	 <p>An email has been sent to you with instructions on how to reset your password. <br><br>
 	 <a href="loginvalidate.php">Return</a> to the login page. </p><br>    <p>
-	 This is the message that would appear in the email:</p><br>    <div class="message"><?= $passwordMessage;?></div><br>    
+	 For testing convenience, this is the link that will appear in the email:</p><br>    <div class="message"><?= $passwordLink;?></div><br>    
 	 
 	 <?php break;
 	case 'recoverForm': ?>
@@ -114,8 +114,7 @@ if ($_SESSION['badCount'] >= 3)
 	
     <?php 
 	$key = $_GET['email'];
-	echo $key;
-	$securityUser = getEmployeeID($key); echo $securityUser; ?>.</p>
+	$securityUser = getEmployeeID($key); ?></p>
     <p>In the fields below, enter your new password.</p>
     <?php if ($error == true) { ?><span class="error">The new passwords must match and must not be empty.</span><?php } ?>
     <form action="<?= $_SERVER['PHP_SELF']; ?>" method="post">
