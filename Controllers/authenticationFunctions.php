@@ -44,7 +44,7 @@ function sendPasswordEmail($email)
             $SQL->execute();
             $SQL->close();
             $passwordLink = "<a href=\"?a=recover&email=" . $key . "&u=" . urlencode(base64_encode($userID)) . "\">http://34.223.203.66/recoverPassword.php?a=recover&email=" . $key . "&u=" . urlencode(base64_encode($userID)) . "</a>";
-            $message = "Dear $fname,\r\n";
+            $message = "<html>Dear $fname,\r\n";
             $message .= "Please visit the link below to reset your password:\r\n";
             $message .= "-----------------------\r\n";
             $message .= "$passwordLink\r\n";
@@ -52,16 +52,40 @@ function sendPasswordEmail($email)
             $message .= "Be sure to copy the entire link into your browser. This link will expire after 3 days for security reasons.\r\n\r\n";
             $message .= "If you did not request this forgotten password email, no action is needed, your password will not be reset as long as the link above is not visited. However, you may want to log into your account and change your password, as someone may have attempted to guess it.\r\n\r\n";
             $message .= "Thanks,\r\n";
-            $message .= "-- Gemini team";
-            $headers = "From: Gemini Employee Recognition Website <kuenstir@oregonstate.edu> \n";
+            $message .= "-- Gemini team</html>";
+			
+			
+            $headers = "From: Gemini Employee Recognition Website <wilsjaco@oregonstate.edu> \n";
             $headers .= "To-Sender: \n";
             $headers .= "X-Mailer: PHP\n"; // mailer
-            $headers .= "Reply-To: kuenstir@oregonstate.edu\n"; // Reply address
-            $headers .= "Return-Path: kuenstir@oregonstate.edu\n"; //Return Path for errors
+            $headers .= "Reply-To: wilsjaco@oregonstate.edu\n"; // Reply address
+            $headers .= "Return-Path: wilsjaco@oregonstate.edu\n"; //Return Path for errors
             $headers .= "Content-Type: text/html; charset=iso-8859-1"; //Enc-type
             $subject = "Your Lost Password";
-            @mail($email,$subject,$message,$headers);
-            return str_replace("\r\n","<br/ >",$passwordLink);
+			
+            if(!mail($email,$subject,$message,$headers)){
+				return str_replace("\r\n","<br/ >Mail not sent");
+				}
+			else{
+			} 
+			
+			/*
+			$headers2 = "From: Gemini Employee Recognition Website <kuenstir@oregonstate.edu> \n";
+            $headers2 .= "To-Sender: \n";
+            $headers2 .= "X-Mailer: PHP\n"; // mailer
+            $headers2 .= "Reply-To: kuenstir@oregonstate.edu\n"; // Reply address
+            $headers2 .= "Return-Path: kuenstir@oregonstate.edu\n"; //Return Path for errors
+            $headers2 .= "Content-Type: text/html; charset=iso-8859-1"; //Enc-type
+			$subject = "Your Lost Password";
+			
+            if(!mail($email,$subject,$message,$headers2)){
+				return str_replace("\r\n","<br/ >Mail not sent");
+				}
+			else{
+				return str_replace("\r\n","<br/ >",$passwordLink);
+			}
+			*/
+			
         }
     }
 }
