@@ -21,11 +21,7 @@ require_once __DIR__ . '/../Models/UsersModel.php';
 class UsersController extends BaseController
 {
     public static $signFileTypes = ['image/png' => 'png'];
-    public static $profilePhotoTypes = [
-        'image/png' => 'png',
-        'image/jpeg' => 'jpeg',
-        'image/bmp' => 'bmp'
-    ];
+    public static $profilePhotoTypes = [ 'image/png' => 'png' ];
 
     /**
      * @param $request
@@ -387,6 +383,13 @@ class UsersController extends BaseController
         ) {
             $formErrors[] = 'Employee signature must be one of the following image types: ('
                 . implode(',', self::$signFileTypes) . ')';
+        }
+
+        if (!empty($_FILES['profilePhoto']['tmp_name']) &&
+            !in_array($_FILES['profilePhoto']['type'], array_keys(self::$profilePhotoTypes))
+        ) {
+            $formErrors[] = 'Employee profile photo must be one of the following image types: ('
+                . implode(',', self::$profilePhotoTypes) . ')';
         }
 
         return $formErrors;
