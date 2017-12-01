@@ -1,13 +1,15 @@
 <?php 
+
 function checkEmail($email)
 {
     global $mySQL;
     $error = array('status'=>false,'userID'=>0);
     if (isset($email) && trim($email) != '') {
+		$email = trim($email);
         //email was entered
         if ($SQL = $mySQL->prepare("SELECT `ID` FROM `Employees` WHERE `Email` = ? LIMIT 1"))
         {
-            $SQL->bind_param('s',trim($email));
+            $SQL->bind_param('s', $email);
             $SQL->execute();
             $SQL->store_result();
             $numRows = $SQL->num_rows();
@@ -25,12 +27,12 @@ function checkEmail($email)
 function sendPasswordEmail($email)
 {
     global $mySQL;
-    if ($SQL = $mySQL->prepare("SELECT `fName`,`Password` FROM `Employees` WHERE `Email` = ? LIMIT 1"))
+    if ($SQL = $mySQL->prepare("SELECT `ID`,`fName`,`Password` FROM `Employees` WHERE `Email` = ? LIMIT 1"))
     {
         $SQL->bind_param('s',$email);
         $SQL->execute();
         $SQL->store_result();
-        $SQL->bind_result($fname,$pword);
+        $SQL->bind_result($userID,$fname,$pword);
         $SQL->fetch();
         $SQL->close();
         $expFormat = mktime(date("H"), date("i"), date("s"), date("m")  , date("d")+3, date("Y"));
@@ -51,7 +53,7 @@ function sendPasswordEmail($email)
             $message .= "If you did not request this forgotten password email, no action is needed, your password will not be reset as long as the link above is not visited. However, you may want to log into your account and change your password, as someone may have attempted to guess it.\r\n\r\n";
             $message .= "Thanks,\r\n";
             $message .= "-- Gemini team";
-            $headers .= "From: Gemini Employee Recognition Website <kuenstir@oregonstate.edu> \n";
+            $headers = "From: Gemini Employee Recognition Website <kuenstir@oregonstate.edu> \n";
             $headers .= "To-Sender: \n";
             $headers .= "X-Mailer: PHP\n"; // mailer
             $headers .= "Reply-To: kuenstir@oregonstate.edu\n"; // Reply address

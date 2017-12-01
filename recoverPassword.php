@@ -1,16 +1,15 @@
 <?php
+    //Turn on error reporting
+    ini_set('display_errors', 'On');
+	
 //used https://code.tutsplus.com/tutorials/creating-an-advanced-password-recovery-utility--net-4741 as reference
 include("Config/database.php"); 
 include("Controllers/authenticationFunctions.php");
 
 $show = 'emailForm'; //which form step to show by default
+$error = false;
 
-if ($_SESSION['lockout'] == true && (mktime() > $_SESSION['lastTime'] + 900))
-{
-    $_SESSION['lockout'] = false;
-    $_SESSION['badCount'] = 0;
-}
-if (isset($_POST['subStep']) && !isset($_GET['a']) && $_SESSION['lockout'] != true)
+if (isset($_POST['subStep']) && !isset($_GET['a']))
 {
     switch($_POST['subStep'])
     {
@@ -25,7 +24,6 @@ if (isset($_POST['subStep']) && !isset($_GET['a']) && $_SESSION['lockout'] != tr
                 $error = false;
                 $show = 'successPage';
                 $passwordLink = sendPasswordEmail($_POST['email']);
-                $_SESSION['badCount'] = 0;
             }
         break;
         case 2:
@@ -53,14 +51,7 @@ elseif (isset($_GET['a']) && $_GET['a'] == 'recover' && $_GET['email'] != "") {
     } elseif ($result['status'] == true) {
         $error = false;
         $show = 'recoverForm';
-        $securityUser = $result['userID'];
     }
-}
-if ($_SESSION['badCount'] >= 3)
-{
-    $show = 'speedLimit';
-    $_SESSION['lockout'] = true;
-    $_SESSION['lastTime'] = '' ? mktime() : $_SESSION['lastTime'];
 }
 ?>
 
@@ -140,7 +131,6 @@ if ($_SESSION['badCount'] >= 3)
 		<p>You have answered the security question wrong too many times. You will be locked out for 15 minutes, after which you can try again.</p><br /><br /><a href="loginvalidate.php">Return</a> to the login page. </p>
     
 	<?php break; }
-		ob_flush();
 		$mySQL->close();
 ?>
 
